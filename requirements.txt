@@ -10,3 +10,4 @@ pygments
 coreapi
 PyCrypto
 pyparsing
+appdirs
