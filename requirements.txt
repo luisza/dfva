@@ -2,7 +2,6 @@ django
 djangorestframework
 markdown
 django-filter
-git+https://github.com/oscarmlage/django-cruds-adminlte.git
 django-select2
 django-image-cropping
 easy-thumbnails
