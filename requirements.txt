@@ -11,3 +11,8 @@ coreapi
 PyCrypto
 pyparsing
 appdirs
+django-crispy-forms
+django-select2
+django-image-cropping
+easy-thumbnails
+djangoajax
