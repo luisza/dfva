@@ -42,16 +42,8 @@ class Authenticate_Data_Request(models.Model):
                                       validators=[identification_validator])
     # '%Y-%m-%d %H:%M:%S',   osea  '2006-10-25 14:30:59'
     request_datetime = models.DateTimeField()
-
-
-class Authenticate_Request(models.Model):
     code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    ALGORITHM = (
-        ('sha256', 'sha256'),
-        ('sha384', 'sha384'),
-        ('sha512', 'sha512')
-    )
+        primary_key=False, default=uuid.uuid4, editable=False)
 
     STATUS = ((1, 'Solicitud recibida correctamente.'),
               (2, 'Ha ocurrido algún problema al solicitar la firma.'),
@@ -64,10 +56,21 @@ class Authenticate_Request(models.Model):
                'El tamaño de hash inválido debe estar entre 1 y 130 caracteres.'),
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto')
-
               )
-
     status = models.IntegerField(choices=STATUS, default=1)
+    nombre = models.CharField(max_length=250, null=True)
+    response_datetime = models.DateTimeField(auto_now=True)
+
+
+class Authenticate_Request(models.Model):
+    code = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    ALGORITHM = (
+        ('sha256', 'sha256'),
+        ('sha384', 'sha384'),
+        ('sha512', 'sha512')
+    )
+
     arrived_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     expirate_datetime = models.DateTimeField(null=True, blank=True)
