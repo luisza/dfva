@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.project
+.pydevproject
+.settings/
+db.sqlite3
+internal_ca
+

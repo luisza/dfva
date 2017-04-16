@@ -1,0 +1,46 @@
+{% extends "cruds/base.html" %}
+{% load i18n %}
+
+
+{% block title %}Inicio{% endblock %}
+{% block body_class %}Inicio{% endblock body_class %}
+{% block page_name %}Inicio{% endblock %}
+{% block page_description %}Inicio{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+            	<div class="box-body">
+<h1> Bienvenido</h1>
+<p>
+	Este sistema es un programa de prueba cuya función es ayudar en el proceso de autenticación con 
+	firma digital bajo un esquema moderlo.<br>
+	No es un sistema de producción sinó de pruebas 
+</p>
+<p>
+	Para poder hacer un proceso de inicio de sesión con firma digital se necesita tener registrada una 
+	institución y sus respectivas URL de notificación (ver editar de institución). <br>
+	Una vez creada la institución se podrá acceder a los detalles de la misma para observar las claves de accesos<br>
+	Se proporciona lo siguiente en formato PEM:
+	<ul>
+		<li><b>private key :</b> Clave privada para encriptar mensajes</li>
+		<li><b>server public key :</b> Clave pública para desencriptar mensajes del servidor</li>
+		<li><b>public certificate :</b> Certificado de validación de servicio</li>
+	</ul>
+	<b>Nota:</b> Mantenga esta información en un lugar seguro
+</p>
+<h2> Enlaces útiles </h2>
+<p>  Todos los enlaces útiles estarán en la barra izquierda, pero para comenzar es bueno iniciar con:
+</p>
+
+<ul>
+	<li> Iniciando sesión (<a href="{% url 'login' %}">aquí</a>)</li>
+	<li> Creando una institución (<a href="{% url 'authenticator_institution_list' %}">aquí</a>)</li>
+	<li> Creando una institución (<a href="{% url 'authenticator_institution_list' %}">aquí</a>)</li>
+</ul>
+		</div>
+	</div>
+</div></</div>
+{% endblock%}
