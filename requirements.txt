@@ -9,3 +9,4 @@ pyOpenSSL
 pygments
 coreapi
 PyCrypto
+pyparsing
