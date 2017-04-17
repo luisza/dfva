@@ -6,8 +6,8 @@ from django.db import models
 
 
 identification_validator = RegexValidator(
-    r'^(\d{9-11})$',
-    message="Debe contener 9 dígitos o 11 para extranjeros y 10 cédulas jurídicas por ejemplo: 102340456 para "
+    r'^(\d{9,11})$',
+    message="Debe contener 9 dígitos o 11 para extranjeros y 10 para cédulas jurídicas por ejemplo: 102340456 para "
             "nacionales o 10234045611 para extranjeros")
 
 
@@ -44,16 +44,16 @@ class AuthenticateDataRequest(models.Model):
     code = models.UUIDField(
         primary_key=False, default=uuid.uuid4, editable=False)
 
-    STATUS = ((1, 'Solicitud recibida correctamente.'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma.'),
-              (3, 'Solicitud con campos incompletos.'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor.'),
-              (5, 'La entidad no se encuentra registrada.'),
-              (6, 'La entidad se encuentra en estado inactiva.'),
-              (7, 'La URL no pertenece a la entidad solicitante.'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres.'),
-              (9, 'Algoritmo desconocido.'),
-              (10, 'Certificado incorrecto.'))
+    STATUS = ((1, 'Solicitud recibida correctamente'),
+              (2, 'Ha ocurrido algún problema al solicitar la firma'),
+              (3, 'Solicitud con campos incompletos'),
+              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
+              (5, 'La entidad no se encuentra registrada'),
+              (6, 'La entidad se encuentra en estado inactiva'),
+              (7, 'La URL no pertenece a la entidad solicitante'),
+              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
+              (9, 'Algoritmo desconocido'),
+              (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
     name = models.CharField(max_length=250, null=True)
     response_datetime = models.DateTimeField(auto_now=True)
