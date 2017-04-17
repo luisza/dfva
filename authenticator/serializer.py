@@ -18,6 +18,7 @@ from rest_framework.exceptions import ValidationError
 
 from authenticator.models import AuthenticateDataRequest, AuthenticateRequest,\
     Institution, NotificationURL
+from ca.ca_management.check_cert import check_certificate
 from ca.rsa import decrypt, get_hash_sum
 
 
@@ -63,6 +64,8 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
                 'Institution not found, certificate not match']
             return False
 
+        if not check_certificate(self.data['public_certificate']):
+            self._errors['public_certificate'] = ['Certificate not valid']
         try:
             self.requestdata = decrypt(self.institution.server_sign_key,
                                        self.data['data'])
