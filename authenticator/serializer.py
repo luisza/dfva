@@ -9,17 +9,16 @@ Created on 14/4/2017
 from __future__ import unicode_literals
 
 import datetime
+
 from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from authenticator.models import Institution, Notification_URL,\
-    Authenticate_Data_Request
+from authenticator.models import AuthenticateDataRequest, AuthenticateRequest,\
+    Institution, NotificationURL
 from ca.rsa import decrypt, get_hash_sum
-
-from .models import Authenticate_Request
 
 
 class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
@@ -51,7 +50,7 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
         if data['institution'] != str(self.institution.code):
             self._errors['institution'] = ['Institution not match']
 
-        if not Notification_URL.objects.filter(
+        if not NotificationURL.objects.filter(
                 institution=self.institution,
                 url=data['notification_url']).exists():
             self._errors['notification_url'] = ['notification_url not found']
@@ -68,12 +67,12 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
             self.requestdata = decrypt(self.institution.server_sign_key,
                                        self.data['data'])
             self.check_internal_data(self.requestdata)
-        except Exception as e:
+        except:
             self._errors['data'] = ['Data not decripted well']
             return False
 
     def is_valid(self, raise_exception=False):
-        valid = serializers.HyperlinkedModelSerializer.is_valid(
+        serializers.HyperlinkedModelSerializer.is_valid(
             self, raise_exception=raise_exception)
         self.validate_digest()
         self.validate_certificate()
@@ -88,9 +87,9 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
                 continue
             odata[field] = self.data[field]
 
-        auth_request = Authenticate_Request(**odata)
+        auth_request = AuthenticateRequest(**odata)
 
-        adr = Authenticate_Data_Request()
+        adr = AuthenticateDataRequest()
         adr.notification_url = self.requestdata['notification_url']
         adr.identification = self.requestdata['identification']
         adr.institution = self.institution
@@ -106,7 +105,7 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
         return auth_request
 
     class Meta:
-        model = Authenticate_Request
+        model = AuthenticateRequest
         fields = ('institution', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
@@ -114,6 +113,6 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
 class Authenticate_Response_Serializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Authenticate_Data_Request
+        model = AuthenticateDataRequest
         fields = (
-            'code', 'status', 'identification', 'nombre', 'request_datetime')
+            'code', 'status', 'identification', 'name', 'request_datetime')

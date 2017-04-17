@@ -3,7 +3,7 @@ from rest_framework import mixins, viewsets
 from rest_framework import status
 from rest_framework.response import Response
 
-from authenticator.models import Authenticate_Request
+from authenticator.models import AuthenticateRequest
 from authenticator.serializer import Authenticate_Request_Serializer,\
     Authenticate_Response_Serializer
 
@@ -11,11 +11,11 @@ from authenticator.serializer import Authenticate_Request_Serializer,\
 # Create your views here.
 
 
-class Authenticate_Request_ViewSet(mixins.CreateModelMixin,
-                                   viewsets.GenericViewSet):
+class AuthenticateRequestViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Solicita una petición de autenticación para un usuario """
+
     serializer_class = Authenticate_Request_Serializer
-    queryset = Authenticate_Request.objects.all()
+    queryset = AuthenticateRequest.objects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

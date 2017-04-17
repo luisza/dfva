@@ -17,11 +17,11 @@ from django.http.response import HttpResponseRedirect
 
 from ca.ca_management import gen_cert
 
-from .models import Institution, Notification_URL
+from .models import Institution, NotificationURL
 
 
-class Notification_URLAjaxCRUD(InlineAjaxCRUD):
-    model = Notification_URL
+class NotificationURLAjaxCRUD(InlineAjaxCRUD):
+    model = NotificationURL
     base_model = Institution
     inline_field = 'institution'
     fields = ['description', 'url']
@@ -32,12 +32,12 @@ class InstitutionCRUD(UserCRUDView):
     model = Institution
     check_login = True
     check_perms = True
-    fields = ['name', 'domain', 'institution_unit', 'actived']
-    list_fields = ['name', 'domain', 'institution_unit', 'actived']
-    display_fields = [
-        'name', 'code',  'domain', 'institution_unit', 'actived', 'private_key', 'server_public_key', 'public_certificate']
+    fields = ['name', 'domain', 'institution_unit', 'active']
+    list_fields = ['name', 'domain', 'institution_unit', 'active']
+    display_fields = ['name', 'code',  'domain', 'institution_unit', 'active', 'private_key', 'server_public_key',
+                      'public_certificate']
 
-    inlines = [Notification_URLAjaxCRUD]
+    inlines = [NotificationURLAjaxCRUD]
 
     def get_create_view(self):
         CView = UserCRUDView.get_create_view(self)
