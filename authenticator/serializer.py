@@ -8,12 +8,15 @@ Created on 14/4/2017
 '''
 from __future__ import unicode_literals
 
-import hashlib
-
+import datetime
+from django.conf import settings
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from authenticator.models import Institution
+from authenticator.models import Institution, Notification_URL,\
+    Authenticate_Data_Request
 from ca.rsa import decrypt, get_hash_sum
 
 from .models import Authenticate_Request
@@ -38,21 +41,36 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
                 'Hash sum are not equals %s != %s' % (hashsum, self.data['data_hash'])]
             # HAy que hacer algo con los errores de status
 
+    def check_internal_data(self, data):
+        fields = ['notification_url', 'identification',
+                  'request_datetime', 'institution']
+        for field in fields:
+            if field not in data:
+                self._errors[field] = ['%s not found' % (field)]
+
+        if data['institution'] != str(self.institution.code):
+            self._errors['institution'] = ['Institution not match']
+
+        if not Notification_URL.objects.filter(
+                institution=self.institution,
+                url=data['notification_url']).exists():
+            self._errors['notification_url'] = ['notification_url not found']
+
     def validate_certificate(self):
-        institution = Institution.objects.filter(
+        self.institution = Institution.objects.filter(
             code=self.data['institution']).first()
-        if institution is None:
+        if self.institution is None:
             self._errors['data'] = [
                 'Institution not found, certificate not match']
             return False
 
         try:
-            data = decrypt(institution.server_sign_key,
-                           self.data['data'])
-
+            self.requestdata = decrypt(self.institution.server_sign_key,
+                                       self.data['data'])
+            self.check_internal_data(self.requestdata)
         except Exception as e:
-            print (e)
             self._errors['data'] = ['Data not decripted well']
+            return False
 
     def is_valid(self, raise_exception=False):
         valid = serializers.HyperlinkedModelSerializer.is_valid(
@@ -63,6 +81,30 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
             raise ValidationError(self.errors)
         return not bool(self._errors)
 
+    def save(self, **kwargs):
+        odata = {}
+        for field in self.Meta.fields:
+            if field == 'data':
+                continue
+            odata[field] = self.data[field]
+
+        auth_request = Authenticate_Request(**odata)
+
+        adr = Authenticate_Data_Request()
+        adr.notification_url = self.requestdata['notification_url']
+        adr.identification = self.requestdata['identification']
+        adr.institution = self.institution
+        adr.request_datetime = parse_datetime(
+            self.requestdata['request_datetime'])
+        adr.save()
+        self.adr = adr
+        auth_request.expirate_datetime = timezone.now(
+        ) + datetime.timedelta(minutes=settings.EXPIRED_DELTA)
+
+        auth_request.data_request = adr
+        auth_request.save()
+        return auth_request
+
     class Meta:
         model = Authenticate_Request
         fields = ('institution', 'data_hash', 'algorithm',
@@ -72,5 +114,6 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
 class Authenticate_Response_Serializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Authenticate_Request
-        fields = ('code', 'status', 'arrived_time', 'expirate_datetime')
+        model = Authenticate_Data_Request
+        fields = (
+            'code', 'status', 'identification', 'nombre', 'request_datetime')

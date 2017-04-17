@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 from base64 import b64decode, b64encode
 import hashlib
+import json
 
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -38,7 +39,7 @@ def decrypt(private_key, cipher_text):
     rsakey = PKCS1_OAEP.new(rsakey)
     raw_cipher_data = b64decode(cipher_text)
     decrypted = rsakey.decrypt(raw_cipher_data)
-    return decrypted
+    return json.loads(decrypted.decode())
 
 
 def encrypt(public_key, message):
