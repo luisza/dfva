@@ -90,6 +90,10 @@ ENV/
 .project
 .pydevproject
 .settings/
+
+# Application specific
 db.sqlite3
 internal_ca
 
+# IDE
+.idea/

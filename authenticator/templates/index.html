@@ -16,29 +16,29 @@
 <h1> Bienvenido</h1>
 <p>
 	Este sistema es un programa de prueba cuya función es ayudar en el proceso de autenticación con 
-	firma digital bajo un esquema moderlo.<br>
-	No es un sistema de producción sinó de pruebas 
+	firma digital bajo un esquema moderno.<br>
+	Considere que no es un sistema de producción sino de pruebas.
 </p>
 <p>
-	Para poder hacer un proceso de inicio de sesión con firma digital se necesita tener registrada una 
-	institución y sus respectivas URL de notificación (ver editar de institución). <br>
-	Una vez creada la institución se podrá acceder a los detalles de la misma para observar las claves de accesos<br>
+	Para poder crear un proceso de inicio de sesión con firma digital se necesita tener registrada una
+	institución y sus respectivas URLs de notificación (ver opción editar de institución). <br>
+	Una vez creada la institución se podrá acceder a los detalles de la misma para observar las claves de accesos.<br>
 	Se proporciona lo siguiente en formato PEM:
 	<ul>
-		<li><b>private key :</b> Clave privada para encriptar mensajes</li>
-		<li><b>server public key :</b> Clave pública para desencriptar mensajes del servidor</li>
-		<li><b>public certificate :</b> Certificado de validación de servicio</li>
+		<li><b>private key:</b> Clave privada para encriptar mensajes.</li>
+		<li><b>server public key:</b> Clave pública para desencriptar mensajes del servidor.</li>
+		<li><b>public certificate:</b> Certificado de validación de servicio.</li>
 	</ul>
-	<b>Nota:</b> Mantenga esta información en un lugar seguro
+	<b>Nota:</b> Mantenga esta información en un lugar seguro.
 </p>
 <h2> Enlaces útiles </h2>
-<p>  Todos los enlaces útiles estarán en la barra izquierda, pero para comenzar es bueno iniciar con:
+<p>  Todos los enlaces útiles estarán en la barra de menú a la izquierda, pero se puede comenzar con:
 </p>
 
 <ul>
-	<li> Iniciando sesión (<a href="{% url 'login' %}">aquí</a>)</li>
-	<li> Creando una institución (<a href="{% url 'authenticator_institution_list' %}">aquí</a>)</li>
-	<li> Revisando la documentación (<a href="/docs/">aquí</a>)</li>
+	<li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+	<li><a href="{% url 'authenticator_institution_list' %}">Crear una institución </a></li>
+	<li><a href="/docs/">Revisar la documentación</a></li>
 </ul>
 		</div>
 	</div>

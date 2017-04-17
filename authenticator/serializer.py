@@ -16,7 +16,7 @@ from rest_framework.exceptions import ValidationError
 from authenticator.models import Institution
 from ca.rsa import decrypt, get_hash_sum
 
-from .models import Authenticate_Request
+from .models import AuthenticateRequest
 
 
 class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
@@ -64,7 +64,7 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
         return not bool(self._errors)
 
     class Meta:
-        model = Authenticate_Request
+        model = AuthenticateRequest
         fields = ('institution', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
@@ -72,5 +72,5 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
 class Authenticate_Response_Serializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Authenticate_Request
+        model = AuthenticateRequest
         fields = ('code', 'status', 'arrived_time', 'expirate_datetime')

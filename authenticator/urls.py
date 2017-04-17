@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.conf.urls import url, include
 from rest_framework import routers
 
-from authenticator.views import Authenticate_Request_ViewSet
+from authenticator.views import AuthenticateRequestViewSet
 
 from . import views
 from .institution_views import InstitutionCRUD
@@ -19,7 +19,7 @@ from .institution_views import InstitutionCRUD
 
 iviews = InstitutionCRUD()
 router = routers.DefaultRouter()
-router.register(r'authenticate', Authenticate_Request_ViewSet)
+router.register(r'authenticate', AuthenticateRequestViewSet)
 urlpatterns = [
     url(r'^', include(iviews.get_urls())),
     url(r'^', include(router.urls)),
