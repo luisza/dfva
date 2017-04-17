@@ -95,11 +95,12 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
         adr.institution = self.institution
         adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
-        adr.save()
-        self.adr = adr
-        auth_request.expirate_datetime = timezone.now(
+
+        adr.expiration_datetime = timezone.now(
         ) + datetime.timedelta(minutes=settings.EXPIRED_DELTA)
 
+        adr.save()
+        self.adr = adr
         auth_request.data_request = adr
         auth_request.save()
         return auth_request
@@ -115,4 +116,4 @@ class Authenticate_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = AuthenticateDataRequest
         fields = (
-            'code', 'status', 'identification', 'name', 'request_datetime')
+            'code', 'status', 'identification', 'name', 'request_datetime', 'expiration_datetime')
