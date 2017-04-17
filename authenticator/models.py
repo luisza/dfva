@@ -1,8 +1,10 @@
 import uuid
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils import timezone
 
 
 identification_validator = RegexValidator(
@@ -58,6 +60,12 @@ class AuthenticateDataRequest(models.Model):
     name = models.CharField(max_length=250, null=True)
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
+
+    @property
+    def left_time(self):
+        now = timezone.now()
+        ttime = relativedelta(self.expiration_datetime, now)
+        return "%d:%d:%d" % (ttime.hours, ttime.minutes, ttime.seconds)
 
 
 class AuthenticateRequest(models.Model):

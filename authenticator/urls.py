@@ -11,11 +11,11 @@ from __future__ import unicode_literals
 from django.conf.urls import url, include
 from rest_framework import routers
 
+from authenticator.authentication_request import send_notification
 from authenticator.views import AuthenticateRequestViewSet
 
-from . import views
-from .institution_views import InstitutionCRUD
 from .authentication_request import AuthenticateDataRequestListView, AuthenticateDataRequestUpdate
+from .institution_views import InstitutionCRUD
 
 
 iviews = InstitutionCRUD()
@@ -28,5 +28,6 @@ urlpatterns = [
         name="authenticator_authenticatedatarequest_update"),
     url(r'^authenticator/authenticatedatarequest/list$', AuthenticateDataRequestListView.as_view(),
         name="authenticator_authenticatedatarequest_list"),
-    # url(r'^solicita$', views.authenticate, name="authenticate"),
+    url(r'^authenticator/authenticatedatarequest/list/(?P<token>[^/]+)/test$',
+        send_notification, name="send_authrequest_notification"),
 ]
