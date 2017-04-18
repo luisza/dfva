@@ -37,9 +37,9 @@
                                 {{ object.left_time}}
                               </td>
                               <td>
-                                  <a href="{% url 'authenticator_authenticatedatarequest_update' object.pk %}" class="btn btn-primary">{% trans "Edit" %}</a>
-                                  <a data-loading-text="{% trans 'Loading...' %}" 
-                                  id="btn_{{object.code}}" href="{% url 'send_authrequest_notification' object.code %}" 
+                                  <a href="{% url 'authenticator_authenticatedatarequest_update' object.code %}" class="btn btn-primary">{% trans "Edit" %}</a>
+                                  <a data-loading-text="{% trans 'Sending...' %}"
+                                  id="btn_{{object.code}}" href="{% url 'send_authrequest_notification' object.code %}"
                                   data-ajax="true" data-success="notifyfinish" class="btn btn-danger notifybtn">{% trans "Notify" %}</a>
                               </td>
                             </tr>
@@ -52,40 +52,33 @@
         </div>
     </div>
     
-<div id="mymodal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">{% trans 'Error processing request'  %}</h4>
-      </div>
-      <div class="modal-body">
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans 'Close' %}</button>
-
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->    
+    <div id="mymodal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{% trans 'Error processing the request' %}</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans 'Close' %}</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}
     
-    
-<script type="text/javascript">
-	document.btns={};
-
-	$('.notifybtn').on('click', function () {
-	    document.btns[$(this).attr('id')] = $(this).button('loading');
-	 });
-
-	function notifyfinish(content) {
-
-		if(content['ok'] != 0){
-			$(".modal-body").html("<pre>"+content['errors'][0]+'</pre>');
-			$('#mymodal').modal('show');
-		}
-		var ecode = "btn_" + content.code;
-		document.btns[ ecode ].button('reset');
-	 }
- </script>
+{% block extra_foot %}
+    <script type="text/javascript">
+        $('.notifybtn').on('click', function () {
+            $(this).button('loading');
+         });
+        function notifyfinish(content) {
+            if(content['ok'] != 0){
+                $(".modal-body").html("<pre>"+content['errors'][0]+'</pre>');
+                $('#mymodal').modal('show');
+            }
+            $("#btn_" + content.code).button('reset');
+         }
+     </script>
 {% endblock %}
