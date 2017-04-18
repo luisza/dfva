@@ -24,7 +24,7 @@ router.register(r'authenticate', AuthenticateRequestViewSet)
 urlpatterns = [
     url(r'^', include(iviews.get_urls())),
     url(r'^', include(router.urls)),
-    url(r'^authenticator/authenticatedatarequest/(?P<pk>[0-9]+)/update$', AuthenticateDataRequestUpdate.as_view(),
+    url(r'^authenticator/authenticatedatarequest/(?P<token>[^/]+)/update$', AuthenticateDataRequestUpdate.as_view(),
         name="authenticator_authenticatedatarequest_update"),
     url(r'^authenticator/authenticatedatarequest/list$', AuthenticateDataRequestListView.as_view(),
         name="authenticator_authenticatedatarequest_list"),
