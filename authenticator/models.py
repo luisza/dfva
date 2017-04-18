@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils import timezone
+from authenticator.presentation import PEMpresentation
 
 
 identification_validator = RegexValidator(
@@ -14,7 +15,7 @@ identification_validator = RegexValidator(
 
 
 # Create your models here.
-class Institution(models.Model):
+class Institution(models.Model, PEMpresentation):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=250)
     code = models.UUIDField(
