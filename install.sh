@@ -28,9 +28,9 @@ pip install -r requirements.txt
 pip install psycopg2 gunicorn 
 
 cd dfva
-secret_key=fdva_user_pass=$(openssl rand -base64 32)
-echo "DBPASS='$dfva_user_pass'\n" >> environment.py
-echo "SECRET_KEY = '$secret_key'\n" >> environment.py
+secret_key=$(openssl rand -base64 32)
+echo -e "DBPASS='$dfva_user_pass'\n" >> environment.py
+echo -e "SECRET_KEY = '$secret_key'\n" >> environment.py
 logout
 
 chmod u+x /home/dfva/dfva/deploy/gunicorn_start
