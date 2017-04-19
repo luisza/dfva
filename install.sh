@@ -25,12 +25,18 @@ git clone https://github.com/luisza/dfva.git
 cd dfva
 pip install -r requirements.txt
 pip install psycopg2 gunicorn 
-touch /home/dfva/gunicorn_supervisor.log 
+mkdir -p /home/dfva/logs/
+touch /home/dfva/logs/gunicorn_supervisor.log 
 
 cd dfva
 secret_key=$(openssl rand -base64 32)
 echo -e "DBPASS='$dfva_user_pass'\n" >> environment.py
 echo -e "SECRET_KEY = '$secret_key'\n" >> environment.py
+cd ..
+
+python manage.py migrate --settings=dfva.settings_prod
+python manage.py collectstatic --settings=dfva.settings_prod
+
 logout
 
 chmod u+x /home/dfva/dfva/deploy/gunicorn_start
