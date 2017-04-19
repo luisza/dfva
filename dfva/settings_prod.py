@@ -34,7 +34,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dfva_user',
-        'USER': 'db_fva',
+        'USER': 'db_dfva',
         'PASSWORD': DBPASS,
         'HOST': 'localhost',
         'PORT': '5432',                      # Set to empty string for default.
