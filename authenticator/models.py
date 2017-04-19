@@ -30,11 +30,16 @@ class Institution(models.Model, PEMpresentation):
     server_sign_key = models.TextField()
     server_public_key = models.TextField()
 
+    class Meta:
+        ordering = ('pk',)
 
 class NotificationURL(models.Model):
     description = models.CharField(max_length=250)
     url = models.URLField()
     institution = models.ForeignKey(Institution)
+
+    class Meta:
+        ordering = ('institution',)
 
 
 class AuthenticateDataRequest(models.Model):
@@ -68,6 +73,8 @@ class AuthenticateDataRequest(models.Model):
         ttime = relativedelta(self.expiration_datetime, now)
         return "%d:%d:%d" % (ttime.hours, ttime.minutes, ttime.seconds)
 
+    class Meta:
+        ordering = ('request_datetime',)
 
 class AuthenticateRequest(models.Model):
     code = models.UUIDField(
