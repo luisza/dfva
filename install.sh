@@ -1,3 +1,5 @@
+#/bin/bash 
+
 apt-get install -y postgresql postgresql-contrib python-virtualenv nginx supervisor
 
 dfva_user_pass=`openssl rand -base64 16`
@@ -55,4 +57,4 @@ ln -s /etc/nginx/sites-available/fdva.conf /etc/nginx/sites-enabled/fdva.conf
 
 service nginx restart 
 apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
-
+apt-get autoremove

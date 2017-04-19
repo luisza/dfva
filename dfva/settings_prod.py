@@ -33,8 +33,8 @@ WSGI_APPLICATION = 'dfva.wsgi_prod.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dfva_user',
-        'USER': 'db_dfva',
+        'NAME': 'db_dfva',
+        'USER': 'dfva_user',
         'PASSWORD': DBPASS,
         'HOST': 'localhost',
         'PORT': '5432',                      # Set to empty string for default.
