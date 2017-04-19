@@ -7,7 +7,7 @@ cryptography==1.8.1
 Django==1.11
 django-appconf==1.0.2
 django-crispy-forms==1.6.1
-django-cruds-adminlte==0.0.2
+django-cruds-adminlte==0.0.3
 django-filter==1.0.2
 django-image-cropping==1.0.4
 Django-Select2==5.9.0
