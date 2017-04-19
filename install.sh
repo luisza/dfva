@@ -1,4 +1,4 @@
-apt-get install -y postgresql postgresql-contrib
+apt-get install -y postgresql postgresql-contrib python-virtualenv nginx supervisor
 
 fdva_user_pass=$(openssl rand -base64 16)
 
@@ -10,12 +10,11 @@ logout
 
 groupadd --system webapps
 useradd --system --gid webapps --shell /bin/bash --home /home/dfva dfva
-apt-get install -y python-virtualenv git
 
 mkdir -p /home/dfva
 chown dfva:webapps /home/dfva
 
-apt-get install -y build-essential libssl-dev libffi-dev python3-dev libpq-dev
+apt-get install -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
 
 su - dfva
 virtualenv -p python3 environment
@@ -26,6 +25,7 @@ git clone https://github.com/luisza/dfva.git
 cd dfva
 pip install -r requirements.txt
 pip install psycopg2 gunicorn 
+touch /home/dfva/gunicorn_supervisor.log 
 
 cd dfva
 secret_key=$(openssl rand -base64 32)
@@ -34,7 +34,10 @@ echo -e "SECRET_KEY = '$secret_key'\n" >> environment.py
 logout
 
 chmod u+x /home/dfva/dfva/deploy/gunicorn_start
+cp /home/dfva/dfva/deploy/supervisor.conf /etc/supervisor/conf.d/
 
+supervisorctl reread
+supervisorctl update
 
 
 apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev

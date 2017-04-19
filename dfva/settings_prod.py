@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-from .settings import 
+from .settings import *
 from .environment import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
