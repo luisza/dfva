@@ -27,8 +27,9 @@ secret_key=`openssl rand -base64 32`
 echo DBPASS="\"$dfva_user_pass\"" > /home/dfva/dfva/dfva/environment.py
 echo -e "\n" >> /home/dfva/dfva/dfva/environment.py
 echo SECRET_KEY ="\"$secret_key\"" >> /home/dfva/dfva/dfva/environment.py
+echo "HOSTS =['dfva.info']" >> /home/dfva/dfva/dfva/environment.py
 
-chown dfva:webapps  /home/dfva/dfva/environment.py
+chown dfva:webapps /home/dfva/dfva/dfva/environment.py
 
 su - dfva <<EOF
 virtualenv -p python3 environment
@@ -57,4 +58,4 @@ ln -s /etc/nginx/sites-available/fdva.conf /etc/nginx/sites-enabled/fdva.conf
 
 service nginx restart 
 apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
-apt-get autoremove
+apt-get -y autoremove

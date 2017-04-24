@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['dfva.info']
+ALLOWED_HOSTS = HOSTS
 WSGI_APPLICATION = 'dfva.wsgi_prod.application'
 
 # Database
