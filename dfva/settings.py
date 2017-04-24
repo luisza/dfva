@@ -147,3 +147,4 @@ THUMBNAIL_PROCESSORS = (
 CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 
 EXPIRED_DELTA = 5  # in minutes
+LOGIN_REDIRECT_URL = '/'
