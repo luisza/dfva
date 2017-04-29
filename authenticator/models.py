@@ -32,6 +32,9 @@ class Institution(models.Model, PEMpresentation):
 
     class Meta:
         ordering = ('pk',)
+        permissions = (
+            ("view_institution", "Can see available tasks"),
+            )
 
 class NotificationURL(models.Model):
     description = models.CharField(max_length=250)
@@ -40,7 +43,9 @@ class NotificationURL(models.Model):
 
     class Meta:
         ordering = ('institution',)
-
+        permissions = (
+            ("view_notificationurl", "Can see available notification urls"),
+            )
 
 class AuthenticateDataRequest(models.Model):
     institution = models.ForeignKey(Institution)
@@ -75,7 +80,9 @@ class AuthenticateDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-
+        permissions = (
+            ("view_authenticatedatarequest", "Can see available Authenticate Data Request"),
+            )
 class AuthenticateRequest(models.Model):
     code = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
@@ -101,3 +108,6 @@ class AuthenticateRequest(models.Model):
 
     class Meta:
         ordering = ('arrived_time',)
+        permissions = (
+            ("view_authenticaterequest", "Can see available Authenticate Request"),
+            )
