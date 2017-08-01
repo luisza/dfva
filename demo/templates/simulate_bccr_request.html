@@ -1,0 +1,23 @@
+{% extends "cruds/base.html" %}
+{% load i18n %}
+
+
+
+{% block content %}
+
+<center> <h1> {{title}}</h1></center>
+
+{% if message %}
+<div class="alert alert-success"> {{message}} </div>
+{% endif %}
+
+
+
+<form class="form" method="post" enctype="multipart/form-data" >
+<table class="table">
+{{form}}
+<tr><td></td> <td><input type="submit" class="btn" value="{% trans 'submit' %}" /> </td> </tr>
+</table>
+{% csrf_token %}
+</form>
+{% endblock %}

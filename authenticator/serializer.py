@@ -8,80 +8,52 @@ Created on 14/4/2017
 '''
 from __future__ import unicode_literals
 
-import datetime
-
-from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from authenticator.models import AuthenticateDataRequest, AuthenticateRequest,\
-    Institution, NotificationURL
-from ca.ca_management.check_cert import check_certificate
-from ca.rsa import decrypt, get_hash_sum
+    AuthenticatePersonDataRequest, AuthenticatePersonRequest
+from corebase.serializer import CoreCheckBaseBaseSerializer
+import warnings
+from pyfva.clientes.autenticador import ClienteAutenticador
 
 
-class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
+class Authenticate_RequestSerializer(CoreCheckBaseBaseSerializer, serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
-        help_text="""Datos de solicitud de autenticación encriptados: los datos son
-        {institution: uid de la institucion ver code en detalles de institución,
-        notification_url: URL para la notificación Nota debe estar inscrita,
-        identification: Identificación de la persona a autenticar,
-        request_datetime: Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-         }
-        
-         """)
+        help_text="""Datos de solicitud de autenticación encriptados usando 
+        AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
+        """)
     readonly_fields = ['data']
+    check_internal_fields = None
 
-    def validate_digest(self):
-        hashsum = get_hash_sum(self.data['data'], self.data['algorithm'])
-        if hashsum != self.data['data_hash']:
-            self._errors['data_hash'] = [
-                'Hash sum are not equals %s != %s' % (hashsum, self.data['data_hash'])]
-            # HAy que hacer algo con los errores de status
+    validate_request_class = None
+    validate_data_class = None
 
-    def check_internal_data(self, data):
-        fields = ['notification_url', 'identification',
-                  'request_datetime', 'institution']
-        for field in fields:
-            if field not in data:
-                self._errors[field] = ['%s not found' % (field)]
+    def save_subject(self):
+        pass
 
-        if data['institution'] != str(self.institution.code):
-            self._errors['institution'] = ['Institution not match']
+    def call_BCCR(self):
+        authclient = ClienteAutenticador(self.institution.bccr_bussiness,
+                                         self.institution.bccr_entity)
+        if authclient.validar_servicio():
+            data = authclient.solicitar_autenticacion(
+                self.requestdata['identification'])
 
-        if not NotificationURL.objects.filter(
-                institution=self.institution,
-                url=data['notification_url']).exists():
-            self._errors['notification_url'] = ['notification_url not found']
+        else:
+            warnings.warn("Auth BCCR No disponible", RuntimeWarning)
+            data = authclient.DEFAULT_ERROR
 
-    def validate_certificate(self):
-        self.institution = Institution.objects.filter(
-            code=self.data['institution']).first()
-        if self.institution is None:
-            self._errors['data'] = [
-                'Institution not found, certificate not match']
-            return False
+        self.save_subject()
+        self.adr.institution = self.institution
+        self.adr.request_datetime = parse_datetime(
+            self.requestdata['request_datetime'])
 
-        if not check_certificate(self.data['public_certificate']):
-            self._errors['public_certificate'] = ['Certificate not valid']
-        try:
-            self.requestdata = decrypt(self.institution.server_sign_key,
-                                       self.data['data'])
-            self.check_internal_data(self.requestdata)
-        except:
-            self._errors['data'] = ['Data not decripted well']
-            return False
-
-    def is_valid(self, raise_exception=False):
-        serializers.HyperlinkedModelSerializer.is_valid(
-            self, raise_exception=raise_exception)
-        self.validate_digest()
-        self.validate_certificate()
-        if self._errors and raise_exception:
-            raise ValidationError(self.errors)
-        return not bool(self._errors)
+        self.adr.expiration_datetime = timezone.now(
+        ) + timezone.timedelta(minutes=data['tiempo_maximo'])
+        self.adr.status = data['codigo_error']
+        self.adr.id_transaction = data['id_solicitud']
+        self.adr.code = data['codigo_verificacion']
 
     def save(self, **kwargs):
         odata = {}
@@ -90,27 +62,55 @@ class Authenticate_Request_Serializer(serializers.HyperlinkedModelSerializer):
                 continue
             odata[field] = self.data[field]
 
-        auth_request = AuthenticateRequest(**odata)
+        auth_request = self.validate_request_class(**odata)
+        self.adr = self.validate_data_class()
+        self.call_BCCR()
+        self.adr.save()
 
-        adr = AuthenticateDataRequest()
-        adr.notification_url = self.requestdata['notification_url']
-        adr.identification = self.requestdata['identification']
-        adr.institution = self.institution
-        adr.request_datetime = parse_datetime(
-            self.requestdata['request_datetime'])
-
-        adr.expiration_datetime = timezone.now(
-        ) + datetime.timedelta(minutes=settings.EXPIRED_DELTA)
-
-        adr.save()
-        self.adr = adr
-        auth_request.data_request = adr
+        auth_request.data_request = self.adr
         auth_request.save()
         return auth_request
+
+
+class Authenticate_Request_Serializer(Authenticate_RequestSerializer):
+
+    check_internal_fields = ['notification_url', 'identification',
+                             'request_datetime', 'institution']
+
+    check_show_fields = ['institution',
+                         'notification_url',
+                         'identification',
+                         'request_datetime']
+
+    validate_request_class = AuthenticateRequest
+    validate_data_class = AuthenticateDataRequest
+
+    def save_subject(self):
+        self.adr.notification_url = self.requestdata['notification_url']
+        self.adr.identification = self.requestdata['identification']
 
     class Meta:
         model = AuthenticateRequest
         fields = ('institution', 'data_hash', 'algorithm',
+                  'public_certificate', 'data')
+
+
+class Authenticate_Person_Request_Serializer(Authenticate_RequestSerializer):
+
+    check_internal_fields = ['identification',
+                             'request_datetime', 'person']
+    check_show_fields = ['person',
+                         'identification',
+                         'request_datetime']
+    validate_request_class = AuthenticatePersonRequest
+    validate_data_class = AuthenticatePersonDataRequest
+
+    def save_subject(self):
+        self.adr.person = self.person
+
+    class Meta:
+        model = AuthenticatePersonRequest
+        fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
 
@@ -119,4 +119,16 @@ class Authenticate_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = AuthenticateDataRequest
         fields = (
-            'code', 'status', 'identification', 'name', 'request_datetime', 'expiration_datetime')
+            'code', 'status', 'identification', 'id_transaction',
+            'request_datetime', 'sign_document', 'expiration_datetime',
+            'received_notification')
+
+
+class Authenticate_Person_Response_Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AuthenticatePersonDataRequest
+        fields = (
+            'code', 'status', 'identification', 'id_transaction',
+            'request_datetime', 'sign_document', 'expiration_datetime',
+            'received_notification')

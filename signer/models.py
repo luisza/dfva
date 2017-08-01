@@ -7,7 +7,7 @@ from corebase.models import Institution, identification_validator, ALGORITHM,\
     Person
 
 
-class AuthenticateDataRequest(models.Model):
+class SignDataRequest(models.Model):
     institution = models.ForeignKey(Institution)
     notification_url = models.URLField()
     identification = models.CharField(
@@ -28,10 +28,10 @@ class AuthenticateDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
-    sign_document = models.TextField(null=True, blank=True)
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
     id_transaction = models.IntegerField(default=0)
+    sign_document = models.TextField(null=True, blank=True)
     received_notification = models.BooleanField(default=False)
 
     @property
@@ -43,19 +43,19 @@ class AuthenticateDataRequest(models.Model):
     class Meta:
         ordering = ('request_datetime',)
         permissions = (
-            ("view_authenticatedatarequest",
-             "Can see available Authenticate Data Request"),
+            ("view_signerdatarequest",
+             "Can see available Signer Data Request"),
         )
 
 
-class AuthenticateRequest(models.Model):
+class SignRequest(models.Model):
     code = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
     arrived_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     data_request = models.ForeignKey(
-        AuthenticateDataRequest, null=True, blank=True)
+        SignDataRequest, null=True, blank=True)
     data_hash = models.CharField(max_length=130,
                                  help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
                                  algoritmo especificado """)
@@ -69,12 +69,12 @@ class AuthenticateRequest(models.Model):
     class Meta:
         ordering = ('arrived_time',)
         permissions = (
-            ("view_authenticaterequest", "Can see available Authenticate Request"),
+            ("view_signrequest", "Can see available Sign Request"),
         )
 
 
-class AuthenticatePersonDataRequest(models.Model):
-    person = models.ForeignKey(Person)
+class SignPersonDataRequest(models.Model):
+    institution = models.ForeignKey(Person)
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
@@ -93,10 +93,10 @@ class AuthenticatePersonDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
-    sign_document = models.TextField(null=True, blank=True)
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
     id_transaction = models.IntegerField(default=0)
+    sign_document = models.TextField(null=True, blank=True)
     received_notification = models.BooleanField(default=False)
 
     @property
@@ -108,32 +108,31 @@ class AuthenticatePersonDataRequest(models.Model):
     class Meta:
         ordering = ('request_datetime',)
         permissions = (
-            ("view_authenticatepersondatarequest",
-             "Can see available Authenticate Person Data Request"),
+            ("view_signerdatarequest",
+             "Can see available Signer Person Data Request"),
         )
 
 
-class AuthenticatePersonRequest(models.Model):
+class SignPersonRequest(models.Model):
     code = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
     arrived_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     data_request = models.ForeignKey(
-        AuthenticatePersonDataRequest, null=True, blank=True)
+        SignPersonDataRequest, null=True, blank=True)
     data_hash = models.CharField(max_length=130,
                                  help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
                                  algoritmo especificado """)
     algorithm = models.CharField(max_length=7, choices=ALGORITHM,
                                  help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
     public_certificate = models.TextField(
-        help_text="""Certificado público  de firma, para firma digital avanzada""")
+        help_text="""Certificado público de firma de la persona solicitante""")
     person = models.CharField(
         max_length=50, help_text="Identificación de la persona solicitante")
 
     class Meta:
         ordering = ('arrived_time',)
         permissions = (
-            ("view_authenticatepersonrequest",
-             "Can see available Authenticate Person Request"),
+            ("view_signpersonrequest", "Can see available Person Sign Request"),
         )
