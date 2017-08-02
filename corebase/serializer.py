@@ -4,7 +4,7 @@ Created on 18 jul. 2017
 @author: luis
 '''
 from corebase.rsa import get_hash_sum, decrypt
-from corebase.models import NotificationURL, Institution, ALGORITHM
+from corebase.models import NotificationURL, Institution, ALGORITHM, Person
 from corebase.ca_management.check_cert import check_certificate
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
@@ -19,27 +19,19 @@ class CoreBaseBaseSerializer(object):
                 'Hash sum are not equals %s != %s' % (hashsum, self.data['data_hash'])]
             # FIXME:  Hay que hacer algo con los errores de status
 
-    def _check_internal_data(self, data, fields=[]):
+    def _get_decrypt_key(self):
+        return
 
+    def get_institution(self):
+        pass
+
+    def check_subject(self):
+        return True
+
+    def check_internal_data(self, data, fields=[]):
         for field in fields:
             if field not in data:
                 self._errors[field] = ['%s not found' % (field)]
-
-        if data['institution'] != str(self.institution.code):
-            self._errors['institution'] = ['Institution not match']
-
-        if data['notification_url'].upper() == 'N/D':
-            if not NotificationURL.objects.filter(
-                institution=self.institution,
-                    not_webapp=True).exists():
-                self._errors['notification_url'] = [
-                    'notification_url not found']
-        elif not NotificationURL.objects.filter(
-                institution=self.institution,
-                url=data['notification_url']).exists():
-            self._errors['notification_url'] = ['notification_url not found']
-
-    def check_internal_data(self, data, fields=[]):
         self._check_internal_data(data, fields=self.check_internal_fields)
         self.check_hash_algorithm(data)
 
@@ -54,26 +46,18 @@ class CoreBaseBaseSerializer(object):
                             supported_algorithm)
                     )]
 
-    def get_institution(self):
-        self.institution = Institution.objects.filter(
-            code=self.data['institution']).first()
-
     def validate_certificate(self):
         self.get_institution()
-        if self.institution is None:
-            self._errors['data'] = [
-                'Institution not found, certificate not match']
-            return False
-
-        if not check_certificate(self.data['public_certificate']):
-            self._errors['public_certificate'] = ['Certificate not valid']
-        try:
-            self.requestdata = decrypt(self.institution.server_sign_key,
-                                       self.data['data'])
-            self.check_internal_data(self.requestdata)
-        except Exception as e:
-            self._errors['data'] = ['Data not decripted well']
-            return False
+        if self.check_subject():
+            if not check_certificate(self.data['public_certificate']):
+                self._errors['public_certificate'] = ['Certificate not valid']
+            try:
+                self.requestdata = decrypt(self._get_decrypt_key(),
+                                           self.data['data'])
+                self.check_internal_data(self.requestdata)
+            except Exception as e:
+                self._errors['data'] = ['Data not decripted well %r' % (e,)]
+                return False
 
     def is_valid(self, raise_exception=False):
         serializers.HyperlinkedModelSerializer.is_valid(
@@ -85,11 +69,63 @@ class CoreBaseBaseSerializer(object):
         return not bool(self._errors)
 
 
-class CoreCheckBaseBaseSerializer(CoreBaseBaseSerializer):
+class InstitutionBaseSerializer(CoreBaseBaseSerializer):
+
+    def check_subject(self):
+        if self.institution is None:
+            self._errors['data'] = [
+                'Institution not found, certificate not match']
+            return False
+        return True
+
+    def get_institution(self):
+        self.institution = Institution.objects.filter(
+            code=self.data['institution']).first()
+
+    def _get_decrypt_key(self):
+        return self.institution.server_sign_key
+
+    def _check_internal_data(self, data, fields=[]):
+        if data['institution'] != str(self.institution.code):
+            self._errors['institution'] = ['Institution not match']
+
+        if data['notification_url'].upper() == 'N/D':
+            if not NotificationURL.objects.filter(
+                institution=self.institution,
+                    not_webapp=True).exists():
+                self._errors['notification_url'] = [
+                    'notification_url not found']
+        elif not NotificationURL.objects.filter(
+                institution=self.institution,
+                url=data['notification_url']).exists():
+            self._errors['notification_url'] = ['notification_url not found']
+
+
+class PersonBaseSerializer(CoreBaseBaseSerializer):
+
+    def get_institution(self):
+        self.institution = Institution.objects.first()
+
+    def check_subject(self):
+        return True
+    # Fixme: Revisar que pesona exista
+
+    def _get_decrypt_key(self):
+        return self.institution.server_sign_key
+
+    def _check_internal_data(self, data, fields=[]):
+        self.person = Person.objects.filter(
+            identification=data['person']).first()
+        if self.person is None:
+            self._errors['person'] = ['Person not found']
+
+
+class CheckBaseBaseSerializer():
 
     def check_code(self, code, raise_exception=False):
         dev = False
         self.check_internal_fields = self.check_show_fields
+
         if self.is_valid(raise_exception=raise_exception):
             fields = {
                 'code': code,
@@ -103,3 +139,11 @@ class CoreCheckBaseBaseSerializer(CoreBaseBaseSerializer):
                 self.adr = data
                 dev = True
         return dev
+
+
+class InstitutionCheckBaseBaseSerializer(InstitutionBaseSerializer, CheckBaseBaseSerializer):
+    pass
+
+
+class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializer):
+    pass

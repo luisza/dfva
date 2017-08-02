@@ -10,7 +10,8 @@ from django.conf.urls import url
 from demo.views.authentication import send_notification,\
     AuthenticateDataRequestListView, AuthenticateDataRequestUpdate
 from demo.views import show_simulate_bccr_request
-
+from django.apps import apps
+from cruds_adminlte.urls import crud_for_model
 
 urlpatterns = [
 
@@ -24,3 +25,5 @@ urlpatterns = [
     url(r'^authenticator/authenticatedatarequest/list/(?P<token>[^/]+)/test$',
         send_notification, name="send_authrequest_notification"),
 ]
+
+urlpatterns += crud_for_model(apps.get_model('corebase', 'Person'))

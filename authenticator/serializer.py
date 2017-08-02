@@ -14,12 +14,13 @@ from rest_framework import serializers
 
 from authenticator.models import AuthenticateDataRequest, AuthenticateRequest,\
     AuthenticatePersonDataRequest, AuthenticatePersonRequest
-from corebase.serializer import CoreCheckBaseBaseSerializer
 import warnings
 from pyfva.clientes.autenticador import ClienteAutenticador
+from corebase.serializer import InstitutionCheckBaseBaseSerializer,\
+    PersonCheckBaseBaseSerializer
 
 
-class Authenticate_RequestSerializer(CoreCheckBaseBaseSerializer, serializers.HyperlinkedModelSerializer):
+class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
         help_text="""Datos de solicitud de autenticación encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
@@ -72,7 +73,7 @@ class Authenticate_RequestSerializer(CoreCheckBaseBaseSerializer, serializers.Hy
         return auth_request
 
 
-class Authenticate_Request_Serializer(Authenticate_RequestSerializer):
+class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer, Authenticate_RequestSerializer):
 
     check_internal_fields = ['notification_url', 'identification',
                              'request_datetime', 'institution']
@@ -95,7 +96,7 @@ class Authenticate_Request_Serializer(Authenticate_RequestSerializer):
                   'public_certificate', 'data')
 
 
-class Authenticate_Person_Request_Serializer(Authenticate_RequestSerializer):
+class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Authenticate_RequestSerializer):
 
     check_internal_fields = ['identification',
                              'request_datetime', 'person']
@@ -107,6 +108,7 @@ class Authenticate_Person_Request_Serializer(Authenticate_RequestSerializer):
 
     def save_subject(self):
         self.adr.person = self.person
+        self.adr.identification = self.requestdata['identification']
 
     class Meta:
         model = AuthenticatePersonRequest
