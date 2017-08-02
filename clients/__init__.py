@@ -3,6 +3,11 @@ class Settings():
     FVA_SERVER_URL = 'http://localhost:8000'
     AUTHENTICATE_PERSON = '/authenticate/person/'
     CHECK_AUTHENTICATE_PERSON = '/authenticate/%s/person_show/'
+    SIGN_PERSON = '/sign/person/'
+    CHECK_SIGN_PERSON = '/sign/%s/person_show/'
+
+    SUPPORTED_SIGN_FORMAT = ['xml', 'odf', 'msoffice']
+
     SERVER_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0P6ppvL3B02bIdppFXku
 1ctSgcCS+bSTLQJDt1/1s6kWLYbO0hbBeDAORud2WiGE1Wch8DLBrdRFKlZf1FKW

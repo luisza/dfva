@@ -2,7 +2,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from signer.models import SignRequest
+from signer.models import SignRequest, SignPersonRequest
 from signer.serializer import Sign_Request_Serializer, Sign_Response_Serializer,\
     Sign_Person_Request_Serializer, Sign_Person_Response_Serializer
 from rest_framework.decorators import detail_route, list_route
@@ -124,7 +124,7 @@ class SignPersonRequestViewSet(ViewSetBase,
     """
 
     serializer_class = Sign_Person_Request_Serializer
-    queryset = SignRequest.objects.all()
+    queryset = SignPersonRequest.objects.all()
     response_class = Sign_Person_Response_Serializer
 
     @list_route(methods=['post'])

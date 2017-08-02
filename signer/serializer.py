@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from corebase.serializer import CoreBaseBaseSerializer
+from corebase.serializer import PersonCheckBaseBaseSerializer, InstitutionCheckBaseBaseSerializer
 
 import warnings
 from signer.models import SignDataRequest, SignRequest, SignPersonDataRequest,\
@@ -19,16 +19,13 @@ from signer.models import SignDataRequest, SignRequest, SignPersonDataRequest,\
 from pyfva.clientes.firmador import ClienteFirmador
 
 
-class Sign_RequestSerializer(CoreBaseBaseSerializer, serializers.HyperlinkedModelSerializer):
+class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
 
     data = serializers.CharField(
         help_text="""Datos de solicitud de autenticación encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
          """)
     readonly_fields = ['data']
-
-    def save_subject(self):
-        pass
 
     def call_BCCR(self):
         signclient = ClienteFirmador(
@@ -78,7 +75,7 @@ class Sign_RequestSerializer(CoreBaseBaseSerializer, serializers.HyperlinkedMode
         return auth_request
 
 
-class Sign_Request_Serializer(Sign_RequestSerializer):
+class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSerializer):
 
     check_internal_fields = ['institution',
                              'notification_url',
@@ -107,7 +104,7 @@ class Sign_Request_Serializer(Sign_RequestSerializer):
                   'public_certificate', 'data')
 
 
-class Sign_Person_Request_Serializer(Sign_RequestSerializer):
+class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Sign_RequestSerializer):
 
     check_internal_fields = ['person',
                              'document',

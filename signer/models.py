@@ -74,7 +74,7 @@ class SignRequest(models.Model):
 
 
 class SignPersonDataRequest(models.Model):
-    institution = models.ForeignKey(Person)
+    person = models.ForeignKey(Person)
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
