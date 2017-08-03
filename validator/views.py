@@ -5,13 +5,15 @@ from validator.serializer import ValidateCertificate_Request_Serializer,\
     ValidatePersonCertificate_Request_Serializer,\
     ValidatePersonDocument_Request_Serializer,\
     ValidatePersonCertificateRequest_Response_Serializer,\
-    ValidatePersonDocumentRequest_Response_Serializer
+    ValidatePersonDocumentRequest_Response_Serializer,\
+    SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
 from validator.models import ValidateCertificateRequest,\
     ValidateDocumentRequest, ValidatePersonCertificateRequest,\
     ValidatePersonDocumentRequest
 from rest_framework.decorators import list_route
 from corebase.views import ViewSetBase
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 # Create your views here.
 
 
@@ -97,7 +99,6 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         Los valores a suministrar en el parámetro data son:
 
         * **person:** Identificación de la persona validante,
-        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
         * **document:** Archivo en base64 del certificado, 
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
@@ -128,7 +129,6 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         Los valores a suministrar en el parámetro data son:
 
         * **person:** Identificación de la persona validante,
-        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
         * **document:** Archivo en base64 del certificado, 
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
@@ -153,3 +153,60 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.response_class = ValidatePersonDocumentRequest_Response_Serializer
 
         return self._create(request, *args, **kwargs)
+
+
+class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
+    serializer_class = SuscriptorInstitution_Serializer
+    queryset = ValidatePersonCertificateRequest.objects.all()
+
+    def _create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = {
+            'is_connected': serializer.save()
+        }
+
+        # adr.is_valid(raise_exception=False)
+        return Response(data, status=status.HTTP_200_OK)
+
+    def get_error_response(self):
+        return Response({
+            'is_connected':  False
+        }, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'])
+    def institution_suscriptor_connected(self, request, *args, **kwargs):
+        """Verifica si una persona está conectada (es contactable por el BCCR).  
+
+        Los valores a suministrar en el parámetro data son:
+
+
+        * **institution:** uid de la institucion ver code en detalles de institución,
+        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
+        * **identification:** Identificación de la persona a buscar, 
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **Retorna:** 
+            **is_connected:** True si la persona está conectada, false si no lo está
+        """
+        return self._create(request,  *args, **kwargs)
+
+    @list_route(methods=['post'])
+    def person_suscriptor_connected(self, request, *args, **kwargs):
+        """Verifica si una persona está conectada (es contactable por el BCCR).  
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **person:** Identificación de la persona validante,
+        * **identification:** Identificación de la persona a buscar, 
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **Retorna:** 
+            **is_connected:** True si la persona está conectada, false si no lo está
+        """
+        self.serializer_class = SuscriptorPerson_Serializer
+        return self._create(request,  *args, **kwargs)

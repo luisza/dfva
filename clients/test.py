@@ -13,3 +13,5 @@ client.sign('08-0888-0888',  None, "Readme file test",
             file_path='README.md', wait=True)
 
 client.validate(None, file_path='README.md')
+client.validate(None, file_path='README.md', _format='xml')
+client.is_suscriptor_connected('08-0888-0888')

@@ -38,6 +38,9 @@ class PersonClientInterface():
                  is_base64=False):
         pass
 
+    def is_suscriptor_connected(self, identification, algorithm='sha512'):
+        pass
+
 
 class PersonBaseClient(PersonClientInterface):
 
@@ -225,6 +228,35 @@ class PersonBaseClient(PersonClientInterface):
             self.settings.FVA_SERVER_URL + url, json=params, headers=headers)
 
         return result.json()
+
+    def is_suscriptor_connected(self, identification, algorithm='sha512'):
+
+        data = {
+            'person': self.person,
+            'identification': identification,
+            'request_datetime': self._get_time(),
+        }
+
+        str_data = json.dumps(data)
+        edata = self._encript(str_data, etype='authenticate')
+        hashsum = get_hash_sum(edata,  algorithm)
+        edata = edata.decode()
+        params = {
+            "data_hash": hashsum,
+            "algorithm": algorithm,
+            "public_certificate": self._get_public_auth_certificate(),
+            'person': self.person,
+            "data": edata,
+        }
+        result = requests.post(
+            self.settings.FVA_SERVER_URL +
+            self.settings.SUSCRIPTOR_CONNECTED, json=params)
+
+        data = result.json()
+        dev = False
+        if 'is_connected' in data:
+            dev = data['is_connected']
+        return dev
 
 
 class PersonClient(PersonBaseClient):

@@ -10,8 +10,7 @@ from __future__ import unicode_literals
 
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from corebase.serializer import CoreBaseBaseSerializer,\
-    InstitutionBaseSerializer, PersonBaseSerializer
+from corebase.serializer import InstitutionBaseSerializer, PersonBaseSerializer
 
 import warnings
 from validator.models import ValidateCertificateDataRequest,\
@@ -20,6 +19,8 @@ from validator.models import ValidateCertificateDataRequest,\
     ValidatePersonDocumentDataRequest, ValidatePersonDocumentRequest,\
     ValidatePersonCertificateDataRequest, ValidatePersonCertificateRequest
 from pyfva.clientes.validador import ClienteValidador
+from rest_framework.exceptions import ValidationError
+from pyfva.clientes.firmador import ClienteFirmador
 
 
 class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -255,7 +256,6 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDoc
 class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
                                                 ValidateDocument_RequestSerializer):
     check_internal_fields = ['person',
-                             'notification_url',
                              'document',
                              'request_datetime']
 
@@ -308,3 +308,60 @@ class ValidatePersonDocumentRequest_Response_Serializer(ValidateDocument_Respons
                   'code', 'status',
                   'advertencias', 'errores', 'firmantes',
                   'fue_exitosa')
+
+
+class Suscriptor_Serializer(serializers.ModelSerializer):
+    data = serializers.CharField(
+        help_text="""Datos de solicitud de validación de certificado encriptados usando 
+        AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
+         """)
+    readonly_fields = ['data']
+
+    def is_valid(self, raise_exception=False):
+        serializers.Serializer.is_valid(
+            self, raise_exception=raise_exception)
+        self.validate_digest()
+        self.validate_certificate()
+        if self._errors and raise_exception:
+            raise ValidationError(self.errors)
+        return not bool(self._errors)
+
+    def call_BCCR(self):
+        signclient = ClienteFirmador(
+            negocio=self.institution.bccr_bussiness,
+            entidad=self.institution.bccr_entity,
+        )
+        if signclient.validar_servicio():
+
+            data = signclient.suscriptor_conectado(
+                self.requestdata['identification'])
+        else:
+            warnings.warn("Sign/Validate:  BCCR No disponible", RuntimeWarning)
+            data = False
+        return data
+
+    def save(self, **kwargs):
+        return self.call_BCCR()
+
+
+class SuscriptorInstitution_Serializer(Suscriptor_Serializer, InstitutionBaseSerializer):
+    check_internal_fields = ['institution',
+                             'notification_url',
+                             'identification',
+                             'request_datetime']
+
+    class Meta:
+        model = ValidateDocumentRequest
+        fields = ('institution', 'data_hash', 'algorithm',
+                  'public_certificate', 'data')
+
+
+class SuscriptorPerson_Serializer(Suscriptor_Serializer, PersonBaseSerializer):
+    check_internal_fields = ['person',
+                             'identification',
+                             'request_datetime']
+
+    class Meta:
+        model = ValidatePersonDocumentRequest
+        fields = ('person', 'data_hash', 'algorithm',
+                  'public_certificate', 'data')
