@@ -122,7 +122,7 @@ class ValidatePersonCertificateRequest(models.Model):
     arrived_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     data_request = models.ForeignKey(
-        ValidateCertificateDataRequest, null=True, blank=True)
+        ValidatePersonCertificateDataRequest, null=True, blank=True)
     data_hash = models.CharField(max_length=130,
                                  help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
                                  algoritmo especificado """)

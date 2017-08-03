@@ -27,14 +27,15 @@ class PersonClientInterface():
         pass
 
     def sign(self, identification, document, algorithm='sha512',
-             file_path=None,
+             file_path=None, _format='xml', is_base64=False,
              wait=False):
         pass
 
     def check_sign(self, identification, code):
         pass
 
-    def validate(self, document, format='certificate'):
+    def validate(self, document, file_path=None, algorithm='sha512', _format='certificate',
+                 is_base64=False):
         pass
 
 
@@ -117,13 +118,16 @@ class PersonBaseClient(PersonClientInterface):
         data = result.json()
         return data
 
-    def sign(self, identification, document, resume, format="Xml",
-             file_path=None,
+    def sign(self, identification, document, resume, _format="xml",
+             file_path=None, is_base64=False,
              algorithm='sha512', wait=False):
+        if not is_base64:
+            document = b64encode(document).decode()
+
         data = {
             'person': self.person,
-            'document': b64encode(document).decode(),
-            'format': format,
+            'document': document,
+            'format': _format,
             'algorithm_hash': algorithm,
             'document_hash': get_hash_sum(document,  algorithm),
             'identification': identification,
@@ -153,7 +157,6 @@ class PersonBaseClient(PersonClientInterface):
         data = result.json()
 
         if wait:
-            print('wait', data['received_notification'])
             while not data['received_notification']:
                 time.sleep(self.wait_time)
                 data = self.check_sign(
@@ -186,14 +189,51 @@ class PersonBaseClient(PersonClientInterface):
         data = result.json()
         return data
 
+    def validate(self, document, file_path=None, algorithm='sha512',
+                 is_base64=False,
+                 _format='certificate'):
+
+        if not is_base64:
+            document = b64encode(document).decode()
+        data = {
+            'person': self.person,
+            'document': document,
+            'request_datetime': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+
+        str_data = json.dumps(data)
+        # print(str_data)
+        edata = self._encript(str_data, etype='sign')
+        hashsum = get_hash_sum(edata,  algorithm)
+        edata = edata.decode()
+        params = {
+            "data_hash": hashsum,
+            "algorithm": algorithm,
+            "public_certificate": self._get_public_sign_certificate(),
+            'person': self.person,
+            "data": edata,
+        }
+
+        if _format == 'certificate':
+            url = self.settings.VALIDATE_CERTIFICATE
+        else:
+            url = self.settings.VALIDATE_DOCUMENT
+        headers = {'Accept': 'application/json',
+                   'Content-Type': 'application/json'}
+
+        result = requests.post(
+            self.settings.FVA_SERVER_URL + url, json=params, headers=headers)
+
+        return result.json()
+
 
 class PersonClient(PersonBaseClient):
 
-    def sign(self, identification, document, resume, format="xml",
-             file_path=None,
+    def sign(self, identification, document, resume, _format="xml",
+             file_path=None, is_base64=False,
              algorithm='sha512', wait=False):
 
-        if format not in self.settings.SUPPORTED_SIGN_FORMAT:
+        if _format not in self.settings.SUPPORTED_SIGN_FORMAT:
             raise Exception("Format not supported only %s" %
                             (",".join(self.settings.SUPPORTED_SIGN_FORMAT)))
 
@@ -219,5 +259,31 @@ class PersonClient(PersonBaseClient):
             resume,
             format=format,
             file_path=None,
+            is_base64=is_base64,
             algorithm=algorithm,
             wait=wait)
+
+    def validate(self, document, file_path=None, algorithm='sha512',
+                 is_base64=False,
+                 _format='certificate'):
+
+        if _format not in self.settings.SUPPORTED_VALIDATE_FORMAT:
+            raise Exception("Format not supported only %s" %
+                            (",".join(self.settings.SUPPORTED_VALIDATE_FORMAT)))
+
+        if file_path is None and document is None:
+            raise Exception("Document or file_path must be set")
+
+        if file_path:
+            with open(file_path, 'rb') as arch:
+                document = arch.read()
+
+        if hasattr(document, 'read'):
+            document = document.read()
+
+        return super(PersonClient, self).validate(
+            document,
+            file_path=None,
+            algorithm=algorithm,
+            is_base64=is_base64,
+            _format=_format)

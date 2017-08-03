@@ -1,6 +1,3 @@
-from rest_framework import mixins, viewsets
-from rest_framework import status
-from rest_framework.response import Response
 from validator.serializer import ValidateCertificate_Request_Serializer,\
     ValidateDocument_Request_Serializer,\
     ValidateCertificateRequest_Response_Serializer,\
@@ -13,39 +10,15 @@ from validator.models import ValidateCertificateRequest,\
     ValidateDocumentRequest, ValidatePersonCertificateRequest,\
     ValidatePersonDocumentRequest
 from rest_framework.decorators import list_route
+from corebase.views import ViewSetBase
+from rest_framework import viewsets
 # Create your views here.
 
 
-class ValidateResquestViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidateCertificate_Request_Serializer
     queryset = ValidateCertificateRequest.objects.all()
-    response_serializer_class = ValidateCertificateRequest_Response_Serializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        adr = self.response_serializer_class(serializer.adr)
-        # adr.is_valid(raise_exception=False)
-        return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class ValidateCertificateRequestViewSet(ValidateResquestViewSet):
-    serializer_class = ValidateCertificate_Request_Serializer
-    queryset = ValidateCertificateRequest.objects.all()
-    response_serializer_class = ValidateCertificateRequest_Response_Serializer
-
-
-class ValidateDocumentRequestViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = ValidateDocument_Request_Serializer
-    queryset = ValidateDocumentRequest.objects.all()
-    response_serializer_class = ValidateDocumentRequest_Response_Serializer
-
-
-class ValidateInstitutionViewSet(viewsets.GenericViewSet):
-    serializer_class = ValidateCertificate_Request_Serializer
-    queryset = ValidateCertificateRequest.objects.all()
+    response_class = ValidateCertificateRequest_Response_Serializer
 
     @list_route(methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
@@ -76,7 +49,7 @@ class ValidateInstitutionViewSet(viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
-        return ValidateCertificateRequestViewSet.as_view({'post': 'create'})(request, *args, **kwargs)
+        return self._create(request, *args, **kwargs)
 
     @list_route(methods=['post'])
     def institution_document(self, request, *args, **kwargs):
@@ -105,24 +78,17 @@ class ValidateInstitutionViewSet(viewsets.GenericViewSet):
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
         """
-        return ValidateDocumentRequestViewSet.as_view({'post': 'create'})(request, *args, **kwargs)
+
+        self.serializer_class = ValidateDocument_Request_Serializer
+        self.queryset = ValidateDocumentRequest.objects.all()
+        self.response_class = ValidateDocumentRequest_Response_Serializer
+        return self._create(request, *args, **kwargs)
 
 
-class ValidatePersonCertificateRequestViewSet(ValidateResquestViewSet):
+class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidatePersonCertificate_Request_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
-    response_serializer_class = ValidatePersonCertificateRequest_Response_Serializer
-
-
-class ValidatePersonDocumentRequestViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = ValidatePersonDocument_Request_Serializer
-    queryset = ValidatePersonDocumentRequest.objects.all()
-    response_serializer_class = ValidatePersonDocumentRequest_Response_Serializer
-
-
-class ValidatePersonViewSet(viewsets.GenericViewSet):
-    serializer_class = ValidatePersonCertificate_Request_Serializer
-    queryset = ValidatePersonCertificateRequest.objects.all()
+    response_class = ValidatePersonCertificateRequest_Response_Serializer
 
     @list_route(methods=['post'])
     def person_certificate(self, request, *args, **kwargs):
@@ -153,7 +119,7 @@ class ValidatePersonViewSet(viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
-        return ValidatePersonCertificateRequestViewSet.as_view({'post': 'create'})(request, *args, **kwargs)
+        return self._create(request, *args, **kwargs)
 
     @list_route(methods=['post'])
     def person_document(self, request, *args, **kwargs):
@@ -182,4 +148,8 @@ class ValidatePersonViewSet(viewsets.GenericViewSet):
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
         """
-        return ValidatePersonDocumentRequestViewSet.as_view({'post': 'create'})(request, *args, **kwargs)
+        self.serializer_class = ValidatePersonDocument_Request_Serializer
+        self.queryset = ValidatePersonDocumentRequest.objects.all()
+        self.response_class = ValidatePersonDocumentRequest_Response_Serializer
+
+        return self._create(request, *args, **kwargs)

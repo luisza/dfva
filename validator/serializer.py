@@ -10,7 +10,8 @@ from __future__ import unicode_literals
 
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from corebase.serializer import CoreBaseBaseSerializer
+from corebase.serializer import CoreBaseBaseSerializer,\
+    InstitutionBaseSerializer, PersonBaseSerializer
 
 import warnings
 from validator.models import ValidateCertificateDataRequest,\
@@ -21,7 +22,7 @@ from validator.models import ValidateCertificateDataRequest,\
 from pyfva.clientes.validador import ClienteValidador
 
 
-class ValidateCertificate_RequestSerializer(CoreBaseBaseSerializer, serializers.HyperlinkedModelSerializer):
+class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
@@ -75,6 +76,7 @@ class ValidateCertificate_RequestSerializer(CoreBaseBaseSerializer, serializers.
 
         self.cert_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()
+        print(self.cert_request)
         self.call_BCCR()
         self.adr.save()
 
@@ -83,7 +85,8 @@ class ValidateCertificate_RequestSerializer(CoreBaseBaseSerializer, serializers.
         return self.cert_request
 
 
-class ValidateCertificate_Request_Serializer(ValidateCertificate_RequestSerializer):
+class ValidateCertificate_Request_Serializer(InstitutionBaseSerializer,
+                                             ValidateCertificate_RequestSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
                              'document',
@@ -102,7 +105,7 @@ class ValidateCertificate_Request_Serializer(ValidateCertificate_RequestSerializ
                   'public_certificate', 'data')
 
 
-class ValidatePersonCertificate_Request_Serializer(ValidateCertificate_RequestSerializer):
+class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, ValidateCertificate_RequestSerializer):
     check_internal_fields = ['person',
                              'notification_url',
                              'document',
@@ -120,8 +123,7 @@ class ValidatePersonCertificate_Request_Serializer(ValidateCertificate_RequestSe
                   'public_certificate', 'data')
 
 
-class ValidateCertificate_ResponseSerializer(serializers.ModelSerializer):
-
+class ValidateCertificateRequest_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ValidateCertificateDataRequest
         fields = ('identification', 'request_datetime',
@@ -130,17 +132,16 @@ class ValidateCertificate_ResponseSerializer(serializers.ModelSerializer):
                   'fue_exitosa')
 
 
-class ValidateCertificateRequest_Response_Serializer(ValidateCertificate_ResponseSerializer):
-    class Meta:
-        model = ValidateCertificateDataRequest
-
-
-class ValidatePersonCertificateRequest_Response_Serializer(ValidateCertificate_ResponseSerializer):
+class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ValidatePersonCertificateDataRequest
+        fields = ('identification', 'request_datetime',
+                  'code', 'status',
+                  'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
+                  'fue_exitosa')
 
 
-class ValidateDocument_RequestSerializer(CoreBaseBaseSerializer, serializers.HyperlinkedModelSerializer):
+class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
@@ -232,7 +233,7 @@ class ValidateDocument_RequestSerializer(CoreBaseBaseSerializer, serializers.Hyp
         return self.document_request
 
 
-class ValidateDocument_Request_Serializer(ValidateDocument_RequestSerializer):
+class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDocument_RequestSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
                              'document',
@@ -251,7 +252,8 @@ class ValidateDocument_Request_Serializer(ValidateDocument_RequestSerializer):
                   'public_certificate', 'data')
 
 
-class ValidatePersonDocument_Request_Serializer(ValidateDocument_RequestSerializer):
+class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
+                                                ValidateDocument_RequestSerializer):
     check_internal_fields = ['person',
                              'notification_url',
                              'document',
@@ -288,17 +290,21 @@ class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = None
+
+
+class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
+    class Meta:
+        model = ValidateDocumentDataRequest
         fields = ('request_datetime',
                   'code', 'status',
                   'advertencias', 'errores', 'firmantes',
                   'fue_exitosa')
 
 
-class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
-    class Meta:
-        model = ValidateDocumentDataRequest
-
-
 class ValidatePersonDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
     class Meta:
         model = ValidatePersonDocumentDataRequest
+        fields = ('request_datetime',
+                  'code', 'status',
+                  'advertencias', 'errores', 'firmantes',
+                  'fue_exitosa')
