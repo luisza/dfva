@@ -3,11 +3,16 @@ Created on 18 jul. 2017
 
 @author: luis
 '''
-from corebase.rsa import get_hash_sum, decrypt
-from corebase.models import NotificationURL, Institution, ALGORITHM, Person
+from corebase.rsa import get_hash_sum, decrypt, rsa_encrypt, get_random_token,\
+    encrypt, validate_sign, pem_to_base64, decrypt_person, validate_sign_data
+from corebase.models import NotificationURL, Institution, ALGORITHM, Person,\
+    PersonLogin
 from corebase.ca_management.check_cert import check_certificate
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from pyfva.clientes.validador import ClienteValidador
+import warnings
 
 
 class CoreBaseBaseSerializer(object):
@@ -103,15 +108,56 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
 
+    def validate_digest(self):
+        super(PersonBaseSerializer, self).validate_digest()
+        plain_text = self._get_decrypt_key()
+        if not validate_sign_data(self.data['public_certificate'], plain_text, self.data['data']):
+            self._errors['data_hash'] = [
+                'Sign key check fail,  are you signing with your private key pair']
+
+    def validate_certificate(self):
+        self.get_institution()
+        client = ClienteValidador(
+            negocio=self.institution.bccr_bussiness,
+            entidad=self.institution.bccr_entity,
+        )
+        if client.validar_servicio('certificado'):
+
+            data = client.validar_certificado_autenticacion(
+                pem_to_base64(self.data['public_certificate']))
+
+        else:
+            warnings.warn(
+                "Certificate BCCR No disponible", RuntimeWarning)
+            data = client.DEFAULT_CERTIFICATE_ERROR
+
+        if data['codigo_error'] != 1 or not data['exitosa']:
+            self._errors['public_certificate'] = ['Certificate not valid']
+
+        if self.check_subject():
+            key = self._get_decrypt_key()
+            try:
+                self.requestdata = decrypt_person(key,
+                                                  self.data['data'])
+                self.check_internal_data(self.requestdata)
+            except Exception as e:
+                self._errors['data'] = ['Data not decripted well %r' % (e,)]
+                return False
+
     def get_institution(self):
         self.institution = Institution.objects.first()
+        self.person = Person.objects.filter(
+            identification=self.data['person']).first()
 
     def check_subject(self):
         return True
     # Fixme: Revisar que pesona exista
 
     def _get_decrypt_key(self):
-        return self.institution.server_sign_key
+        self.get_institution()
+        key = decrypt(self.institution.private_key,
+                      self.person.cipher_token, as_str=False)
+        return key
 
     def _check_internal_data(self, data, fields=[]):
         self.person = Person.objects.filter(
@@ -147,3 +193,83 @@ class InstitutionCheckBaseBaseSerializer(InstitutionBaseSerializer, CheckBaseBas
 
 class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializer):
     pass
+
+
+class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
+
+    def get_institution(self):
+        self.institution = Institution.objects.first()
+        self.person = Person.objects.get(
+            identification=self.data['person'])
+
+    def validate_certificate(self):
+        client = ClienteValidador(
+            negocio=self.institution.bccr_bussiness,
+            entidad=self.institution.bccr_entity,
+        )
+        if client.validar_servicio('certificado'):
+
+            data = client.validar_certificado_autenticacion(
+                pem_to_base64(self.data['public_certificate']))
+
+        else:
+            warnings.warn(
+                "Login certificate BCCR No disponible", RuntimeWarning)
+            data = client.DEFAULT_CERTIFICATE_ERROR
+
+        if data['codigo_error'] != 1 or not data['exitosa']:
+            self._errors['public_certificate'] = ['Certificate not valid']
+
+        elif data['certificado']['identificacion'] != self.data['person']:
+            self._errors['public_certificate'] = [
+                'Signer Certificate is not owned by requesting person']
+
+    def validate_digest(self):
+        # Fixme: Solo funciona para register
+        plain_text = self.data['person']
+        if not validate_sign(self.data['public_certificate'], plain_text, self.data['code']):
+            self._errors['data_hash'] = [
+                'Data hash not valid, are you signing with your private key pair']
+
+    def is_valid(self, raise_exception=False):
+        serializers.HyperlinkedModelSerializer.is_valid(
+            self, raise_exception=raise_exception)
+
+        self.get_institution()
+        self.validate_certificate()
+        self.validate_digest()
+        if self._errors and raise_exception:
+            raise ValidationError(self.errors)
+        return not bool(self._errors)
+
+    def save(self):
+        person = Person.objects.get(identification=self.data['person'])
+        random_token = get_random_token()
+        person.cipher_token = encrypt(self.institution.public_key,
+                                      random_token
+                                      )
+        person.token = rsa_encrypt(
+            self.data['public_certificate'], message=random_token).decode()
+        person.expiration_datetime_token = timezone.now() + timezone.timedelta(minutes=25)
+        person.last_error_code = 1
+        person.save()
+        response = PersonLoginResponseSerializer(person)
+
+        return response
+
+    class Meta:
+        model = PersonLogin
+        fields = (
+            'public_certificate', 'code', 'person', 'data_hash', 'algorithm'
+        )
+
+
+class PersonLoginResponseSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Person
+        fields = (
+            'identification',
+            'token',
+            'expiration_datetime_token',
+            'last_error_code'
+        )

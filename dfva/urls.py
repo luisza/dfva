@@ -22,6 +22,7 @@ from rest_framework import routers
 from authenticator.urls import get_routes_view as auth_routes_view
 from signer.urls import get_routes_view as sign_routes_view
 from validator.urls import get_routes_view as validate_routes_view
+from corebase.urls import get_routes_view as login_get_routes_view
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
 from soapfish.django_ import django_dispatcher
 dispatcher = django_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
@@ -31,6 +32,7 @@ router = routers.DefaultRouter()
 auth_routes_view(router)
 sign_routes_view(router)
 validate_routes_view(router)
+login_get_routes_view(router)
 
 
 urlpatterns = [

@@ -66,8 +66,35 @@ class NotificationURL(models.Model):
 
 
 class Person(models.Model):
+    ERROR_CODE = (
+        (1, 'Transacción satisfactoria'),
+        (2, 'Error, persona no existe'),
+        (3, 'Error no determinado')
+
+    )
     user = models.OneToOneField(User)
     identification = models.CharField(max_length=20, primary_key=True)
+    token = models.TextField(null=True, blank=True)
+    cipher_token = models.TextField(null=True, blank=True)
+    expiration_datetime_token = models.DateTimeField(null=True, blank=True)
+    last_error_code = models.SmallIntegerField(default=1, choices=ERROR_CODE)
 
     def __str__(self):
         return self.user.get_full_name() or self.indentification
+
+
+class PersonLogin(models.Model):
+    arrived_time = models.DateTimeField(auto_now_add=True)
+    public_certificate = models.TextField(
+        help_text="""Certificado público  de firma, para firma digital avanzada""")
+    code = models.TextField()
+    person = models.CharField(
+        max_length=50, help_text="Identificación de la persona solicitante")
+    data_hash = models.CharField(max_length=130,
+                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
+                                 algoritmo especificado """)
+    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
+                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
+
+    def __str__(self):
+        return self.person

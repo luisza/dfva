@@ -22,8 +22,11 @@ from django.http.response import HttpResponseRedirect
 from .models import Institution, NotificationURL
 from corebase.ca_management import gen_cert
 from rest_framework.settings import api_settings
-from rest_framework import status
+from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
+from corebase.models import PersonLogin
+from corebase.serializer import PersonLoginSerializer,\
+    PersonLoginResponseSerializer
 
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
@@ -91,3 +94,25 @@ class ViewSetBase:
 
     def get_error_response(self):
         return Response({"error": "Error inexperado"})
+
+
+class PersonLoginView(mixins.CreateModelMixin,
+                      viewsets.GenericViewSet):
+
+    queryset = PersonLogin.objects.all()
+    serializer_class = PersonLoginSerializer
+    response_class = PersonLoginResponseSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            data = serializer.save()
+            headers = self.get_success_headers(data.data)
+            return Response(data.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        return Response({
+            'identification': 'N/D',
+            'token': None,
+            'expiration_datetime_token': None,
+            'last_error_code': 3
+        }, status=status.HTTP_201_CREATED, headers=headers)

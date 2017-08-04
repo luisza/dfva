@@ -11,16 +11,15 @@ from .views import InstitutionCRUD
 
 from soapfish.django_ import django_dispatcher
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
+from corebase.views import PersonLoginView
 
 dispatcher = django_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 
 
-# NOTE: Put these lines in the urls.py for your project or application:
-# urlpatterns += patterns('',
-#
-# )
-##############################################################################
-# Operations
+def get_routes_view(router):
+    router.register(r'login', PersonLoginView)
+    # pass
+
 
 urlpatterns = [
 
