@@ -80,7 +80,7 @@ class Person(models.Model):
     last_error_code = models.SmallIntegerField(default=1, choices=ERROR_CODE)
 
     def __str__(self):
-        return self.user.get_full_name() or self.indentification
+        return self.user.get_full_name() or self.identification
 
 
 class PersonLogin(models.Model):
