@@ -2,15 +2,16 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from signer.models import SignRequest, SignPersonRequest
-from signer.serializer import Sign_Request_Serializer, Sign_Response_Serializer,\
-    Sign_Person_Request_Serializer, Sign_Person_Response_Serializer
+from signer.models import SignRequest
+from signer.serializer import Sign_Request_Serializer, Sign_Response_Serializer
 from rest_framework.decorators import detail_route, list_route
 from django.utils import timezone
 from corebase.views import ViewSetBase
 
+#person
+from signer.models import SignPersonRequest
+from signer.serializer importSign_Person_Request_Serializer, Sign_Person_Response_Serializer
 
-# Create your views here.
 
 
 class SignRequestViewSet(ViewSetBase,

@@ -34,6 +34,7 @@ class CoreBaseBaseSerializer(object):
         return True
 
     def check_internal_data(self, data, fields=[]):
+
         for field in fields:
             if field not in data:
                 self._errors[field] = ['%s not found' % (field)]
@@ -73,6 +74,26 @@ class CoreBaseBaseSerializer(object):
             raise ValidationError(self.errors)
         return not bool(self._errors)
 
+class CheckBaseBaseSerializer():
+
+    def check_code(self, code, raise_exception=False):
+        dev = False
+        self.check_internal_fields = self.check_show_fields
+
+        if self.is_valid(raise_exception=raise_exception):
+            fields = {
+                'code': code,
+                'identification': self.requestdata['identification']
+            }
+            if 'notification_url' in self.check_internal_fields:
+                fields['notification_url'] = self.requestdata['notification_url']
+            data = self.validate_data_class.objects.filter(
+                **fields).first()
+            if data:
+                self.adr = data
+                dev = True
+        return dev
+
 
 class InstitutionBaseSerializer(CoreBaseBaseSerializer):
 
@@ -105,6 +126,25 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                 url=data['notification_url']).exists():
             self._errors['notification_url'] = ['notification_url not found']
 
+    def validate_certificate(self):
+        self.institution = Institution.objects.filter(
+            code=self.data['institution']).first()
+        if self.institution is None:
+            self._errors['data'] = [
+                'Institution not found, certificate not match']
+            return False
+        if not check_certificate(self.data['public_certificate']):
+            self._errors['public_certificate'] = ['Certificate not valid']
+        try:
+            self.requestdata = decrypt(self.institution.server_sign_key,
+                                       self.data['data'])
+            self.check_internal_data(self.requestdata)
+        except Exception as e:
+            self._errors['data'] = ['Data not decripted well']
+            return False
+
+class InstitutionCheckBaseBaseSerializer(InstitutionBaseSerializer, CheckBaseBaseSerializer):
+	pass
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
 
@@ -164,32 +204,6 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
             identification=data['person']).first()
         if self.person is None:
             self._errors['person'] = ['Person not found']
-
-
-class CheckBaseBaseSerializer():
-
-    def check_code(self, code, raise_exception=False):
-        dev = False
-        self.check_internal_fields = self.check_show_fields
-
-        if self.is_valid(raise_exception=raise_exception):
-            fields = {
-                'code': code,
-                'identification': self.requestdata['identification']
-            }
-            if 'notification_url' in self.check_internal_fields:
-                fields['notification_url'] = self.requestdata['notification_url']
-            data = self.validate_data_class.objects.filter(
-                **fields).first()
-            if data:
-                self.adr = data
-                dev = True
-        return dev
-
-
-class InstitutionCheckBaseBaseSerializer(InstitutionBaseSerializer, CheckBaseBaseSerializer):
-    pass
-
 
 class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializer):
     pass

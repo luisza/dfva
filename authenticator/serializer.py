@@ -12,12 +12,16 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 
-from authenticator.models import AuthenticateDataRequest, AuthenticateRequest,\
-    AuthenticatePersonDataRequest, AuthenticatePersonRequest
+from authenticator.models import AuthenticateDataRequest, AuthenticateRequest
+from corebase.serializer import CoreBaseBaseSerializer
 import warnings
 from pyfva.clientes.autenticador import ClienteAutenticador
-from corebase.serializer import InstitutionCheckBaseBaseSerializer,\
-    PersonCheckBaseBaseSerializer
+from corebase.serializer import InstitutionCheckBaseBaseSerializer
+    
+
+# Person
+from authenticator.models import AuthenticatePersonDataRequest, AuthenticatePersonRequest
+from corebase.serializer import PersonCheckBaseBaseSerializer
 
 
 class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -96,6 +100,15 @@ class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer, Authen
                   'public_certificate', 'data')
 
 
+class Authenticate_Response_Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AuthenticateDataRequest
+        fields = (
+            'code', 'status', 'identification', 'id_transaction',
+            'request_datetime', 'sign_document', 'expiration_datetime',
+            'received_notification')
+
 class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Authenticate_RequestSerializer):
 
     check_internal_fields = ['identification',
@@ -115,15 +128,6 @@ class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Auth
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
-
-class Authenticate_Response_Serializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = AuthenticateDataRequest
-        fields = (
-            'code', 'status', 'identification', 'id_transaction',
-            'request_datetime', 'sign_document', 'expiration_datetime',
-            'received_notification')
 
 
 class Authenticate_Person_Response_Serializer(serializers.ModelSerializer):

@@ -1,21 +1,22 @@
 from validator.serializer import ValidateCertificate_Request_Serializer,\
     ValidateDocument_Request_Serializer,\
     ValidateCertificateRequest_Response_Serializer,\
-    ValidateDocumentRequest_Response_Serializer,\
-    ValidatePersonCertificate_Request_Serializer,\
-    ValidatePersonDocument_Request_Serializer,\
-    ValidatePersonCertificateRequest_Response_Serializer,\
-    ValidatePersonDocumentRequest_Response_Serializer,\
-    SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
+    ValidateDocumentRequest_Response_Serializer
 from validator.models import ValidateCertificateRequest,\
-    ValidateDocumentRequest, ValidatePersonCertificateRequest,\
-    ValidatePersonDocumentRequest
+    ValidateDocumentRequest
 from rest_framework.decorators import list_route
 from corebase.views import ViewSetBase
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-# Create your views here.
 
+# Person
+from validator.models import ValidatePersonCertificateRequest,\
+    ValidatePersonDocumentRequest
+from validator.serializer import ValidatePersonCertificate_Request_Serializer,\
+    ValidatePersonDocument_Request_Serializer,\
+    ValidatePersonCertificateRequest_Response_Serializer,\
+    ValidatePersonDocumentRequest_Response_Serializer,\
+    SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidateCertificate_Request_Serializer

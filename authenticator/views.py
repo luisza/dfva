@@ -1,18 +1,21 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from authenticator.models import AuthenticateRequest, AuthenticatePersonRequest
+from authenticator.models import AuthenticateRequest
 from authenticator.serializer import Authenticate_Request_Serializer,\
-    Authenticate_Response_Serializer, Authenticate_Person_Response_Serializer,\
-    Authenticate_Person_Request_Serializer
+    Authenticate_Response_Serializer
 from django.utils import timezone
-
 import logging
 from rest_framework.decorators import detail_route, list_route
 from corebase.views import ViewSetBase
 
+#Person
+from authenticator.models import  AuthenticatePersonRequest
+from authenticator.serializer import  Authenticate_Person_Response_Serializer,\
+    Authenticate_Person_Request_Serializer
 
-logger = logging.getLogger('ucr_fva')
+
+logger = logging.getLogger('dfva')
 
 # Create your views here.
 

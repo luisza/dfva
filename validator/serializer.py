@@ -10,17 +10,20 @@ from __future__ import unicode_literals
 
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from corebase.serializer import InstitutionBaseSerializer, PersonBaseSerializer
+from corebase.serializer import InstitutionBaseSerializer
 
 import warnings
 from validator.models import ValidateCertificateDataRequest,\
     ValidateCertificateRequest, ValidateDocumentRequest,\
-    ValidateDocumentDataRequest, Advertencia, ErrorEncontrado, Firmante,\
-    ValidatePersonDocumentDataRequest, ValidatePersonDocumentRequest,\
-    ValidatePersonCertificateDataRequest, ValidatePersonCertificateRequest
+    ValidateDocumentDataRequest, Advertencia, ErrorEncontrado, Firmante
 from pyfva.clientes.validador import ClienteValidador
 from rest_framework.exceptions import ValidationError
 from pyfva.clientes.firmador import ClienteFirmador
+
+# Person
+from corebase.serializer import  PersonBaseSerializer
+from validator.models import ValidatePersonDocumentDataRequest, ValidatePersonDocumentRequest,\
+    ValidatePersonCertificateDataRequest, ValidatePersonCertificateRequest
 
 
 class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -77,7 +80,6 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
 
         self.cert_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()
-        print(self.cert_request)
         self.call_BCCR()
         self.adr.save()
 
@@ -106,36 +108,9 @@ class ValidateCertificate_Request_Serializer(InstitutionBaseSerializer,
                   'public_certificate', 'data')
 
 
-class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, ValidateCertificate_RequestSerializer):
-    check_internal_fields = ['person',
-                             'notification_url',
-                             'document',
-                             'request_datetime']
-
-    validate_request_class = ValidatePersonCertificateRequest
-    validate_data_class = ValidatePersonCertificateDataRequest
-
-    def save_subject(self):
-        self.adr.person = self.person
-
-    class Meta:
-        model = ValidatePersonCertificateRequest
-        fields = ('person', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
-
-
 class ValidateCertificateRequest_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ValidateCertificateDataRequest
-        fields = ('identification', 'request_datetime',
-                  'code', 'status',
-                  'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
-                  'fue_exitosa')
-
-
-class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = ValidatePersonCertificateDataRequest
         fields = ('identification', 'request_datetime',
                   'code', 'status',
                   'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
@@ -233,6 +208,30 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         self.document_request.save()
         return self.document_request
 
+class ErrorEncontradoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ErrorEncontrado
+        fields = ('codigo', 'detalle')
+
+
+class FirmanteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Firmante
+        fields = ('cedula', 'fecha_de_firma', 'nombre_completo')
+
+
+class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
+    advertencias = serializers.StringRelatedField(many=True)
+    firmantes = FirmanteSerializer(many=True)
+    errores = ErrorEncontradoSerializer(many=True)
+
+class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
+    class Meta:
+        model = ValidateDocumentDataRequest
+        fields = ('request_datetime',
+                  'code', 'status',
+                  'advertencias', 'errores', 'firmantes',
+                  'fue_exitosa')
 
 class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDocument_RequestSerializer):
     check_internal_fields = ['institution',
@@ -253,6 +252,23 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDoc
                   'public_certificate', 'data')
 
 
+class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, ValidateCertificate_RequestSerializer):
+    check_internal_fields = ['person',
+                             'notification_url',
+                             'document',
+                             'request_datetime']
+
+    validate_request_class = ValidatePersonCertificateRequest
+    validate_data_class = ValidatePersonCertificateDataRequest
+
+    def save_subject(self):
+        self.adr.person = self.person
+
+    class Meta:
+        model = ValidatePersonCertificateRequest
+        fields = ('person', 'data_hash', 'algorithm',
+                  'public_certificate', 'data')
+
 class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
                                                 ValidateDocument_RequestSerializer):
     check_internal_fields = ['person',
@@ -270,34 +286,12 @@ class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
-
-class ErrorEncontradoSerializer(serializers.ModelSerializer):
+class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSerializer):
     class Meta:
-        model = ErrorEncontrado
-        fields = ('codigo', 'detalle')
-
-
-class FirmanteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Firmante
-        fields = ('cedula', 'fecha_de_firma', 'nombre_completo')
-
-
-class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
-    advertencias = serializers.StringRelatedField(many=True)
-    firmantes = FirmanteSerializer(many=True)
-    errores = ErrorEncontradoSerializer(many=True)
-
-    class Meta:
-        model = None
-
-
-class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
-    class Meta:
-        model = ValidateDocumentDataRequest
-        fields = ('request_datetime',
+        model = ValidatePersonCertificateDataRequest
+        fields = ('identification', 'request_datetime',
                   'code', 'status',
-                  'advertencias', 'errores', 'firmantes',
+                  'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
                   'fue_exitosa')
 
 

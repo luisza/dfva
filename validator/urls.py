@@ -7,9 +7,9 @@ Created on 20 jul. 2017
 '''
 
 from __future__ import unicode_literals
-from validator.views import ValidateInstitutionViewSet, ValidatePersonViewSet,\
-    ValidateSubscriptorViewSet
+from validator.views import ValidateInstitutionViewSet, ValidateSubscriptorViewSet
 
+from validator.views import ValidatePersonViewSet
 
 def get_routes_view(router):
     router.register(r'validate', ValidateInstitutionViewSet)

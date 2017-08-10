@@ -11,11 +11,12 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from corebase.serializer import PersonCheckBaseBaseSerializer, InstitutionCheckBaseBaseSerializer
+from corebase.serializer import InstitutionCheckBaseBaseSerializer
+from corebase.serializer import PersonCheckBaseBaseSerializer
 
 import warnings
-from signer.models import SignDataRequest, SignRequest, SignPersonDataRequest,\
-    SignPersonRequest
+from signer.models import SignDataRequest, SignRequest
+from signer.models import SignPersonDataRequest, SignPersonRequest
 from pyfva.clientes.firmador import ClienteFirmador
 
 
@@ -103,6 +104,14 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSe
         fields = ('institution', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
+class Sign_Response_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = SignDataRequest
+        fields = (
+            'code', 'status', 'identification', 'id_transaction',
+            'sign_document',
+            'request_datetime', 'expiration_datetime', 'received_notification')
+
 
 class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Sign_RequestSerializer):
 
@@ -130,15 +139,6 @@ class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Sign_Request
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
-
-class Sign_Response_Serializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SignDataRequest
-        fields = (
-            'code', 'status', 'identification', 'id_transaction',
-            'sign_document',
-            'request_datetime', 'expiration_datetime', 'received_notification')
 
 
 class Sign_Person_Response_Serializer(serializers.ModelSerializer):
