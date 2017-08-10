@@ -53,8 +53,8 @@ cp /home/dfva/dfva/deploy/supervisor.conf /etc/supervisor/conf.d/
 supervisorctl reread
 supervisorctl update
 
-cp /home/dfva/dfva/deploy/nginx.conf /etc/nginx/sites-available/fdva.conf
-ln -s /etc/nginx/sites-available/fdva.conf /etc/nginx/sites-enabled/fdva.conf
+cp /home/dfva/dfva/deploy/nginx.conf /etc/nginx/sites-available/dfva.conf
+ln -s /etc/nginx/sites-available/dfva.conf /etc/nginx/sites-enabled/dfva.conf
 
 service nginx restart 
 apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
