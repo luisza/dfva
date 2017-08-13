@@ -8,10 +8,9 @@ from rest_framework.decorators import detail_route, list_route
 from django.utils import timezone
 from corebase.views import ViewSetBase
 
-#person
+# person
 from signer.models import SignPersonRequest
-from signer.serializer importSign_Person_Request_Serializer, Sign_Person_Response_Serializer
-
+from signer.serializer import Sign_Person_Request_Serializer, Sign_Person_Response_Serializer
 
 
 class SignRequestViewSet(ViewSetBase,
