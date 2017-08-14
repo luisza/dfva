@@ -30,7 +30,7 @@ def test_validate_certificate(url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/validate_certificate/', json=params)
+        SERVER_URL + '/validate/institution_certificate/', json=params)
 
     # print(params)
     data = result.json()
@@ -59,7 +59,7 @@ def test_validate_document(url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/validate_document/', json=params)
+        SERVER_URL + '/validate/institution_document/', json=params)
 
     # print(params)
     data = result.json()

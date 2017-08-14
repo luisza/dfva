@@ -75,22 +75,23 @@ class ViewSetBase:
 
     def _create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
-        adr = self.response_class(serializer.adr)
-        # adr.is_valid(raise_exception=False)
-        return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
+        if serializer.is_valid(raise_exception=False):
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            adr = self.response_class(serializer.adr)
+            # adr.is_valid(raise_exception=False)
+            return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
+        return self.get_error_response(serializer)
 
     def show(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.check_code(kwargs['pk'], raise_exception=True):
+        if serializer.check_code(kwargs['pk'], raise_exception=False):
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
             # adr.is_valid(raise_exception=False)
             return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        return self.get_error_response()
+        return self.get_error_response(serializer)
 
     def get_error_response(self):
         return Response({"error": "Error inexperado"})
@@ -105,7 +106,7 @@ class PersonLoginView(mixins.CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid(raise_exception=False):
             data = serializer.save()
             headers = self.get_success_headers(data.data)
             return Response(data.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -114,5 +115,6 @@ class PersonLoginView(mixins.CreateModelMixin,
             'identification': 'N/D',
             'token': None,
             'expiration_datetime_token': None,
-            'last_error_code': 3
+            'last_error_code': 3,
+            'error_text': repr(serializer._errors)
         }, status=status.HTTP_201_CREATED, headers=headers)

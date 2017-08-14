@@ -13,7 +13,7 @@ from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from corebase.serializer import InstitutionCheckBaseBaseSerializer
 from corebase.serializer import PersonCheckBaseBaseSerializer
-
+from django.utils.translation import ugettext_lazy as _
 import warnings
 from signer.models import SignDataRequest, SignRequest
 from signer.models import SignPersonDataRequest, SignPersonRequest
@@ -44,14 +44,16 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 resumen=self.requestdata['resumen'])
 
         else:
-            warnings.warn("Sign BCCR No disponible", RuntimeWarning)
+            warnings.warn(_("Sign BCCR not available"), RuntimeWarning)
             data = signclient.DEFAULT_ERROR
 
         self.save_subject()
         self.adr.identification = self.requestdata['identification']
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
-
+        self.adr.duration = data['tiempo_maximo']
+        if 'texto_codigo_error' in data:
+            self.adr.status_text = data['texto_codigo_error']
         self.adr.expiration_datetime = timezone.now(
         ) + timezone.timedelta(minutes=data['tiempo_maximo'])
 
@@ -104,12 +106,13 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSe
         fields = ('institution', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
+
 class Sign_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = SignDataRequest
         fields = (
             'code', 'status', 'identification', 'id_transaction',
-            'sign_document',
+            'sign_document', 'duration', 'status_text',
             'request_datetime', 'expiration_datetime', 'received_notification')
 
 
@@ -140,12 +143,11 @@ class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Sign_Request
                   'public_certificate', 'data')
 
 
-
 class Sign_Person_Response_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = SignPersonDataRequest
         fields = (
             'code', 'status', 'identification', 'id_transaction',
-            'sign_document',
+            'sign_document', 'duration', 'status_text',
             'request_datetime', 'expiration_datetime', 'received_notification')

@@ -9,10 +9,12 @@ import logging
 from rest_framework.decorators import detail_route, list_route
 from corebase.views import ViewSetBase
 
-#Person
-from authenticator.models import  AuthenticatePersonRequest
-from authenticator.serializer import  Authenticate_Person_Response_Serializer,\
+# Person
+from authenticator.models import AuthenticatePersonRequest
+from authenticator.serializer import Authenticate_Person_Response_Serializer,\
     Authenticate_Person_Request_Serializer
+import pyfva
+from pyfva.constants import get_text_representation
 
 
 logger = logging.getLogger('dfva')
@@ -58,16 +60,18 @@ class AuthenticateRequestViewSet(ViewSetBase,
     def institution_show(self, request, *args, **kwargs):
         return self.show(request, *args, **kwargs)
 
-    def get_error_response(self):
+    def get_error_response(self, serializer):
         return Response({
             'code': 'N/D',
             'status': 2,
+            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
             'sign_document': None,
             'expiration_datetime': None,
-            'received_notification': False
+            'received_notification': False,
+            'error_info': serializer._errors
         })
 
 
@@ -106,7 +110,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
     def person_show(self, request, *args, **kwargs):
         return self.show(request, *args, **kwargs)
 
-    def get_error_response(self):
+    def get_error_response(self, serializer):
         return Response({
             'code': 'N/D',
             'status': 2,

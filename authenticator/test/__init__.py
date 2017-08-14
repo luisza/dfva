@@ -29,7 +29,7 @@ def test_authentication(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/authenticate/', json=params)
+        SERVER_URL + '/authenticate/institution/', json=params)
 
     # print(params)
     data = result.json()
@@ -59,7 +59,7 @@ def test_authentication_detail(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + "/authenticate/%s/show/" % (authdata['code']), json=params)
+        SERVER_URL + "/authenticate/%s/institution_show/" % (authdata['code']), json=params)
 
     # print(params)
     data = result.json()

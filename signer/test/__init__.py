@@ -37,7 +37,7 @@ def test_xml_signer(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/sign/', json=params)
+        SERVER_URL + '/sign/institution/', json=params)
 
     data = result.json()
     # print(data)
@@ -71,7 +71,7 @@ def test_odf_signer(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/sign/', json=params)
+        SERVER_URL + '/sign/institution/', json=params)
 
     data = result.json()
     print(data)
@@ -105,7 +105,7 @@ def test_msoffice_signer(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/sign/', json=params)
+        SERVER_URL + '/sign/institution/', json=params)
 
     data = result.json()
     print(data)
@@ -135,7 +135,7 @@ def test_signer_show(identificacion, url=LISTEN_URL):
         "data": edata,
     }
     result = requests.post(
-        SERVER_URL + '/sign/%s/show/' % (signdata['code'], ), json=params)
+        SERVER_URL + '/sign/%s/institution_show/' % (signdata['code'], ), json=params)
 
     data = result.json()
     return data

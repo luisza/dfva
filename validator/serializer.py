@@ -19,11 +19,15 @@ from validator.models import ValidateCertificateDataRequest,\
 from pyfva.clientes.validador import ClienteValidador
 from rest_framework.exceptions import ValidationError
 from pyfva.clientes.firmador import ClienteFirmador
+from django.utils.translation import ugettext as _
+
 
 # Person
-from corebase.serializer import  PersonBaseSerializer
+from corebase.serializer import PersonBaseSerializer
 from validator.models import ValidatePersonDocumentDataRequest, ValidatePersonDocumentRequest,\
     ValidatePersonCertificateDataRequest, ValidatePersonCertificateRequest
+from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,\
+    ERRORES_VALIDA_DOCUMENTO
 
 
 class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -52,7 +56,7 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
 
         else:
             warnings.warn(
-                "Validate certificate BCCR No disponible", RuntimeWarning)
+                _("Validate certificate BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_CERTIFICATE_ERROR
 
         self.save_subject()
@@ -60,6 +64,11 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
             self.requestdata['request_datetime'])
         self.adr.code = self.cert_request.code
         self.adr.codigo_de_error = data['codigo_error']
+        if 'texto_codigo_error' in data:
+            self.adr.status_text = data['texto_codigo_error']
+        else:
+            self.adr.status_text = get_text_representation(
+                ERRORES_VALIDA_CERTIFICADO,  data['codigo_error'])
         self.adr.fue_exitosa = data['exitosa']
 
         if data['exitosa']:
@@ -143,13 +152,19 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
 
         else:
             warnings.warn(
-                "Validar documento BCCR No disponible", RuntimeWarning)
+                _("Validate document BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_DOCUMENT_ERROR
 
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
         self.adr.code = self.document_request.code
+        self.adr.status = data['codigo_error']
+        if 'texto_codigo_error' in data:
+            self.adr.status_text = data['texto_codigo_error']
+        else:
+            self.adr.status_text = get_text_representation(
+                ERRORES_VALIDA_DOCUMENTO,  data['codigo_error'])
         self.adr.fue_exitosa = data['exitosa']
 
         self.adr.save()
@@ -158,8 +173,6 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
             self.get_advertencias(data['advertencias'])
             self.get_errores_encontrados(data['errores_encontrados'])
             self.get_firmantes(data['firmantes'])
-        else:
-            self.adr.status = 2
 
     def get_firmantes(self, firmantes):
         if firmantes is None:
@@ -208,6 +221,7 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         self.document_request.save()
         return self.document_request
 
+
 class ErrorEncontradoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ErrorEncontrado
@@ -225,6 +239,7 @@ class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
     firmantes = FirmanteSerializer(many=True)
     errores = ErrorEncontradoSerializer(many=True)
 
+
 class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
     class Meta:
         model = ValidateDocumentDataRequest
@@ -232,6 +247,7 @@ class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSeria
                   'code', 'status',
                   'advertencias', 'errores', 'firmantes',
                   'fue_exitosa')
+
 
 class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDocument_RequestSerializer):
     check_internal_fields = ['institution',
@@ -269,6 +285,7 @@ class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, Validat
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
+
 class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
                                                 ValidateDocument_RequestSerializer):
     check_internal_fields = ['person',
@@ -286,11 +303,12 @@ class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
 
+
 class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ValidatePersonCertificateDataRequest
         fields = ('identification', 'request_datetime',
-                  'code', 'status',
+                  'code', 'status', 'status_text',
                   'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
                   'fue_exitosa')
 
@@ -299,7 +317,7 @@ class ValidatePersonDocumentRequest_Response_Serializer(ValidateDocument_Respons
     class Meta:
         model = ValidatePersonDocumentDataRequest
         fields = ('request_datetime',
-                  'code', 'status',
+                  'code', 'status', 'status_text',
                   'advertencias', 'errores', 'firmantes',
                   'fue_exitosa')
 

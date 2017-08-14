@@ -28,10 +28,12 @@ class AuthenticateDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     sign_document = models.TextField(null=True, blank=True)
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
     id_transaction = models.IntegerField(default=0)
+    duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
 
     @property
@@ -93,10 +95,12 @@ class AuthenticatePersonDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     sign_document = models.TextField(null=True, blank=True)
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
     id_transaction = models.IntegerField(default=0)
+    duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
 
     @property

@@ -11,6 +11,8 @@ from corebase.views import ViewSetBase
 # person
 from signer.models import SignPersonRequest
 from signer.serializer import Sign_Person_Request_Serializer, Sign_Person_Response_Serializer
+from pyfva.constants import get_text_representation
+import pyfva
 
 
 class SignRequestViewSet(ViewSetBase,
@@ -79,16 +81,18 @@ class SignRequestViewSet(ViewSetBase,
         """
         return self.show(request, *args, **kwargs)
 
-    def get_error_response(self):
+    def get_error_response(self, serializer):
         return Response({
             'code': 'N/D',
             'status': 2,
+            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
             'sign_document': None,
             'expiration_datetime': None,
-            'received_notification': False
+            'received_notification': False,
+            'error_info': serializer._errors
         })
 
 
@@ -157,14 +161,16 @@ class SignPersonRequestViewSet(ViewSetBase,
         """
         return self.show(request, *args, **kwargs)
 
-    def get_error_response(self):
+    def get_error_response(self, serializer):
         return Response({
             'code': 'N/D',
             'status': 2,
+            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
             'sign_document': None,
             'expiration_datetime': None,
-            'received_notification': False
+            'received_notification': False,
+            'error_info': serializer._errors
         })

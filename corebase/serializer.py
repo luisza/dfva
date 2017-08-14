@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from pyfva.clientes.validador import ClienteValidador
 import warnings
+from django.utils.translation import ugettext_lazy as _
 
 
 class CoreBaseBaseSerializer(object):
@@ -21,7 +22,7 @@ class CoreBaseBaseSerializer(object):
         hashsum = get_hash_sum(self.data['data'], self.data['algorithm'])
         if hashsum != self.data['data_hash']:
             self._errors['data_hash'] = [
-                'Hash sum are not equals %s != %s' % (hashsum, self.data['data_hash'])]
+                _('Hash sums are not equal %s != %s') % (hashsum, self.data['data_hash'])]
             # FIXME:  Hay que hacer algo con los errores de status
 
     def _get_decrypt_key(self):
@@ -34,7 +35,6 @@ class CoreBaseBaseSerializer(object):
         return True
 
     def check_internal_data(self, data, fields=[]):
-
         for field in fields:
             if field not in data:
                 self._errors[field] = ['%s not found' % (field)]
@@ -46,7 +46,7 @@ class CoreBaseBaseSerializer(object):
             supported_algorithm = [x for x, y in ALGORITHM]
             if data['algorithm_hash'] not in supported_algorithm:
                 self._errors['data'] = [
-                    '%s is not valid algorithm. supported are %s ' % (
+                    _('%s is not valid algorithm. supported are %s ') % (
                         data['algorithm_hash'],
                         ",".join(
                             supported_algorithm)
@@ -56,13 +56,15 @@ class CoreBaseBaseSerializer(object):
         self.get_institution()
         if self.check_subject():
             if not check_certificate(self.data['public_certificate']):
-                self._errors['public_certificate'] = ['Certificate not valid']
+                self._errors['public_certificate'] = [
+                    _('Invalid certificate')]
             try:
                 self.requestdata = decrypt(self._get_decrypt_key(),
                                            self.data['data'])
                 self.check_internal_data(self.requestdata)
             except Exception as e:
-                self._errors['data'] = ['Data not decripted well %r' % (e,)]
+                self._errors['data'] = [
+                    _('Data was not decrypted well %r') % (e,)]
                 return False
 
     def is_valid(self, raise_exception=False):
@@ -73,6 +75,7 @@ class CoreBaseBaseSerializer(object):
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
+
 
 class CheckBaseBaseSerializer():
 
@@ -100,7 +103,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
     def check_subject(self):
         if self.institution is None:
             self._errors['data'] = [
-                'Institution not found, certificate not match']
+                _('Institution not found, certificate does not match')]
             return False
         return True
 
@@ -113,7 +116,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
 
     def _check_internal_data(self, data, fields=[]):
         if data['institution'] != str(self.institution.code):
-            self._errors['institution'] = ['Institution not match']
+            self._errors['institution'] = [_('Institution does not match')]
 
         if data['notification_url'].upper() == 'N/D':
             if not NotificationURL.objects.filter(
@@ -124,27 +127,31 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
         elif not NotificationURL.objects.filter(
                 institution=self.institution,
                 url=data['notification_url']).exists():
-            self._errors['notification_url'] = ['notification_url not found']
+            self._errors['notification_url'] = [
+                _('notification_url not found')]
 
     def validate_certificate(self):
         self.institution = Institution.objects.filter(
             code=self.data['institution']).first()
         if self.institution is None:
             self._errors['data'] = [
-                'Institution not found, certificate not match']
+                _('Institution not found, certificate does not match')]
             return False
         if not check_certificate(self.data['public_certificate']):
-            self._errors['public_certificate'] = ['Certificate not valid']
+            self._errors['public_certificate'] = [_('Invalid Certificate')]
         try:
             self.requestdata = decrypt(self.institution.server_sign_key,
                                        self.data['data'])
-            self.check_internal_data(self.requestdata)
+            self.check_internal_data(
+                self.requestdata, fields=self.check_internal_fields)
         except Exception as e:
-            self._errors['data'] = ['Data not decripted well']
+            self._errors['data'] = [_('Data was not decrypted well')]
             return False
 
+
 class InstitutionCheckBaseBaseSerializer(InstitutionBaseSerializer, CheckBaseBaseSerializer):
-	pass
+    pass
+
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
 
@@ -153,7 +160,7 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
         plain_text = self._get_decrypt_key()
         if not validate_sign_data(self.data['public_certificate'], plain_text, self.data['data']):
             self._errors['data_hash'] = [
-                'Sign key check fail,  are you signing with your private key pair']
+                _('Sign key check fail,  are you signing with your private key pair?')]
 
     def validate_certificate(self):
         self.get_institution()
@@ -168,11 +175,11 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
 
         else:
             warnings.warn(
-                "Certificate BCCR No disponible", RuntimeWarning)
+                _("Certificate BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_CERTIFICATE_ERROR
 
         if data['codigo_error'] != 1 or not data['exitosa']:
-            self._errors['public_certificate'] = ['Certificate not valid']
+            self._errors['public_certificate'] = [_('Invalid certificate')]
 
         if self.check_subject():
             key = self._get_decrypt_key()
@@ -181,7 +188,8 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
                                                   self.data['data'])
                 self.check_internal_data(self.requestdata)
             except Exception as e:
-                self._errors['data'] = ['Data not decripted well %r' % (e,)]
+                self._errors['data'] = [
+                    _('Data was not decrypted well %r') % (e,)]
                 return False
 
     def get_institution(self):
@@ -203,7 +211,8 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
         self.person = Person.objects.filter(
             identification=data['person']).first()
         if self.person is None:
-            self._errors['person'] = ['Person not found']
+            self._errors['person'] = [_('Person not found')]
+
 
 class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializer):
     pass
@@ -228,22 +237,22 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
         else:
             warnings.warn(
-                "Login certificate BCCR No disponible", RuntimeWarning)
+                _("Login certificate BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_CERTIFICATE_ERROR
 
         if data['codigo_error'] != 1 or not data['exitosa']:
-            self._errors['public_certificate'] = ['Certificate not valid']
+            self._errors['public_certificate'] = [_('Invalid certificate')]
 
         elif data['certificado']['identificacion'] != self.data['person']:
             self._errors['public_certificate'] = [
-                'Signer Certificate is not owned by requesting person']
+                _('Signer certificate is not owned by person who request')]
 
     def validate_digest(self):
         # Fixme: Solo funciona para register
         plain_text = self.data['person']
         if not validate_sign(self.data['public_certificate'], plain_text, self.data['code']):
             self._errors['data_hash'] = [
-                'Data hash not valid, are you signing with your private key pair']
+                _('Data hash invalid, are you signing with your private key pair?')]
 
     def is_valid(self, raise_exception=False):
         serializers.HyperlinkedModelSerializer.is_valid(

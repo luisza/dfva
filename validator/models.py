@@ -28,6 +28,7 @@ class ValidateCertificateDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
     codigo_de_error = models.IntegerField()
     fue_exitosa = models.BooleanField(default=True)
@@ -94,6 +95,7 @@ class ValidatePersonCertificateDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
     codigo_de_error = models.IntegerField()
     fue_exitosa = models.BooleanField(default=True)
@@ -183,6 +185,7 @@ class ValidateDocumentDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     advertencias = models.ManyToManyField(Advertencia)
     errores = models.ManyToManyField(ErrorEncontrado)
     firmantes = models.ManyToManyField(Firmante)
@@ -240,6 +243,7 @@ class ValidatePersonDocumentDataRequest(models.Model):
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
     status = models.IntegerField(choices=STATUS, default=1)
+    status_text = models.CharField(max_length=256, default='n/d')
     advertencias = models.ManyToManyField(Advertencia)
     errores = models.ManyToManyField(ErrorEncontrado)
     firmantes = models.ManyToManyField(Firmante)

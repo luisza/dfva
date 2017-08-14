@@ -11,17 +11,17 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-
+from django.utils.translation import ugettext as _
 from authenticator.models import AuthenticateDataRequest, AuthenticateRequest
-from corebase.serializer import CoreBaseBaseSerializer
 import warnings
 from pyfva.clientes.autenticador import ClienteAutenticador
 from corebase.serializer import InstitutionCheckBaseBaseSerializer
-    
+
 
 # Person
 from authenticator.models import AuthenticatePersonDataRequest, AuthenticatePersonRequest
 from corebase.serializer import PersonCheckBaseBaseSerializer
+from pyfva.constants import get_text_representation, ERRORES_AL_SOLICITAR_FIRMA
 
 
 class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,7 +46,7 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 self.requestdata['identification'])
 
         else:
-            warnings.warn("Auth BCCR No disponible", RuntimeWarning)
+            warnings.warn(_("Auth BCCR not available"), RuntimeWarning)
             data = authclient.DEFAULT_ERROR
 
         self.save_subject()
@@ -56,6 +56,12 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
 
         self.adr.expiration_datetime = timezone.now(
         ) + timezone.timedelta(minutes=data['tiempo_maximo'])
+        self.adr.duration = data['tiempo_maximo']
+        if 'texto_codigo_error' in data:
+            self.adr.status_text = data['texto_codigo_error']
+        else:
+            self.adr.status_text = get_text_representation(
+                ERRORES_AL_SOLICITAR_FIRMA,  data['codigo_error'])
         self.adr.status = data['codigo_error']
         self.adr.id_transaction = data['id_solicitud']
         self.adr.code = data['codigo_verificacion']
@@ -107,7 +113,8 @@ class Authenticate_Response_Serializer(serializers.ModelSerializer):
         fields = (
             'code', 'status', 'identification', 'id_transaction',
             'request_datetime', 'sign_document', 'expiration_datetime',
-            'received_notification')
+            'received_notification', 'duration', 'status_text')
+
 
 class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Authenticate_RequestSerializer):
 
@@ -129,7 +136,6 @@ class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Auth
                   'public_certificate', 'data')
 
 
-
 class Authenticate_Person_Response_Serializer(serializers.ModelSerializer):
 
     class Meta:
@@ -137,4 +143,4 @@ class Authenticate_Person_Response_Serializer(serializers.ModelSerializer):
         fields = (
             'code', 'status', 'identification', 'id_transaction',
             'request_datetime', 'sign_document', 'expiration_datetime',
-            'received_notification')
+            'received_notification', 'duration', 'status_text')
