@@ -108,8 +108,14 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
         return True
 
     def get_institution(self):
-        self.institution = Institution.objects.filter(
-            code=self.data['institution']).first()
+        try:
+            self.institution = Institution.objects.filter(
+                code=self.data['institution']).first()
+        except:
+            # Fixme: log this exception uuid send exception if not uuid
+            self._errors['institution'] = [
+                _('Institution not found, certificate does not match')]
+            self.institution = None
 
     def _get_decrypt_key(self):
         return self.institution.server_sign_key
@@ -131,8 +137,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                 _('notification_url not found')]
 
     def validate_certificate(self):
-        self.institution = Institution.objects.filter(
-            code=self.data['institution']).first()
+        self.get_institution()
         if self.institution is None:
             self._errors['data'] = [
                 _('Institution not found, certificate does not match')]
