@@ -1,3 +1,8 @@
+'''
+Created on 16 ago. 2017
+
+@author: luis
+'''
 
 
 from django.utils import timezone
@@ -5,7 +10,7 @@ import json
 from corebase.rsa import encrypt, get_hash_sum
 import requests
 from corebase.test.environment import *
-from validator.test.certificate import CERTIFICATE_FILE
+from validator.tests.certificate import CERTIFICATE_FILE
 
 
 def test_validate_certificate(url=LISTEN_URL):

@@ -27,6 +27,7 @@ from rest_framework.response import Response
 from corebase.models import PersonLogin
 from corebase.serializer import PersonLoginSerializer,\
     PersonLoginResponseSerializer
+from pyfva.constants import get_text_representation
 
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
@@ -93,8 +94,14 @@ class ViewSetBase:
 
         return self.get_error_response(serializer)
 
-    def get_error_response(self):
-        return Response({"error": "Error inexperado"})
+    def get_error_response(self, serializer):
+        return Response({"error_info": serializer._errors,
+                         'code': 'N/D',
+                         'status': 2,
+                         'status_text': get_text_representation(
+                             self.DEFAULT_ERROR,  2),
+                         'id_transaction': 0
+                         })
 
 
 class PersonLoginView(mixins.CreateModelMixin,

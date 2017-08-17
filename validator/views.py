@@ -17,11 +17,14 @@ from validator.serializer import ValidatePersonCertificate_Request_Serializer,\
     ValidatePersonCertificateRequest_Response_Serializer,\
     ValidatePersonDocumentRequest_Response_Serializer,\
     SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
+from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDA_DOCUMENTO
+
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidateCertificate_Request_Serializer
     queryset = ValidateCertificateRequest.objects.all()
     response_class = ValidateCertificateRequest_Response_Serializer
+    DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
 
     @list_route(methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
@@ -42,7 +45,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **request_datetime:**  Hora de recepción de la solicitud
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
-        * **codigo_de_error:**  Códigos de error del certificado, si existen
+        * **status_text:**  Descripción en texto del estado
         * **nombre_completo:**  Nombre completo del suscriptor
         * **inicio_vigencia:**  Inicio de la vigencia del certificado
         * **fin_vigencia:**  Fin de la vigencia del certificado
@@ -52,6 +55,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
+        self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
     @list_route(methods=['post'])
@@ -73,6 +77,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **request_datetime:**  Hora de recepción de la solicitud
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
+        * **status_text:**  Descripción en texto del estado
         * **advertencias:** Lista de advertencias
         * **errores:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
         * **firmantes:** Lista con la información de los firmantes [ {'cedula': '08-8888-8888', 'nombre_completo': 'nombre del suscriptor', 'fecha_de_firma': timezone.now()}, ... ]
@@ -85,6 +90,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.serializer_class = ValidateDocument_Request_Serializer
         self.queryset = ValidateDocumentRequest.objects.all()
         self.response_class = ValidateDocumentRequest_Response_Serializer
+        self.DEFAULT_ERROR = ERRORES_VALIDA_DOCUMENTO
         return self._create(request, *args, **kwargs)
 
 
@@ -170,9 +176,10 @@ class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
         # adr.is_valid(raise_exception=False)
         return Response(data, status=status.HTTP_200_OK)
 
-    def get_error_response(self):
+    def get_error_response(self, serializer):
         return Response({
-            'is_connected':  False
+            'is_connected':  False,
+            'info_error': serializer._errors
         }, status=status.HTTP_200_OK)
 
     @list_route(methods=['post'])

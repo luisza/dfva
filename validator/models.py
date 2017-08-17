@@ -30,11 +30,14 @@ class ValidateCertificateDataRequest(models.Model):
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
-    codigo_de_error = models.IntegerField()
     fue_exitosa = models.BooleanField(default=True)
     nombre_completo = models.CharField(max_length=250, null=True)
     inicio_vigencia = models.DateTimeField(null=True)
     fin_vigencia = models.DateTimeField(null=True)
+
+    @property
+    def id_transaction(self):
+        return self.pk
 
     @property
     def left_time(self):
@@ -190,6 +193,10 @@ class ValidateDocumentDataRequest(models.Model):
     errores = models.ManyToManyField(ErrorEncontrado)
     firmantes = models.ManyToManyField(Firmante)
     fue_exitosa = models.BooleanField(default=True)
+
+    @property
+    def id_transaction(self):
+        return self.pk
 
     class Meta:
         ordering = ('request_datetime',)

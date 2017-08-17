@@ -11,8 +11,8 @@ from corebase.rsa import encrypt, get_hash_sum
 import requests
 from .xmlfile import XMLFILE, HASHXML
 from corebase.test.environment import *
-from signer.test.odffile import ODFFILE, HASHODF
-from signer.test.docxfile import DOCXFILE, HASHDOCX
+from signer.tests.odffile import ODFFILE, HASHODF
+from signer.tests.docxfile import DOCXFILE, HASHDOCX
 
 
 def test_xml_signer(identificacion, url=LISTEN_URL):

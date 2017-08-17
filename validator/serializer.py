@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from corebase.serializer import InstitutionBaseSerializer
-
+import logging
 import warnings
 from validator.models import ValidateCertificateDataRequest,\
     ValidateCertificateRequest, ValidateDocumentRequest,\
@@ -28,6 +28,9 @@ from validator.models import ValidatePersonDocumentDataRequest, ValidatePersonDo
     ValidatePersonCertificateDataRequest, ValidatePersonCertificateRequest
 from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDA_DOCUMENTO
+
+
+logger = logging.getLogger('dfva')
 
 
 class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -53,17 +56,18 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
 
             data = client.validar_certificado_autenticacion(
                 self.requestdata['document'])
-
+            data['code'] = self.cert_request.code
         else:
             warnings.warn(
                 _("Validate certificate BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_CERTIFICATE_ERROR
+            data['code'] = 'N/D'
 
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
-        self.adr.code = self.cert_request.code
-        self.adr.codigo_de_error = data['codigo_error']
+        self.adr.code = data['code']
+        self.adr.status = data['codigo_error']
         if 'texto_codigo_error' in data:
             self.adr.status_text = data['texto_codigo_error']
         else:
@@ -73,12 +77,9 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
 
         if data['exitosa']:
             self.adr.identification = data['certificado']['identificacion']
-            self.adr.status = 1
             self.adr.nombre_completo = data['certificado']['nombre']
             self.adr.inicio_vigencia = data['certificado']['inicio_vigencia']
             self.adr.fin_vigencia = data['certificado']['fin_vigencia']
-        else:
-            self.adr.status = 2
 
     def save(self, **kwargs):
         odata = {}
@@ -121,8 +122,8 @@ class ValidateCertificateRequest_Response_Serializer(serializers.ModelSerializer
     class Meta:
         model = ValidateCertificateDataRequest
         fields = ('identification', 'request_datetime',
-                  'code', 'status',
-                  'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
+                  'code', 'status', 'id_transaction',
+                  'status_text', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
                   'fue_exitosa')
 
 
@@ -244,7 +245,7 @@ class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSeria
     class Meta:
         model = ValidateDocumentDataRequest
         fields = ('request_datetime',
-                  'code', 'status',
+                  'code', 'status', 'status_text',
                   'advertencias', 'errores', 'firmantes',
                   'fue_exitosa')
 
