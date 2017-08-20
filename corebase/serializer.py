@@ -162,7 +162,11 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
 
     def validate_digest(self):
         super(PersonBaseSerializer, self).validate_digest()
-        plain_text = self._get_decrypt_key()
+        try:
+            plain_text = self._get_decrypt_key()
+        except:
+            self._errors['data'] = [_('Sign, wrong encryption')]
+            return
         if not validate_sign_data(self.data['public_certificate'], plain_text, self.data['data']):
             self._errors['data_hash'] = [
                 _('Sign key check fail,  are you signing with your private key pair?')]
@@ -182,13 +186,16 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
             warnings.warn(
                 _("Certificate BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_CERTIFICATE_ERROR
+            self._errors['public_certificate'] = [
+                _("Wrong certificate or communication error")]
 
         if data['codigo_error'] != 1 or not data['exitosa']:
             self._errors['public_certificate'] = [_('Invalid certificate')]
 
         if self.check_subject():
-            key = self._get_decrypt_key()
+
             try:
+                key = self._get_decrypt_key()
                 self.requestdata = decrypt_person(key,
                                                   self.data['data'])
                 self.check_internal_data(self.requestdata)
@@ -227,6 +234,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_institution(self):
         self.institution = Institution.objects.first()
+        # Fixme: check person in self.data first
         self.person = Person.objects.get(
             identification=self.data['person'])
 

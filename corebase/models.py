@@ -17,6 +17,8 @@ ALGORITHM = (
     ('sha512', 'sha512')
 )
 
+SUPPORTED_DOC_FORMAT = ['xml', 'odf', 'msoffice']
+
 
 class Institution(models.Model, PEMpresentation):
     user = models.ForeignKey(User)

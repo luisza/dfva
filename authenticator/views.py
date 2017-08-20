@@ -119,5 +119,6 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
             'request_datetime': timezone.now(),
             'sign_document': None,
             'expiration_datetime': None,
-            'received_notification': False
+            'received_notification': False,
+            'error_info': serializer._errors
         })

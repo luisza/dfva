@@ -24,7 +24,7 @@ from Crypto.PublicKey import RSA
 def pem_to_base64(certificate):
     return certificate.replace("-----BEGIN CERTIFICATE-----\n", '').replace(
         '\n-----END CERTIFICATE-----', ''
-    )
+    ).replace('\n', '')
 
 
 def get_digest(digest_name):
