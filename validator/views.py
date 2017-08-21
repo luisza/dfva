@@ -127,6 +127,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
+        self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
     @list_route(methods=['post'])
@@ -158,7 +159,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.serializer_class = ValidatePersonDocument_Request_Serializer
         self.queryset = ValidatePersonDocumentRequest.objects.all()
         self.response_class = ValidatePersonDocumentRequest_Response_Serializer
-
+        self.DEFAULT_ERROR = ERRORES_VALIDA_DOCUMENTO
         return self._create(request, *args, **kwargs)
 
 

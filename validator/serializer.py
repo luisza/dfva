@@ -271,7 +271,6 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDoc
 
 class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, ValidateCertificate_RequestSerializer):
     check_internal_fields = ['person',
-                             'notification_url',
                              'document',
                              'request_datetime']
 
@@ -310,7 +309,7 @@ class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSeri
         model = ValidatePersonCertificateDataRequest
         fields = ('identification', 'request_datetime',
                   'code', 'status', 'status_text',
-                  'codigo_de_error', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
+                  'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
                   'fue_exitosa')
 
 

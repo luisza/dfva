@@ -100,7 +100,6 @@ class ValidatePersonCertificateDataRequest(models.Model):
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
-    codigo_de_error = models.IntegerField()
     fue_exitosa = models.BooleanField(default=True)
     nombre_completo = models.CharField(max_length=250, null=True)
     inicio_vigencia = models.DateTimeField(null=True)

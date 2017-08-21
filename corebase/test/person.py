@@ -21,11 +21,11 @@ class HTTPClient():
     def __init__(self, apiclient):
         self.apiclient = apiclient
 
-    def post(self, url, json={}, headers={}):
-        return self.apiclient.post(url, json,  format='json')
+    def post(self, url, json={}, headers={}, format='json'):
+        return self.apiclient.post(url, json,  format=format)
 
-    def get(self, url, json={}, headers={}):
-        return self.apiclient.get(url, json,  format='json')
+    def get(self, url, json={}, headers={}, format='json'):
+        return self.apiclient.get(url, json,  format=format)
 
 
 class BasePersonTest(TestCase):
