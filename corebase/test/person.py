@@ -50,7 +50,7 @@ class BasePersonTest(TestCase):
         self.client = PersonClient(settings=self.settings,
                                    request_client=self.request_client)
 
-        self.person = self.client.get_info()[0]['identification']
+        self.person = self.client.get_identification()
         self.person_obj, _ = Person.objects.get_or_create(
             user=self.user,
             identification=self.person)

@@ -6,7 +6,7 @@ Created on 16 ago. 2017
 
 from django.utils import timezone
 from authenticator.tests import WRONG_CERTIFICATE
-from corebase.test.institutio_utils import create_institution, create_url
+from corebase.test.institutio_utils import create_institution
 from corebase.test.person import BasePersonTest
 
 
