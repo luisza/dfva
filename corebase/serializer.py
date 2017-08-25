@@ -14,6 +14,9 @@ from django.utils import timezone
 from pyfva.clientes.validador import ClienteValidador
 import warnings
 from django.utils.translation import ugettext_lazy as _
+import logging
+
+logger = logging.getLogger('dfva')
 
 
 class CoreBaseBaseSerializer(object):
@@ -61,10 +64,12 @@ class CoreBaseBaseSerializer(object):
             try:
                 self.requestdata = decrypt(self._get_decrypt_key(),
                                            self.data['data'])
+                logger.debug("Data: %r" % (self.requestdata,))
                 self.check_internal_data(self.requestdata)
             except Exception as e:
                 self._errors['data'] = [
                     _('Data was not decrypted well %r') % (e,)]
+                logger.error('Data was not decrypted well %r' % (e,))
                 return False
 
     def is_valid(self, raise_exception=False):
@@ -112,7 +117,8 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
             self.institution = Institution.objects.filter(
                 code=self.data['institution']).first()
         except:
-            # Fixme: log this exception uuid send exception if not uuid
+            logger.error("Get institution: Institution not found %r" %
+                         (self.data['institution'] if 'institution' in self.data else "No institution in data", ))
             self._errors['institution'] = [
                 _('Institution not found, certificate does not match')]
             self.institution = None

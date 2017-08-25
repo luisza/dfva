@@ -28,6 +28,9 @@ from corebase.models import PersonLogin
 from corebase.serializer import PersonLoginSerializer,\
     PersonLoginResponseSerializer
 from pyfva.constants import get_text_representation
+import logging
+
+logger = logging.getLogger('dfva')
 
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
@@ -80,8 +83,11 @@ class ViewSetBase:
             serializer.save()
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
+            logger.debug('Data create Response: %r' % (serializer.adr,))
             # adr.is_valid(raise_exception=False)
+            logger.info('Response create ok')
             return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
+        logger.info('Response create ERROR')
         return self.get_error_response(serializer)
 
     def show(self, request, *args, **kwargs):
@@ -89,19 +95,25 @@ class ViewSetBase:
         if serializer.check_code(kwargs['pk'], raise_exception=False):
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
+            logger.debug('Data create Response: %r' % (serializer.adr,))
+            logger.info('Response show ok')
             # adr.is_valid(raise_exception=False)
             return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
 
+        logger.info('Response show ERROR')
         return self.get_error_response(serializer)
 
     def get_error_response(self, serializer):
-        return Response({"error_info": serializer._errors,
-                         'code': 'N/D',
-                         'status': 2,
-                         'status_text': get_text_representation(
-                             self.DEFAULT_ERROR,  2),
-                         'id_transaction': 0
-                         })
+        dev = {"error_info": serializer._errors,
+               'code': 'N/D',
+               'status': 2,
+               'status_text': get_text_representation(
+                   self.DEFAULT_ERROR,  2),
+               'id_transaction': 0
+               }
+        logger.debug('Base Error %r' %
+                     (dev, ))
+        return Response(dev)
 
 
 class PersonLoginView(mixins.CreateModelMixin,
@@ -116,12 +128,17 @@ class PersonLoginView(mixins.CreateModelMixin,
         if serializer.is_valid(raise_exception=False):
             data = serializer.save()
             headers = self.get_success_headers(data.data)
+            logger.debug('Data login Response: %r' % (data.data,))
+            logger.info('Response login ok')
             return Response(data.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        return Response({
+        dev = {
             'identification': 'N/D',
             'token': None,
             'expiration_datetime_token': None,
             'last_error_code': 3,
             'error_text': repr(serializer._errors)
-        }, status=status.HTTP_201_CREATED, headers=headers)
+        }
+        logger.info('Response login ERROR')
+        logger.debug('Data login Response error: %r' % (dev,))
+        return Response(dev, status=status.HTTP_201_CREATED, headers=headers)

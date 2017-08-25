@@ -15,6 +15,8 @@ from authenticator.serializer import Authenticate_Person_Response_Serializer,\
     Authenticate_Person_Request_Serializer
 import pyfva
 from pyfva.constants import get_text_representation
+from corebase.logging import get_ip, get_log_institution_information,\
+    get_log_person_information
 
 
 logger = logging.getLogger('dfva')
@@ -54,14 +56,24 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
     @list_route(methods=['post'])
     def institution(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Authentication: Create Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Authentication: Create Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
 
     @detail_route(methods=['post'])
     def institution_show(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Authentication: Show Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Authentication: Show Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
-        return Response({
+        dev = {
             'code': 'N/D',
             'status': 2,
             'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
@@ -72,7 +84,10 @@ class AuthenticateRequestViewSet(ViewSetBase,
             'expiration_datetime': None,
             'received_notification': False,
             'error_info': serializer._errors
-        })
+        }
+        logger.debug('Authentication: Error Institution %r' %
+                     (dev, ))
+        return Response(dev)
 
 
 class AuthenticatePersonRequestViewSet(ViewSetBase,
@@ -104,14 +119,24 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
 
     @list_route(methods=['post'])
     def person(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Authentication: Create Person %s %r' %
+                     (ip, request.data))
+        logger.info('Authentication: Create Person %s %s %s %s' %
+                    get_log_person_information(request))
         return self._create(request, *args, **kwargs)
 
     @detail_route(methods=['post'])
     def person_show(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Authentication: Show Person %s %r' %
+                     (ip, request.data))
+        logger.info('Authentication: Show Person %s %s %s %s' %
+                    get_log_person_information(request))
         return self.show(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
-        return Response({
+        dev = {
             'code': 'N/D',
             'status': 2,
             'identification': 'N/D',
@@ -121,4 +146,8 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
             'expiration_datetime': None,
             'received_notification': False,
             'error_info': serializer._errors
-        })
+        }
+        logger.debug('Authentication: Error Person %r' %
+                     (dev, ))
+
+        return Response(dev)
