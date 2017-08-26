@@ -189,8 +189,7 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
                 pem_to_base64(self.data['public_certificate']))
 
         else:
-            warnings.warn(
-                _("Certificate BCCR not available"), RuntimeWarning)
+            logger.warning("Certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR
             self._errors['public_certificate'] = [
                 _("Wrong certificate or communication error")]
@@ -255,8 +254,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
                 pem_to_base64(self.data['public_certificate']))
 
         else:
-            warnings.warn(
-                _("Login certificate BCCR not available"), RuntimeWarning)
+            logger.warning("Login certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR
 
         if data['codigo_error'] != 1 or not data['exitosa']:

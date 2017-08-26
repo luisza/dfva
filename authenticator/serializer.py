@@ -11,9 +11,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
-from django.utils.translation import ugettext as _
 from authenticator.models import AuthenticateDataRequest, AuthenticateRequest
-import warnings
 from pyfva.clientes.autenticador import ClienteAutenticador
 from corebase.serializer import InstitutionCheckBaseBaseSerializer
 
@@ -49,7 +47,7 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 self.requestdata['identification'])
 
         else:
-            warnings.warn(_("Auth BCCR not available"), RuntimeWarning)
+            logger.warning("Auth BCCR not available")
             data = authclient.DEFAULT_ERROR
 
         logger.debug("Authentication BCCR: %r" % (data, ))

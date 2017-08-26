@@ -172,3 +172,52 @@ RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
 UCR_FVA_SERVER_URL = 'http://localhost:8000'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'formatter': 'verbose',
+        },
+        'file_info': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/info.log'),
+            'formatter': 'simple',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+
+    },
+    'loggers': {
+        #         'dfva': {
+        #             'handlers': ['file'],
+        #             'level': 'DEBUG',
+        #             'propagate': True,
+        #         },
+        'pyfva':  {
+            'handlers': ['file_info'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'dfva': {
+            'handlers': ['console', 'file_info'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(module)s %(message)s'
+        },
+    },
+}

@@ -9,7 +9,7 @@ from authenticator.models import AuthenticateDataRequest,\
     AuthenticatePersonDataRequest
 from signer.models import SignDataRequest, SignPersonDataRequest
 from receptor.notify import send_notification
-logger = logging.getLogger('ucr_fva')
+logger = logging.getLogger('dfva')
 
 
 def reciba_notificacion(data):

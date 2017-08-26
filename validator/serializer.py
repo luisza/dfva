@@ -12,7 +12,6 @@ from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from corebase.serializer import InstitutionBaseSerializer
 import logging
-import warnings
 from validator.models import ValidateCertificateDataRequest,\
     ValidateCertificateRequest, ValidateDocumentRequest,\
     ValidateDocumentDataRequest, Advertencia, ErrorEncontrado, Firmante
@@ -58,8 +57,7 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
                 self.requestdata['document'])
             data['code'] = self.cert_request.code
         else:
-            warnings.warn(
-                _("Validate certificate BCCR not available"), RuntimeWarning)
+            logger.warning("Validate certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR
             data['code'] = 'N/D'
 
@@ -153,8 +151,7 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
                 self.requestdata['document'])
 
         else:
-            warnings.warn(
-                _("Validate document BCCR not available"), RuntimeWarning)
+            logger.warning("Validate document BCCR not available")
             data = client.DEFAULT_DOCUMENT_ERROR
 
         logger.debug("Validator BCCR:  document %r" % (data, ))
@@ -350,7 +347,7 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
             data = signclient.suscriptor_conectado(
                 self.requestdata['identification'])
         else:
-            warnings.warn("Sign/Validate:  BCCR No disponible", RuntimeWarning)
+            logger.warning("Sign/Validate:  BCCR No disponible")
             data = False
         logger.debug('Subscriptor %r' % (data,))
         return data

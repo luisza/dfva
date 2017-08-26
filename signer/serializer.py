@@ -14,7 +14,6 @@ from rest_framework import serializers
 from corebase.serializer import InstitutionCheckBaseBaseSerializer
 from corebase.serializer import PersonCheckBaseBaseSerializer
 from django.utils.translation import ugettext_lazy as _
-import warnings
 from signer.models import SignDataRequest, SignRequest
 from signer.models import SignPersonDataRequest, SignPersonRequest
 from pyfva.clientes.firmador import ClienteFirmador
@@ -49,7 +48,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 resumen=self.requestdata['resumen'])
 
         else:
-            warnings.warn(_("Sign BCCR not available"), RuntimeWarning)
+            logger.warning("Sign BCCR not available")
             data = signclient.DEFAULT_ERROR
 
         logger.debug("Sign BCCR: %r" % (data, ))
