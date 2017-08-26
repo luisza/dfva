@@ -22,6 +22,9 @@ from corebase.serializer import InstitutionCheckBaseBaseSerializer
 from authenticator.models import AuthenticatePersonDataRequest, AuthenticatePersonRequest
 from corebase.serializer import PersonCheckBaseBaseSerializer
 from pyfva.constants import get_text_representation, ERRORES_AL_SOLICITAR_FIRMA
+import logging
+
+logger = logging.getLogger('dfva')
 
 
 class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
@@ -49,6 +52,7 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
             warnings.warn(_("Auth BCCR not available"), RuntimeWarning)
             data = authclient.DEFAULT_ERROR
 
+        logger.debug("Authentication BCCR: %r" % (data, ))
         self.save_subject()
         self.adr.institution = self.institution
         self.adr.request_datetime = parse_datetime(

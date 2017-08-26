@@ -18,6 +18,12 @@ from validator.serializer import ValidatePersonCertificate_Request_Serializer,\
     ValidatePersonDocumentRequest_Response_Serializer,\
     SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
 from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDA_DOCUMENTO
+import logging
+from corebase.logging import get_ip, get_log_institution_information,\
+    get_log_person_information
+
+
+logger = logging.getLogger('dfva')
 
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
@@ -55,6 +61,11 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
+        ip = get_ip(request)
+        logger.debug('Validator: Certificate Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Validator: Certificate Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
@@ -87,6 +98,11 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
 
         """
 
+        ip = get_ip(request)
+        logger.debug('Validator: Document Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Validator: Document Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         self.serializer_class = ValidateDocument_Request_Serializer
         self.queryset = ValidateDocumentRequest.objects.all()
         self.response_class = ValidateDocumentRequest_Response_Serializer
@@ -127,6 +143,11 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         fin_vigencia deben ignorase o son nulos.
 
         """
+        ip = get_ip(request)
+        logger.debug('Validator: Certificate Person %s %r' %
+                     (ip, request.data))
+        logger.info('Validator: Certificate Person %s %s %s %s' %
+                    get_log_person_information(request))
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
@@ -156,6 +177,12 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
         """
+
+        ip = get_ip(request)
+        logger.debug('Validator: Document Person %s %r' %
+                     (ip, request.data))
+        logger.info('Validator: Document Person %s %s %s %s' %
+                    get_log_person_information(request))
         self.serializer_class = ValidatePersonDocument_Request_Serializer
         self.queryset = ValidatePersonDocumentRequest.objects.all()
         self.response_class = ValidatePersonDocumentRequest_Response_Serializer
@@ -200,6 +227,11 @@ class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
         **Retorna:** 
             **is_connected:** True si la persona está conectada, false si no lo está
         """
+        ip = get_ip(request)
+        logger.debug('Connected:  institution %s %r' %
+                     (ip, request.data))
+        logger.info('Connected:  institution %s %s %s %s' %
+                    get_log_institution_information(request))
         return self._create(request,  *args, **kwargs)
 
     @list_route(methods=['post'])
@@ -217,5 +249,10 @@ class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
         **Retorna:** 
             **is_connected:** True si la persona está conectada, false si no lo está
         """
+        ip = get_ip(request)
+        logger.debug('Connected:  person %s %r' %
+                     (ip, request.data))
+        logger.info('Connected:  person %s %s %s %s' %
+                    get_log_person_information(request))
         self.serializer_class = SuscriptorPerson_Serializer
         return self._create(request,  *args, **kwargs)

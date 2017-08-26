@@ -13,6 +13,11 @@ from signer.models import SignPersonRequest
 from signer.serializer import Sign_Person_Request_Serializer, Sign_Person_Response_Serializer
 from pyfva.constants import get_text_representation
 import pyfva
+import logging
+from corebase.logging import get_ip, get_log_institution_information,\
+    get_log_person_information
+
+logger = logging.getLogger('dfva')
 
 
 class SignRequestViewSet(ViewSetBase,
@@ -52,6 +57,11 @@ class SignRequestViewSet(ViewSetBase,
 
     @list_route(methods=['post'])
     def institution(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Sign: Create Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Sign: Create Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
 
     @detail_route(methods=['post'])
@@ -79,10 +89,15 @@ class SignRequestViewSet(ViewSetBase,
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
 
         """
+        ip = get_ip(request)
+        logger.debug('Sign: Show Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Sign: Show Institution %s %s %s %s' %
+                    get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
-        return Response({
+        dev = {
             'code': 'N/D',
             'status': 2,
             'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
@@ -93,7 +108,10 @@ class SignRequestViewSet(ViewSetBase,
             'expiration_datetime': None,
             'received_notification': False,
             'error_info': serializer._errors
-        })
+        }
+        logger.debug('Sign: ERROR Institution %s %r' %
+                     (dev,))
+        return Response(dev)
 
 
 class SignPersonRequestViewSet(ViewSetBase,
@@ -133,6 +151,11 @@ class SignPersonRequestViewSet(ViewSetBase,
 
     @list_route(methods=['post'])
     def person(self, request, *args, **kwargs):
+        ip = get_ip(request)
+        logger.debug('Sign: Create Person %s %r' %
+                     (ip, request.data))
+        logger.info('Sign: Create Person %s %s %s %s' %
+                    get_log_person_information(request))
         return self._create(request, *args, **kwargs)
 
     @detail_route(methods=['post'])
@@ -159,10 +182,15 @@ class SignPersonRequestViewSet(ViewSetBase,
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
 
         """
+        ip = get_ip(request)
+        logger.debug('Sign: Show Person %s %r' %
+                     (ip, request.data))
+        logger.info('Sign: Show Person %s %s %s %s' %
+                    get_log_person_information(request))
         return self.show(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
-        return Response({
+        dev = {
             'code': 'N/D',
             'status': 2,
             'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
@@ -173,4 +201,7 @@ class SignPersonRequestViewSet(ViewSetBase,
             'expiration_datetime': None,
             'received_notification': False,
             'error_info': serializer._errors
-        })
+        }
+        logger.debug('Sign: ERROR person %s %r' %
+                     (dev,))
+        return Response(dev)

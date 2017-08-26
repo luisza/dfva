@@ -85,9 +85,11 @@ class ViewSetBase:
             adr = self.response_class(serializer.adr)
             logger.debug('Data create Response: %r' % (serializer.adr,))
             # adr.is_valid(raise_exception=False)
-            logger.info('Response create ok')
+            logger.info('Response create ok %s' %
+                        (serializer.data['data_hash']))
             return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
-        logger.info('Response create ERROR')
+        logger.info('Response create ERROR %s' %
+                    (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
         return self.get_error_response(serializer)
 
     def show(self, request, *args, **kwargs):
@@ -96,11 +98,13 @@ class ViewSetBase:
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
             logger.debug('Data create Response: %r' % (serializer.adr,))
-            logger.info('Response show ok')
+            logger.info('Response show ok %s' %
+                        (serializer.data['data_hash'], ))
             # adr.is_valid(raise_exception=False)
             return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        logger.info('Response show ERROR')
+        logger.info('Response show ERROR %s' %
+                    (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
         return self.get_error_response(serializer)
 
     def get_error_response(self, serializer):
@@ -111,7 +115,7 @@ class ViewSetBase:
                    self.DEFAULT_ERROR,  2),
                'id_transaction': 0
                }
-        logger.debug('Base Error %r' %
+        logger.debug('ViewSetBase Error %r' %
                      (dev, ))
         return Response(dev)
 
@@ -139,6 +143,6 @@ class PersonLoginView(mixins.CreateModelMixin,
             'last_error_code': 3,
             'error_text': repr(serializer._errors)
         }
-        logger.info('Response login ERROR')
+        logger.info('Response login ERROR %r' % (serializer._errors, ))
         logger.debug('Data login Response error: %r' % (dev,))
         return Response(dev, status=status.HTTP_201_CREATED, headers=headers)

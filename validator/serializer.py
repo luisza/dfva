@@ -63,6 +63,7 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
             data = client.DEFAULT_CERTIFICATE_ERROR
             data['code'] = 'N/D'
 
+        logger.debug("Validator BCCR: certificate %r" % (data, ))
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
@@ -156,6 +157,7 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
                 _("Validate document BCCR not available"), RuntimeWarning)
             data = client.DEFAULT_DOCUMENT_ERROR
 
+        logger.debug("Validator BCCR:  document %r" % (data, ))
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
@@ -350,6 +352,7 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
         else:
             warnings.warn("Sign/Validate:  BCCR No disponible", RuntimeWarning)
             data = False
+        logger.debug('Subscriptor %r' % (data,))
         return data
 
     def save(self, **kwargs):

@@ -20,6 +20,10 @@ from signer.models import SignPersonDataRequest, SignPersonRequest
 from pyfva.clientes.firmador import ClienteFirmador
 from corebase.models import SUPPORTED_DOC_FORMAT
 
+import logging
+
+logger = logging.getLogger('dfva')
+
 
 class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -48,6 +52,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
             warnings.warn(_("Sign BCCR not available"), RuntimeWarning)
             data = signclient.DEFAULT_ERROR
 
+        logger.debug("Sign BCCR: %r" % (data, ))
         self.save_subject()
         self.adr.identification = self.requestdata['identification']
         self.adr.request_datetime = parse_datetime(
