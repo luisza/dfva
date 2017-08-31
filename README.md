@@ -20,5 +20,6 @@ Proyectos complementarios
 ==============================
 
 * [pyfva](https://github.com/solvo/pyfva) : Interactura con el FVA del BCCR, útil en instituciones.
-* [dfva_client](https://github.com/luisza/dfva_client/) : Cliente en python para interactuar con DFVA con soporte a PKCS11.
+* [dfva_client](https://github.com/luisza/dfva_client/) : Cliente en python para interactuar con DFVA con soporte a PKCS11 para personas.
+* [dfva_java](https://github.com/luisza/dfva_java/) : Cliente en java para interactuar con DFVA para instituciones.
 
