@@ -12,7 +12,6 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from pyfva.clientes.validador import ClienteValidador
-import warnings
 from django.utils.translation import ugettext_lazy as _
 import logging
 

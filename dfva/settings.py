@@ -207,7 +207,7 @@ LOGGING = {
             'propagate': True,
         },
         'dfva': {
-            'handlers': ['console', 'file_info'],
+            'handlers': ['file_info'],  # 'console',
             'level': 'INFO',
             'propagate': True,
         },
