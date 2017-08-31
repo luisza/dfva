@@ -109,8 +109,8 @@ class SignRequestViewSet(ViewSetBase,
             'received_notification': False,
             'error_info': serializer._errors
         }
-        logger.debug('Sign: ERROR Institution %s %r' %
-                     (dev,))
+        logger.debug('Sign: ERROR Institution %r' %
+                     (dev, ))
         return Response(dev)
 
 
@@ -202,6 +202,6 @@ class SignPersonRequestViewSet(ViewSetBase,
             'received_notification': False,
             'error_info': serializer._errors
         }
-        logger.debug('Sign: ERROR person %s %r' %
+        logger.debug('Sign: ERROR person %r' %
                      (dev,))
         return Response(dev)
