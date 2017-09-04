@@ -48,35 +48,35 @@ class BaseInstitutionTest(TestCase):
         return params
 
     def ok_test(self, response):
-        self.assertNotEqual(response.data['code'], 'N/D')
-        self.assertEqual(response.data['status'], 1)
+        self.assertNotEqual(response['code'], 'N/D')
+        self.assertEqual(response['status'], 1)
 
     def check_wrong_url_test(self, response):
-        self.assertEqual(response.data['code'], 'N/D')
-        self.assertTrue('notification_url' in response.data['error_info'])
-        self.assertEqual(response.data['status'], 2)
-        self.assertEqual(response.data['id_transaction'], 0)
+        self.assertEqual(response['code'], 'N/D')
+        self.assertTrue('notification_url' in response['error_info'])
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)
 
     def check_wrong_institution_test(self, response):
-        self.assertEqual(response.data['code'], 'N/D')
-        self.assertTrue('institution' in response.data['error_info'])
-        self.assertEqual(response.data['status'], 2)
-        self.assertEqual(response.data['id_transaction'], 0)
+        self.assertEqual(response['code'], 'N/D')
+        self.assertTrue('institution' in response['error_info'])
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)
 
     def check_wrong_sign_test(self, response):
-        self.assertEqual(response.data['code'], 'N/D')
-        self.assertTrue('data' in response.data['error_info'])
-        self.assertEqual(response.data['status'], 2)
-        self.assertEqual(response.data['id_transaction'], 0)
+        self.assertEqual(response['code'], 'N/D')
+        self.assertTrue('data' in response['error_info'])
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)
 
     def wrong_hashsum_test(self, response):
-        self.assertEqual(response.data['code'], 'N/D')
-        self.assertTrue('data_hash' in response.data['error_info'])
-        self.assertEqual(response.data['status'], 2)
-        self.assertEqual(response.data['id_transaction'], 0)
+        self.assertEqual(response['code'], 'N/D')
+        self.assertTrue('data_hash' in response['error_info'])
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)
 
     def wrong_certificate_test(self, response):
-        self.assertEqual(response.data['code'], 'N/D')
-        self.assertTrue('public_certificate' in response.data['error_info'])
-        self.assertEqual(response.data['status'], 2)
-        self.assertEqual(response.data['id_transaction'], 0)
+        self.assertEqual(response['code'], 'N/D')
+        self.assertTrue('public_certificate' in response['error_info'])
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)

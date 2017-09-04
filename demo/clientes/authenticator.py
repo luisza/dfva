@@ -5,7 +5,7 @@ Created on 26 jul. 2017
 '''
 from django.utils import timezone
 import json
-from corebase.rsa import encrypt, get_hash_sum
+from corebase.rsa import encrypt, get_hash_sum, decrypt
 import requests
 from django.conf import settings
 
@@ -26,7 +26,6 @@ class AuthenticatorClient(object):
         }
         algorithm = 'sha512'
         str_data = json.dumps(data)
-        # print(str_data)
         edata = encrypt(self.institution.server_public_key, str_data)
         hashsum = get_hash_sum(edata,  algorithm)
         edata = edata.decode()
@@ -40,7 +39,7 @@ class AuthenticatorClient(object):
         result = requests.post(
             settings.UCR_FVA_SERVER_URL + '/authenticate/institution/', json=params)
 
-        # print(params)
         data = result.json()
+        data = decrypt(self.institution.private_key, data['data'], as_str=True)
 
         return data

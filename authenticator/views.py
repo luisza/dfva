@@ -87,7 +87,8 @@ class AuthenticateRequestViewSet(ViewSetBase,
         }
         logger.debug('Authentication: Error Institution %r' %
                      (dev, ))
-        return Response(dev)
+
+        return Response(self.get_encrypted_response(dev, serializer))
 
 
 class AuthenticatePersonRequestViewSet(ViewSetBase,
@@ -150,4 +151,4 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
         logger.debug('Authentication: Error Person %r' %
                      (dev, ))
 
-        return Response(dev)
+        return Response(self.get_encrypted_response(dev, serializer))

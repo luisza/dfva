@@ -11,6 +11,8 @@ from django.utils import timezone
 from authenticator.models import AuthenticateDataRequest
 from authenticator.tests import WRONG_CERTIFICATE
 from corebase.test.institution import BaseInstitutionTest
+from corebase.rsa import decrypt
+import json
 
 
 class AuthenticatorInstitutionCase(BaseInstitutionTest):
@@ -33,13 +35,23 @@ class AuthenticatorInstitutionCase(BaseInstitutionTest):
 
         response = self.client.post('/authenticate/institution/',
                                     params, format='json')
+        try:
+            response = decrypt(self.institution.private_key,
+                               response.data['data'])
+        except Exception as e:
+            #            print(e)
+            try:
+                response = json.loads(response.json()['data'])
+            except:
+                pass
+
         return response
 
     def test_authenticate(self):
         response = self.authenticate()
         self.ok_test(response)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
-            code=response.data['code']).first())
+            code=response['code']).first())
 
     def test_algorithms(self):
 
@@ -65,6 +77,10 @@ class AuthenticatorInstitutionCase(BaseInstitutionTest):
         response = self.authenticate(institution=str(institution2.code),
                                      url=url,
                                      public_certificate=institution2.public_certificate)
+
+        response = decrypt(institution2.private_key,
+                           response.data['data'])
+
         self.check_wrong_sign_test(response)
 
     def test_wrong_hashsum(self):

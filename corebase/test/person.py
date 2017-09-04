@@ -8,8 +8,9 @@ from asyncio.test_utils import TestCase
 from corebase.test.institutio_utils import create_institution, create_url
 from rest_framework.test import APIClient
 import json
-from corebase.rsa import get_hash_sum, encrypt
+from corebase.rsa import get_hash_sum, encrypt, decrypt as decrypt_base
 from client_fva.person import PersonClient
+from client_fva.rsa import decrypt
 from client_fva import Settings
 from corebase.models import Person
 from base64 import b64encode
@@ -51,10 +52,17 @@ class BasePersonTest(TestCase):
                                    request_client=self.request_client)
 
         self.person = self.client.get_identification()
+        auth_cert = self.client.get_certificates()['authentication']
         self.person_obj, _ = Person.objects.get_or_create(
             user=self.user,
             identification=self.person)
+        self.person_obj.authenticate_certificate = auth_cert
         self.client.register()
+
+    def _decrypt(self, str_data):
+        etype = 'authentication'
+        keys = self.client.get_keys()
+        return decrypt(keys[etype]['priv_key'], str_data)
 
     def tearDown(self):
         self.client.unregister()
@@ -93,6 +101,9 @@ class BasePersonTest(TestCase):
     def dummy_encrypt(self, data, public_key):
         return encrypt(public_key, data)
 
+    def dummy_decrypt(self, private_key, data):
+        return decrypt_base(private_key, data)
+
     def own_authenticate(self, **kwargs):
         identification = kwargs.get('identification', self.person)
         person = kwargs.get('person', self.person)
@@ -108,7 +119,13 @@ class BasePersonTest(TestCase):
             self.settings.FVA_SERVER_URL +
             self.settings.AUTHENTICATE_PERSON, json=params)
 
-        return result.json()
+        data = result.json()
+        data = self._decrypt(data['data'])
+        try:
+            data = self._decrypt(data['data'])
+        except Exception as e:
+            pass
+        return data
 
     def own_sign(self, **kwargs):
 
@@ -143,7 +160,12 @@ class BasePersonTest(TestCase):
             self.settings.FVA_SERVER_URL + self.settings.SIGN_PERSON,
             json=params, headers=headers)
 
-        return result.json()
+        data = result.json()
+        try:
+            data = self._decrypt(data['data'])
+        except:
+            pass
+        return data
 
     def ok_test(self, response):
         self.assertNotEqual(response['code'], 'N/D')

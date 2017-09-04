@@ -50,6 +50,7 @@ class AuthenticatorPersonCase(BasePersonTest):
             edata=edata_fun,
             public_certificate=institution2.public_certificate
         )
+
         self.check_wrong_sign_test(response)
 #
 

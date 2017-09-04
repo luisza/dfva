@@ -290,6 +290,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
                                       )
         person.token = rsa_encrypt(
             self.data['public_certificate'], message=random_token).decode()
+        person.authenticate_certificate = self.data['public_certificate']
         person.expiration_datetime_token = timezone.now() + timezone.timedelta(minutes=25)
         person.last_error_code = 1
         person.save()

@@ -3,6 +3,8 @@ Created on 16 ago. 2017
 
 @author: luis
 '''
+from corebase.rsa import decrypt
+import json
 '''
 Created on 15 ago. 2017
 
@@ -24,7 +26,8 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
     def setUp(self):
         super(CheckAuthenticatorInstitutionCase, self).setUp()
         response = self.authenticate()
-        self.data = response.data
+        self.data = response
+        # print(self.data)
 
     def authenticate(self, **kwargs):
 
@@ -45,16 +48,25 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
 
         response = self.client.post(request_url,
                                     params, format='json')
+        try:
+            response = decrypt(self.institution.private_key,
+                               response.data['data'])
+        except Exception as e:
+            try:
+                response = json.loads(response.json()['data'])
+            except:
+                pass
+
         return response
 
     def test_authenticate_check(self):
         response = self.authenticate()
         self.ok_test(response)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
-            code=response.data['code']).first())
+            code=response['code']).first())
 
         response = self.authenticate(
-            request_url=self.BASE_URL % (response.data['code'],))
+            request_url=self.BASE_URL % (response['code'],))
         self.ok_test(response)
 
     def test_algorithms(self):
@@ -63,7 +75,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
             response = self.authenticate(algorithm=algorithm)
             response = self.authenticate(
                 algorithm=algorithm,
-                request_url=self.BASE_URL % (response.data['code'],))
+                request_url=self.BASE_URL % (response['code'],))
             self.ok_test(response)
 
     def test_check_wrong_url(self):
@@ -92,6 +104,8 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
                                      request_url=self.BASE_URL % (
                                          self.data['code'],)
                                      )
+        response = decrypt(institution2.private_key,
+                           response.data['data'])
         self.check_wrong_sign_test(response)
 
     def test_wrong_hashsum(self):

@@ -19,6 +19,7 @@ import io
 from Crypto.Hash import SHA512
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def pem_to_base64(certificate):
@@ -149,3 +150,34 @@ def validate_sign_data(public_certificate, key, cipher_text):
     pub_key = RSA.importKey(public_certificate)
     verifier = PKCS1_v1_5.new(pub_key)
     return verifier.verify(digest, enc_session_key)
+
+
+def get_reponse_institution_data_encrypted(data, institution, algorithm='sha512'):
+    sdata = json.dumps(data, cls=DjangoJSONEncoder)
+    if institution and institution.public_key:
+        edata = encrypt(institution.public_key, sdata)
+    else:
+        edata = sdata
+    dev = {
+        'data': edata,
+        'data_hash': get_hash_sum(sdata, algorithm),
+        'algorithm': algorithm
+
+    }
+    return dev
+
+
+def get_reponse_person_data_encrypted(data, public_certificate, algorithm='sha512'):
+    sdata = json.dumps(data, cls=DjangoJSONEncoder)
+
+    if public_certificate:
+        edata = encrypt(public_certificate, sdata)
+    else:
+        edata = sdata
+    dev = {
+        'data': edata,
+        'data_hash': get_hash_sum(sdata, algorithm),
+        'algorithm': algorithm
+
+    }
+    return dev

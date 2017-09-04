@@ -80,6 +80,7 @@ class Person(models.Model):
     cipher_token = models.TextField(null=True, blank=True)
     expiration_datetime_token = models.DateTimeField(null=True, blank=True)
     last_error_code = models.SmallIntegerField(default=1, choices=ERROR_CODE)
+    authenticate_certificate = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.user.get_full_name() or self.identification

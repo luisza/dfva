@@ -29,6 +29,8 @@ from corebase.serializer import PersonLoginSerializer,\
     PersonLoginResponseSerializer
 from pyfva.constants import get_text_representation
 import logging
+from corebase.rsa import get_reponse_institution_data_encrypted,\
+    get_reponse_person_data_encrypted
 
 logger = logging.getLogger('dfva')
 
@@ -71,6 +73,22 @@ class InstitutionCRUD(UserCRUDView):
 
 
 class ViewSetBase:
+
+    def get_encrypted_response(self, data, serializer):
+        dev = {}
+        if "institution" in serializer.fields:
+            dev = get_reponse_institution_data_encrypted(
+                data, serializer.institution,
+                algorithm=serializer.data.get('algorithm', "sha512"))
+        else:  # person
+            dev = get_reponse_person_data_encrypted(
+                data,
+                serializer.person.authenticate_certificate if hasattr(
+                    serializer, 'person') else None,
+                algorithm=serializer.data.get('algorithm', "sha512"))
+
+        return dev
+
     def get_success_headers(self, data):
         try:
             return {'Location': data[api_settings.URL_FIELD_NAME]}
@@ -87,7 +105,8 @@ class ViewSetBase:
             # adr.is_valid(raise_exception=False)
             logger.info('Response create ok %s' %
                         (serializer.data['data_hash']))
-            return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
+
+            return Response(self.get_encrypted_response(adr.data, serializer), status=status.HTTP_201_CREATED, headers=headers)
         logger.info('Response create ERROR %s' %
                     (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
         return self.get_error_response(serializer)
@@ -101,7 +120,8 @@ class ViewSetBase:
             logger.info('Response show ok %s' %
                         (serializer.data['data_hash'], ))
             # adr.is_valid(raise_exception=False)
-            return Response(adr.data, status=status.HTTP_201_CREATED, headers=headers)
+            return Response(self.get_encrypted_response(adr.data, serializer),
+                            status=status.HTTP_201_CREATED, headers=headers)
 
         logger.info('Response show ERROR %s' %
                     (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
@@ -117,7 +137,7 @@ class ViewSetBase:
                }
         logger.debug('ViewSetBase Error %r' %
                      (dev, ))
-        return Response(dev)
+        return Response(self.get_encrypted_response(dev, serializer))
 
 
 class PersonLoginView(mixins.CreateModelMixin,
