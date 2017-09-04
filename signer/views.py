@@ -111,7 +111,7 @@ class SignRequestViewSet(ViewSetBase,
         }
         logger.debug('Sign: ERROR Institution %r' %
                      (dev, ))
-        return Response(dev)
+        return Response(self.get_encrypted_response(dev, serializer))
 
 
 class SignPersonRequestViewSet(ViewSetBase,
@@ -204,4 +204,4 @@ class SignPersonRequestViewSet(ViewSetBase,
         }
         logger.debug('Sign: ERROR person %r' %
                      (dev,))
-        return Response(dev)
+        return Response(self.get_encrypted_response(dev, serializer))

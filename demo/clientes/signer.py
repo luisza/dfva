@@ -5,7 +5,7 @@ Created on 27 jul. 2017
 '''
 from django.utils import timezone
 import json
-from corebase.rsa import encrypt, get_hash_sum
+from corebase.rsa import encrypt, get_hash_sum, decrypt
 import requests
 
 from django.conf import settings
@@ -51,5 +51,6 @@ class SignerClient(object):
 
         # print(params)
         data = result.json()
+        data = decrypt(self.institution.private_key, data['data'], as_str=True)
 
         return data

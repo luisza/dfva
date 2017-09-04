@@ -28,6 +28,7 @@ class SignPersonCase(BasePersonTest):
             resume,
             algorithm=algorithm,
             file_path=file_path, _format=_format, is_base64=is_base64)
+
         return response
 
     def test_sign_xml(self):

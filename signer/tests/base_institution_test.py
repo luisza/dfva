@@ -8,6 +8,8 @@ from corebase.test.institutio_utils import create_institution, create_url
 from signer.models import SignDataRequest
 from django.utils import timezone
 from authenticator.tests import WRONG_CERTIFICATE
+import json
+from corebase.rsa import decrypt
 
 
 class SignCase(BaseInstitutionTest):
@@ -37,6 +39,16 @@ class SignCase(BaseInstitutionTest):
 
         response = self.client.post('/sign/institution/',
                                     params, format='json')
+        try:
+            response = decrypt(self.institution.private_key,
+                               response.data['data'])
+        except Exception as e:
+            #            print(e)
+            try:
+                response = json.loads(response.json()['data'])
+            except:
+                pass
+
         return response
 
     def test_sign(self):
@@ -45,7 +57,7 @@ class SignCase(BaseInstitutionTest):
         response = self.sign()
         self.ok_test(response)
         self.assertIsNotNone(SignDataRequest.objects.filter(
-            code=response.data['code']).first())
+            code=response['code']).first())
 
     def test_algorithms(self):
         if self.DOCUMENT is None:
@@ -78,6 +90,8 @@ class SignCase(BaseInstitutionTest):
         response = self.sign(institution=str(institution2.code),
                              url=url,
                              public_certificate=institution2.public_certificate)
+        response = decrypt(institution2.private_key,
+                           response.data['data'])
         self.check_wrong_sign_test(response)
 
     def test_wrong_hashsum(self):
@@ -107,7 +121,7 @@ class CheckSignCase(BaseInstitutionTest):
             return
         super(CheckSignCase, self).setUp()
         response = self.sign()
-        self.data = response.data
+        self.data = response
 
     def sign(self, **kwargs):
         if self.DOCUMENT is None:
@@ -133,6 +147,15 @@ class CheckSignCase(BaseInstitutionTest):
 
         response = self.client.post('/sign/institution/',
                                     params, format='json')
+        try:
+            response = decrypt(self.institution.private_key,
+                               response.data['data'])
+        except Exception as e:
+            #            print(e)
+            try:
+                response = json.loads(response.json()['data'])
+            except:
+                pass
         return response
 
     def test_authenticate_check(self):
@@ -141,10 +164,10 @@ class CheckSignCase(BaseInstitutionTest):
         response = self.sign()
         self.ok_test(response)
         self.assertIsNotNone(SignDataRequest.objects.filter(
-            code=response.data['code']).first())
+            code=response['code']).first())
 
         response = self.sign(
-            request_url=self.BASE_URL % (response.data['code'],))
+            request_url=self.BASE_URL % (response['code'],))
         self.ok_test(response)
 
     def test_algorithms(self):
@@ -154,7 +177,7 @@ class CheckSignCase(BaseInstitutionTest):
             response = self.sign(algorithm=algorithm)
             response = self.sign(
                 algorithm=algorithm,
-                request_url=self.BASE_URL % (response.data['code'],))
+                request_url=self.BASE_URL % (response['code'],))
             self.ok_test(response)
 
     def test_check_wrong_url(self):
@@ -189,6 +212,8 @@ class CheckSignCase(BaseInstitutionTest):
                              request_url=self.BASE_URL % (
             self.data['code'],)
         )
+        response = decrypt(institution2.private_key,
+                           response.data['data'])
         self.check_wrong_sign_test(response)
 
     def test_wrong_hashsum(self):
