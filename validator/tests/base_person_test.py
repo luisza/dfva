@@ -32,7 +32,10 @@ class BaseValidatePersonCase(BasePersonTest):
 
         response = self.request_client.post(request_url,
                                             params, format='json')
-        return response.json()
+
+        response = response.json()
+        response = self._decrypt(response['data'])
+        return response
 
     def test_validate(self):
         if self.REQUEST_URL is None:
