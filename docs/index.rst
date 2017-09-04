@@ -9,7 +9,8 @@ Welcome to DFVA's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+           
+   authentication
 
 
 Indices and tables
