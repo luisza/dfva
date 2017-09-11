@@ -189,6 +189,18 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs/info.log'),
             'formatter': 'simple',
         },
+        'remove_authentication': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/authentication.log'),
+            'formatter': 'quiet',
+        },
+        'remove_sign': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/sign.log'),
+            'formatter': 'quiet',
+        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
@@ -211,6 +223,18 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'dfva_authentication': {
+            'handlers': ['remove_authentication'],  # 'log/authentication',
+            'level': 'INFO',
+            'propagate': False,
+
+        },
+        'dfva_sign': {
+            'handlers': ['remove_sign'],  # 'log/authentication',
+            'level': 'INFO',
+            'propagate': False,
+
+        }
     },
     'formatters': {
         'verbose': {
@@ -219,5 +243,31 @@ LOGGING = {
         'simple': {
             'format': '%(asctime)s %(module)s %(message)s'
         },
+        'quiet': {
+            'format': '\n--- %(asctime)s ---\n %(message)s'
+        },
+    },
+}
+
+
+DFVA_REMOVE_AUTHENTICATION = 5  # minutes
+DFVA_REMOVE_SIGN = 20  # minutes
+CELERY_MODULE = "dfva.celery"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ACCEPT_CONTENT = ['json']
+
+from celery.schedules import crontab
+
+CELERYBEAT_SCHEDULE = {
+    # execute 12:30 pm
+    'remove_autenticacion': {
+        'task': 'authenticator.tasks.remove_expired_authentications',
+        #'schedule': crontab(minute=30, hour=0),
+        'schedule': crontab(minute='*/%d' % (DFVA_REMOVE_AUTHENTICATION, )),
+    },
+    'remove_sign': {
+        'task': 'signer.tasks.remove_expired_signs',
+        #'schedule': crontab(minute=30, hour=0),
+        'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
 }
