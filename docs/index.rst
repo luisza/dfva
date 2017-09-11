@@ -3,17 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to DFVA's documentation!
-================================
+Bienvenidos a la documentación de DFVA
+===========================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contenido:
            
+   instalacion
+   aspectos_de_seguridad
+   API
    authentication
 
 
-Indices and tables
+Índices y tablas
 ==================
 
 * :ref:`genindex`

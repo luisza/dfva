@@ -26,36 +26,39 @@ logger = logging.getLogger('dfva')
 
 class AuthenticateRequestViewSet(ViewSetBase,
                                  viewsets.GenericViewSet):
-    """Solicita una petición de autenticación para un usuario 
-
-    Los valores a suministrar en el parámetro data son:
-
-    * **institution:** uid de la institucion ver code en detalles de institución,
-    * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
-    * **identification:** Identificación de la persona a autenticar,
-    * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-
-    Data es un diccionario, osea un objeto de tipo clave -> valor
-
-    Los valores devueltos son: 
-
-    * **expiration_datetime:** hora final de validez
-    * **request_datetime:** Hora de recepción de la solicitud
-    * **id_transaction:** Id de trasnacción en el FVA del BCCR
-    * **status:** Código de error de la transacción
-    * **identification:** Identificador del suscriptor
-    * **code:** Código para mostrar al usuario
-    * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
-
-
-    """
-
     serializer_class = Authenticate_Request_Serializer
     queryset = AuthenticateRequest.objects.all()
     response_class = Authenticate_Response_Serializer
 
     @list_route(methods=['post'])
     def institution(self, request, *args, **kwargs):
+        """
+        ::
+        
+          POST /authenticate/institution/
+
+        Solicita una petición de autenticación para un usuario 
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **institution:** uid de la institucion ver code en detalles de institución,
+        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
+        * **identification:** Identificación de la persona a autenticar,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        Los valores devueltos son: 
+
+        * **expiration_datetime:** hora final de validez
+        * **request_datetime:** Hora de recepción de la solicitud
+        * **id_transaction:** Id de trasnacción en el FVA del BCCR
+        * **status:** Código de error de la transacción
+        * **identification:** Identificador del suscriptor
+        * **code:** Código para mostrar al usuario
+        * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
+
+        """
         ip = get_ip(request)
         logger.debug('Authentication: Create Institution %s %r' %
                      (ip, request.data))
@@ -65,6 +68,33 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
     @detail_route(methods=['post'])
     def institution_show(self, request, *args, **kwargs):
+        """
+        ::
+        
+          POST /authenticate/{code}/institution_show/
+
+        Solicita el estado de una petición de autenticación para un usuario 
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **institution:** uid de la institucion ver code en detalles de institución,
+        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
+        * **identification:** Identificación de la persona a autenticar,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        Los valores devueltos son: 
+
+        * **expiration_datetime:** hora final de validez
+        * **request_datetime:** Hora de recepción de la solicitud
+        * **id_transaction:** Id de trasnacción en el FVA del BCCR
+        * **status:** Código de error de la transacción
+        * **identification:** Identificador del suscriptor
+        * **code:** Código para mostrar al usuario
+        * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
+
+        """
         ip = get_ip(request)
         logger.debug('Authentication: Show Institution %s %r' %
                      (ip, request.data))
@@ -93,33 +123,37 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
 class AuthenticatePersonRequestViewSet(ViewSetBase,
                                        viewsets.GenericViewSet):
-    """Solicita una petición de autenticación para un usuario 
-
-    Los valores a suministrar en el parámetro data son:
-
-    * **person:** identificación de la persona solicitante de autenticación,
-    * **identification:** Identificación de la persona a autenticar,
-    * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-
-    Data es un diccionario, osea un objeto de tipo clave -> valor
-
-    Los valores devueltos son: 
-
-    * **expiration_datetime:** hora final de validez
-    * **request_datetime:** Hora de recepción de la solicitud
-    * **id_transaction:** Id de trasnacción en el FVA del BCCR
-    * **status:** Código de error de la transacción
-    * **identification:** Identificador del suscriptor
-    * **code:** Código para mostrar al usuario
-    * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
-    """
-
     serializer_class = Authenticate_Person_Request_Serializer
     queryset = AuthenticatePersonRequest.objects.all()
     response_class = Authenticate_Person_Response_Serializer
 
     @list_route(methods=['post'])
     def person(self, request, *args, **kwargs):
+        """
+        ::
+
+          POST /authenticate/person/
+        
+        Solicita una petición de autenticación para un usuario 
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **person:** identificación de la persona solicitante de autenticación,
+        * **identification:** Identificación de la persona a autenticar,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        Los valores devueltos son: 
+
+        * **expiration_datetime:** hora final de validez
+        * **request_datetime:** Hora de recepción de la solicitud
+        * **id_transaction:** Id de trasnacción en el FVA del BCCR
+        * **status:** Código de error de la transacción
+        * **identification:** Identificador del suscriptor
+        * **code:** Código para mostrar al usuario
+        * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
+        """
         ip = get_ip(request)
         logger.debug('Authentication: Create Person %s %r' %
                      (ip, request.data))
@@ -129,6 +163,31 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
 
     @detail_route(methods=['post'])
     def person_show(self, request, *args, **kwargs):
+        """
+        ::
+
+          POST /authenticate/{code}/person_show/
+        
+        Solicita un estado de la solicitud de autenticación para un usuario 
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **person:** identificación de la persona solicitante de autenticación,
+        * **identification:** Identificación de la persona a autenticar,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        Los valores devueltos son: 
+
+        * **expiration_datetime:** hora final de validez
+        * **request_datetime:** Hora de recepción de la solicitud
+        * **id_transaction:** Id de trasnacción en el FVA del BCCR
+        * **status:** Código de error de la transacción
+        * **identification:** Identificador del suscriptor
+        * **code:** Código para mostrar al usuario
+        * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
+        """
         ip = get_ip(request)
         logger.debug('Authentication: Show Person %s %r' %
                      (ip, request.data))

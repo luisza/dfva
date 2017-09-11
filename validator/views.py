@@ -34,7 +34,12 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
-        """Solicita una de un certificado de autenticación para un usuario 
+        """
+        ::
+
+          POST /validate/institution_certificate/
+
+        Solicita una de un certificado de autenticación para un usuario 
 
         Los valores a suministrar en el parámetro data son:
 
@@ -71,7 +76,12 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def institution_document(self, request, *args, **kwargs):
-        """Solicita una verificación de firma  de un documento xml  
+        """
+        ::
+
+          POST /validate/institution_document/  
+        
+        Solicita una verificación de firma  de un documento xml  
 
         Los valores a suministrar en el parámetro data son:
 
@@ -117,7 +127,12 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def person_certificate(self, request, *args, **kwargs):
-        """Solicita una de un certificado de autenticación para un usuario 
+        """
+        ::
+
+          POST /validate/person_certificate/
+
+        Solicita una de un certificado de autenticación para un usuario 
 
         Los valores a suministrar en el parámetro data son:
 
@@ -153,7 +168,12 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def person_document(self, request, *args, **kwargs):
-        """Solicita una verificación de firma  de un documento xml  
+        """
+        ::
+
+          POST /validate/person_document/
+
+        Solicita una verificación de firma  de un documento xml  
 
         Los valores a suministrar en el parámetro data son:
 
@@ -212,7 +232,12 @@ class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def institution_suscriptor_connected(self, request, *args, **kwargs):
-        """Verifica si una persona está conectada (es contactable por el BCCR).  
+        """
+        ::
+
+          POST /validate/institution_suscriptor_connected/
+         
+        Verifica si una persona está conectada (es contactable por el BCCR).  
 
         Los valores a suministrar en el parámetro data son:
 
@@ -236,7 +261,12 @@ class ValidateSubscriptorViewSet(ViewSetBase, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def person_suscriptor_connected(self, request, *args, **kwargs):
-        """Verifica si una persona está conectada (es contactable por el BCCR).  
+        """
+        ::
+
+          POST /validate/person_suscriptor_connected/
+
+        Verifica si una persona está conectada (es contactable por el BCCR).  
 
         Los valores a suministrar en el parámetro data son:
 
