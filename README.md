@@ -10,7 +10,7 @@ Proporciona soporte para instituciones y personas utilizando:
 
 Tantos las personas como las instituciones pueden:
 
-- Solucitar una autenticación.
+- Solicitar una autenticación.
 - Firmar un documento xml (transacciones), ODF, MS Office.
 - Validar un certificado emitido.
 - Validar un documento xml. 
