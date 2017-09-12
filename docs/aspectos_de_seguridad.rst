@@ -65,16 +65,18 @@ El token será utilizado como token de sesión en el algoritmo AES Modo EAX al e
 Almacenamiento
 ------------------
 
-.. note:: FALTA, Actualemente se guarda la información de forma plana en una base de datos y nunca se borra, a continuación cómo se pretende hacer.
+.. note:: FALTA, Actualemente se guarda la información de verificación en forma plana en una base de datos y nunca se borra, autenticación y firma ya mueve a logs la información.
 
 DFVA se basa en Django por lo que soporta todas las bases de datos que este framework soporta, pero recomendamos Postgresql 9.4 o superior. 
 
-Las solicitudes de autenticación tiene un tiempo de vida de 5 minutos (configurables), así una solicitud de autenticación se guardará en la base de datos por el tiempo definido, luego se extrae y se guarda en un archivo de log especiamente diseñado para guardar las solicitudes.
+Las solicitudes de autenticación tiene un tiempo de vida de al menos 5 minutos (configurables), así una solicitud de autenticación se guardará en la base de datos por el tiempo definido, luego se extrae y se guarda en un archivo de log especiamente diseñado para guardar las solicitudes.
 
-Las solicitudes de firma tienen un tiempo de vida de 20 minutos (configurables), así una solicitud de firma se guardará por el tiempo definido y luego se guardará en un archivo de logs diseñado para guardar estas solicitudes. No se guarda el documento firmado, solo el registro de que se firmó y su suma hash.
+Las solicitudes de firma tienen un tiempo de vida de al menos 20 minutos (configurables), así una solicitud de firma se guardará por el tiempo definido y luego se guardará en un archivo de logs diseñado para guardar estas solicitudes. No se guarda el documento firmado, solo el registro de que se firmó y su suma hash.
 
-Las verificaciones de documentos y certificados y las revisiones de suscriptor conectado no se guardan en la base de datos.
 
+Se pretende que las verificaciones de documentos y certificados y las revisiones de suscriptor conectado no se guarden en la base de datos (FALTA).
+
+DFVA trabaja con tareas asincrónicas llamadas cada 5 y 20 minutos las cuales se encargan de revisar cuales peticiones han vencido el plazo y deben enviarse a logs, debido a este comportamiento algunas peticiones tendrán una duración entre 5-9 minutos para autenticación y 20 a 39 minutos para firma antes de ser enviadas a logs.   Debido a que se provee la opción de solicitar la información de una petición para clientes no web esta información debe permanecer por un periodo de tiempo, además los mecanismos de control propios impedirá que una petición cuyo tiempo de vida haya caducado pueda ser obtenida por un cliente.
 
 Transporte
 ------------------

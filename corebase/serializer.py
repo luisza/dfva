@@ -91,7 +91,8 @@ class CheckBaseBaseSerializer():
         if self.is_valid(raise_exception=raise_exception):
             fields = {
                 'code': code,
-                'identification': self.requestdata['identification']
+                'identification': self.requestdata['identification'],
+                'expiration_datetime__lte': timezone.now()
             }
             if 'notification_url' in self.check_internal_fields:
                 fields['notification_url'] = self.requestdata['notification_url']
