@@ -46,3 +46,7 @@ Validación
 .. automethod::  validator.views.ValidatePersonViewSet.person_document
 .. automethod::  validator.views.ValidateSubscriptorViewSet.person_suscriptor_connected
 
+Login
+~~~~~~~~
+
+.. automethod::  corebase.views.PersonLoginView.create

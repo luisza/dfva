@@ -34,3 +34,5 @@ uritemplate==3.0.0
 dateutils
 pyfva>=0.0.7
 pycryptodome
+celery==4.1.0
+

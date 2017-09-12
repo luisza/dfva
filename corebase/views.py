@@ -148,6 +148,12 @@ class PersonLoginView(mixins.CreateModelMixin,
     response_class = PersonLoginResponseSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        ::
+
+          POST /login/
+        """
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=False):
             data = serializer.save()
