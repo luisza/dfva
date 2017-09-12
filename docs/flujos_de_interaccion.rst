@@ -6,4 +6,4 @@ Instituciones
 
 
 
-.. image:: _static/autenticación.gif
+.. image:: _static/autenticacion_institucion.gif
