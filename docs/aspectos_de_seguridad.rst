@@ -80,6 +80,19 @@ Se pretende que las verificaciones de documentos y certificados y las revisiones
 
 DFVA trabaja con tareas asincrónicas llamadas cada 5 y 20 minutos las cuales se encargan de revisar cuales peticiones han vencido el plazo y deben enviarse a logs, debido a este comportamiento algunas peticiones tendrán una duración entre 5-9 minutos para autenticación y 20 a 39 minutos para firma antes de ser enviadas a logs.   Debido a que se provee la opción de solicitar la información de una petición para clientes no web esta información debe permanecer por un periodo de tiempo, además los mecanismos de control propios impedirá que una petición cuyo tiempo de vida haya caducado pueda ser obtenida por un cliente.
 
+Bitácoras
+------------------
+
+DFVA usa al máximo el sistema de bitácoras de Django por lo que es ampliamente configurable.  Actualmente genera los siguientes logs:
+
+* **pyfva (debug, info, errors):** Bitácoras de comunicación con BCCR FVA
+* **dfva (debug, info, errors):** Bitácoras de funcionamiento interno de DFVA.
+* **dfva_authentication (info):** Bitácora de solicitudes de autenticación
+* **dfva_sign (info):**  Bitácora de solicitudes de firma.
+
+Las bitácoras **dfva_authentication**, **dfva_sign** guardan los objecto en formato json.  Actualmente la mayoría de los datos guardados son volcados a estas bitácoras.
+
+
 Transporte
 ------------------
 
