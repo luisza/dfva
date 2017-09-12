@@ -12,6 +12,7 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from pyfva.clientes.validador import ClienteValidador
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 import logging
 
@@ -291,7 +292,8 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
         person.token = rsa_encrypt(
             self.data['public_certificate'], message=random_token).decode()
         person.authenticate_certificate = self.data['public_certificate']
-        person.expiration_datetime_token = timezone.now() + timezone.timedelta(minutes=25)
+        person.expiration_datetime_token = timezone.now(
+        ) + timezone.timedelta(minutes=settings.DFVA_PERSON_SESSION)
         person.last_error_code = 1
         person.save()
         response = PersonLoginResponseSerializer(person)

@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger('dfva_authentication')
 
 
-class LogAuthenticatePersonRequestSerializer(serializers.ModelSerializer):
+class LogAuthenticateInstitutionRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthenticateDataRequest
         fields = ('institution', 'notification_url', 'identification',
@@ -35,7 +35,7 @@ def remove_expired_authentications():
         expiration_datetime__lte=basetime
     )
     if queryset.exists():
-        data = LogAuthenticatePersonRequestSerializer(queryset, many=True)
+        data = LogAuthenticateInstitutionRequestSerializer(queryset, many=True)
         json = JSONRenderer().render(data.data).decode('utf-8')
         logger.info(json)
         queryset.delete()

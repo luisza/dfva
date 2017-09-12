@@ -172,88 +172,89 @@ RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
 UCR_FVA_SERVER_URL = 'http://localhost:8000'
-DO_LOGGIN = not bool(os.environ.get('NOLOGGING', 'False'))
+DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
 
 if DO_LOGGIN:
-  LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'formatter': 'verbose',
-        },
-        'file_info': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/info.log'),
-            'formatter': 'simple',
-        },
-        'remove_authentication': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/authentication.log'),
-            'formatter': 'quiet',
-        },
-        'remove_sign': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/sign.log'),
-            'formatter': 'quiet',
-        },
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-
-    },
-    'loggers': {
-        #         'dfva': {
-        #             'handlers': ['file'],
-        #             'level': 'DEBUG',
-        #             'propagate': True,
-        #         },
-        'pyfva':  {
-            'handlers': ['file_info'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'dfva': {
-            'handlers': ['file_info'],  # 'console',
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'dfva_authentication': {
-            'handlers': ['remove_authentication'],  # 'log/authentication',
-            'level': 'INFO',
-            'propagate': False,
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+                'formatter': 'verbose',
+            },
+            'file_info': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/info.log'),
+                'formatter': 'simple',
+            },
+            'remove_authentication': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/authentication.log'),
+                'formatter': 'quiet',
+            },
+            'remove_sign': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/sign.log'),
+                'formatter': 'quiet',
+            },
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
 
         },
-        'dfva_sign': {
-            'handlers': ['remove_sign'],  # 'log/authentication',
-            'level': 'INFO',
-            'propagate': False,
+        'loggers': {
+            #         'dfva': {
+            #             'handlers': ['file'],
+            #             'level': 'DEBUG',
+            #             'propagate': True,
+            #         },
+            'pyfva':  {
+                'handlers': ['file_info'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+            'dfva': {
+                'handlers': ['file_info'],  # 'console',
+                'level': 'INFO',
+                'propagate': True,
+            },
+            'dfva_authentication': {
+                'handlers': ['remove_authentication'],  # 'log/authentication',
+                'level': 'INFO',
+                'propagate': False,
 
-        }
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'dfva_sign': {
+                'handlers': ['remove_sign'],  # 'log/sign',
+                'level': 'INFO',
+                'propagate': False,
+
+            }
         },
-        'simple': {
-            'format': '%(asctime)s %(module)s %(message)s'
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'simple': {
+                'format': '%(asctime)s %(module)s %(message)s'
+            },
+            'quiet': {
+                'format': '\n--- %(asctime)s ---\n %(message)s'
+            },
         },
-        'quiet': {
-            'format': '\n--- %(asctime)s ---\n %(message)s'
-        },
-    },
-}
+    }
 
 
 DFVA_REMOVE_AUTHENTICATION = 5  # minutes
 DFVA_REMOVE_SIGN = 20  # minutes
+DFVA_PERSON_SESSION = 25
 CELERY_MODULE = "dfva.celery"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ACCEPT_CONTENT = ['json']
