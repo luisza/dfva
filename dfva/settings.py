@@ -172,7 +172,7 @@ RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
 UCR_FVA_SERVER_URL = 'http://localhost:8000'
-DO_LOGGIN = not bool(os.environ.get('NOLOGGING', False))
+DO_LOGGIN = not bool(os.environ.get('NOLOGGING', 'False'))
 
 if DO_LOGGIN:
   LOGGING = {
