@@ -22,6 +22,7 @@ import sys
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dfva.settings'
+os.environ['NOLOGGING'] = True
 #from django.conf import settings
 #settings.configure()
 import django
