@@ -92,12 +92,13 @@ class CheckBaseBaseSerializer():
             fields = {
                 'code': code,
                 'identification': self.requestdata['identification'],
-                'expiration_datetime__lte': timezone.now()
+                'expiration_datetime__gte': timezone.now()
             }
             if 'notification_url' in self.check_internal_fields:
                 fields['notification_url'] = self.requestdata['notification_url']
             data = self.validate_data_class.objects.filter(
                 **fields).first()
+
             if data:
                 self.adr = data
                 dev = True

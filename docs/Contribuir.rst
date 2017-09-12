@@ -34,6 +34,12 @@ Ejecute las pruebas
 
 Recuerde que una contribución con pruebas será mejor aceptada y contribuye a la estabilidad del sistema.
 
+También puede hacer pruebas individuales ejecutando por ejemplo.
+
+.. code:: bash
+
+    python manage.py test authenticator.tests.test_check_authenticator_institution.CheckAuthenticatorInstitutionCase.test_authenticate_check 
+
 Reportar Issues
 -----------------
 

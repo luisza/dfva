@@ -58,6 +58,7 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
 
         self.adr.expiration_datetime = timezone.now(
         ) + timezone.timedelta(minutes=data['tiempo_maximo'])
+
         self.adr.duration = data['tiempo_maximo']
         if 'texto_codigo_error' in data:
             self.adr.status_text = data['texto_codigo_error']

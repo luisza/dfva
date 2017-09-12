@@ -67,6 +67,8 @@ Almacenamiento
 
 .. note:: FALTA, Actualemente se guarda la información de verificación en forma plana en una base de datos y nunca se borra, autenticación y firma ya mueve a logs la información.
 
+.. warning:: FALTA, Manejo información sobre los modelos de personas, la información descrita corresponde únicamente a institutiones.
+
 DFVA se basa en Django por lo que soporta todas las bases de datos que este framework soporta, pero recomendamos Postgresql 9.4 o superior. 
 
 Las solicitudes de autenticación tiene un tiempo de vida de al menos 5 minutos (configurables), así una solicitud de autenticación se guardará en la base de datos por el tiempo definido, luego se extrae y se guarda en un archivo de log especiamente diseñado para guardar las solicitudes.
