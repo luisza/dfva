@@ -149,9 +149,31 @@ class PersonLoginView(mixins.CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
+        .. note:: Esta vista no está encriptada.
+
         ::
 
           POST /login/
+
+        Permite a una persona autenticarse en DFVA, un token de sección es retornado
+        y deberá ser usuado para encriptar la comunicación.
+
+        Los valores a suministrar son:
+
+        * **data_hash:** Suma hash de datos de tamaño máximo 130 caracteres, usando el algoritmo especificado 
+        * **algorithm:** Algoritmo con que se construye data_hash, debe ser alguno de los siguientes: sha256, sha384, sha512
+        * **public_certificate:** Certificado de autenticación del dispositivo pkcs11
+        * **person:** Identificación de la persona,
+        * **code**: Identificación de la persona firmada con la llave privada del certificado de autenticación.
+
+        Los valores devueltos son: 
+
+        * **identification**:  Identificación del suscriptor
+        * **token**: Token de sección para encriptar atributo data posteriormente
+        * **expiration_datetime_token**:  Hora máxima para usar el token 
+        * **last_error_code**:  Código de estado de la transacción
+        * **error_text**: Descripción de los errores encontrados       
+
         """
 
         serializer = self.get_serializer(data=request.data)
