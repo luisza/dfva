@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
 from corebase.models import Institution, identification_validator, ALGORITHM,\
-    Person
+    Person, BasePersonRequestModel, BaseInstitutionRequestModel
 
 
 class AuthenticateDataRequest(models.Model):
@@ -50,25 +50,11 @@ class AuthenticateDataRequest(models.Model):
         )
 
 
-class AuthenticateRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
+class AuthenticateRequest(BaseInstitutionRequestModel):
     data_request = models.OneToOneField(
         AuthenticateDataRequest,
         on_delete=models.CASCADE,
         null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público de la institución (ver Institución) """)
-    institution = models.CharField(
-        max_length=50, help_text="UUID de la institución")
 
     class Meta:
         ordering = ('arrived_time',)
@@ -119,23 +105,10 @@ class AuthenticatePersonDataRequest(models.Model):
         )
 
 
-class AuthenticatePersonRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    data_request = models.ForeignKey(
-        AuthenticatePersonDataRequest, null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público  de firma, para firma digital avanzada""")
-    person = models.CharField(
-        max_length=50, help_text="Identificación de la persona solicitante")
+class AuthenticatePersonRequest(BasePersonRequestModel):
+    data_request = models.OneToOneField(AuthenticatePersonDataRequest,
+                                        on_delete=models.CASCADE,
+                                        null=True, blank=True)
 
     class Meta:
         ordering = ('arrived_time',)

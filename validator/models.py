@@ -3,8 +3,8 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
-from corebase.models import Institution, identification_validator, ALGORITHM,\
-    Person
+from corebase.models import Institution, identification_validator,\
+    Person, BaseInstitutionRequestModel, BasePersonRequestModel
 
 
 class ValidateCertificateDataRequest(models.Model):
@@ -53,23 +53,10 @@ class ValidateCertificateDataRequest(models.Model):
         )
 
 
-class ValidateCertificateRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    data_request = models.ForeignKey(
-        ValidateCertificateDataRequest, null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público de la institución (ver Institución) """)
-    institution = models.CharField(
-        max_length=50, help_text="UUID de la institución")
+class ValidateCertificateRequest(BaseInstitutionRequestModel):
+    data_request = models.OneToOneField(
+        ValidateCertificateDataRequest,
+        on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ('arrived_time',)
@@ -119,23 +106,10 @@ class ValidatePersonCertificateDataRequest(models.Model):
         )
 
 
-class ValidatePersonCertificateRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    data_request = models.ForeignKey(
-        ValidatePersonCertificateDataRequest, null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público de la institución (ver Institución) """)
-    person = models.CharField(
-        max_length=50, help_text="Identificación de la persona validadora")
+class ValidatePersonCertificateRequest(BasePersonRequestModel):
+    data_request = models.OneToOneField(
+        ValidatePersonCertificateDataRequest,
+        on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ('arrived_time',)
@@ -205,23 +179,10 @@ class ValidateDocumentDataRequest(models.Model):
         )
 
 
-class ValidateDocumentRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    data_request = models.ForeignKey(
-        ValidateDocumentDataRequest, null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público de la institución (ver Institución) """)
-    institution = models.CharField(
-        max_length=50, help_text="UUID de la institución")
+class ValidateDocumentRequest(BaseInstitutionRequestModel):
+    data_request = models.OneToOneField(ValidateDocumentDataRequest,
+                                        on_delete=models.CASCADE,
+                                        null=True, blank=True)
 
     class Meta:
         ordering = ('arrived_time',)
@@ -263,23 +224,10 @@ class ValidatePersonDocumentDataRequest(models.Model):
         )
 
 
-class ValidatePersonDocumentRequest(models.Model):
-    code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-
-    arrived_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    data_request = models.ForeignKey(
-        ValidatePersonDocumentDataRequest, null=True, blank=True)
-    data_hash = models.CharField(max_length=130,
-                                 help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
-    algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
-    public_certificate = models.TextField(
-        help_text="""Certificado público de la institución (ver Institución) """)
-    person = models.CharField(
-        max_length=50, help_text="Identificación de la persona validante")
+class ValidatePersonDocumentRequest(BasePersonRequestModel):
+    data_request = models.OneToOneField(
+        ValidatePersonDocumentDataRequest,
+        on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ('arrived_time',)
