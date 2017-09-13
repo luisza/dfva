@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 import json
 from corebase.rsa import encrypt, get_hash_sum
-from corebase.test.institutio_utils import create_institution, create_url
+from corebase.test.institution_utils import create_institution, create_url
 from django.test.testcases import TestCase
 
 

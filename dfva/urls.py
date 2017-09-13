@@ -19,20 +19,19 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
-from authenticator.urls import get_routes_view as auth_routes_view
-from signer.urls import get_routes_view as sign_routes_view
-from validator.urls import get_routes_view as validate_routes_view
-from corebase.urls import get_routes_view as login_get_routes_view
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
 from soapfish.django_ import django_dispatcher
 dispatcher = django_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 from django.conf import settings
+from institution.urls import get_routes_view as instition_get_routes_view
+from person.urls import get_routes_view as person_get_routes_view
+from institution.urls import urlpatterns as institution_urls
 
 router = routers.DefaultRouter()
-auth_routes_view(router)
-sign_routes_view(router)
-validate_routes_view(router)
-login_get_routes_view(router)
+instition_get_routes_view(router)
+person_get_routes_view(router)
+
+
 
 
 urlpatterns = [
@@ -47,7 +46,7 @@ urlpatterns = [
         include_docs_urls(title='API de Dfva')),
     url(r'^', include('corebase.urls')),
     url(r'^', include(router.urls)),
-]
+]+institution_urls
 
 if settings.DEMO:
     # IF DEMO, remove in production

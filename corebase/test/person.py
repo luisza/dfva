@@ -5,16 +5,16 @@ Created on 18 ago. 2017
 '''
 from django.contrib.auth.models import User
 from asyncio.test_utils import TestCase
-from corebase.test.institutio_utils import create_institution, create_url
+from corebase.test.institution_utils import create_institution, create_url
 from rest_framework.test import APIClient
 import json
 from corebase.rsa import get_hash_sum, encrypt, decrypt as decrypt_base
 from client_fva.person import PersonClient
 from client_fva.rsa import decrypt
 from client_fva import Settings
-from corebase.models import Person
 from base64 import b64encode
 from django.utils import timezone
+from person.models import Person
 
 
 class HTTPClient():

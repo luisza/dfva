@@ -6,11 +6,11 @@ Created on 26 jul. 2017
 
 
 from django import forms
-from corebase.models import NotificationURL
 from base64 import b64encode
 from demo.clientes.authenticator import AuthenticatorClient
 from demo.clientes.signer import SignerClient
 from demo.clientes.validator import ValidatorClient
+from institution.models import NotificationURL
 
 
 class AuthenticateForm(forms.Form):

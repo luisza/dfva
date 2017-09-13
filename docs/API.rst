@@ -7,21 +7,21 @@ Instituciones
 Autenticación
 ~~~~~~~~~~~~~~~
 
-.. automethod::  authenticator.views.AuthenticateRequestViewSet.institution 
-.. automethod::  authenticator.views.AuthenticateRequestViewSet.institution_show
+.. automethod::  institution.authenticator.views.AuthenticateRequestViewSet.institution 
+.. automethod::  institution.authenticator.views.AuthenticateRequestViewSet.institution_show
 
 Firma
 ~~~~~~~~~~~~~~~
 
-.. automethod::  signer.views.SignRequestViewSet.institution 
-.. automethod::  signer.views.SignRequestViewSet.institution_show
+.. automethod::  institution.signer.views.SignRequestViewSet.institution 
+.. automethod::  institution.signer.views.SignRequestViewSet.institution_show
 
 Validación
 ~~~~~~~~~~~~~~~
 
-.. automethod::  validator.views.ValidateInstitutionViewSet.institution_certificate
-.. automethod::  validator.views.ValidateInstitutionViewSet.institution_document
-.. automethod::  validator.views.ValidateSubscriptorViewSet.institution_suscriptor_connected
+.. automethod::  institution.validator.views.ValidateInstitutionViewSet.institution_certificate
+.. automethod::  institution.validator.views.ValidateInstitutionViewSet.institution_document
+.. automethod::  institution.validator.views.ValidateSubscriptorInstitutionViewSet.institution_suscriptor_connected
 
 Personas
 ------------
@@ -30,23 +30,23 @@ Personas
 Autenticación
 ~~~~~~~~~~~~~~
 
-.. automethod::  authenticator.views.AuthenticatePersonRequestViewSet.person
-.. automethod::  authenticator.views.AuthenticatePersonRequestViewSet.person_show
+.. automethod::  person.authenticator.views.AuthenticatePersonRequestViewSet.person
+.. automethod::  person.authenticator.views.AuthenticatePersonRequestViewSet.person_show
 
 Firma
 ~~~~~~~~~~~~~~~
 
-.. automethod::  signer.views.SignPersonRequestViewSet.person
-.. automethod::  signer.views.SignPersonRequestViewSet.person_show
+.. automethod::  person.signer.views.SignPersonRequestViewSet.person
+.. automethod::  person.signer.views.SignPersonRequestViewSet.person_show
 
 Validación
 ~~~~~~~~~~~~~~~
 
-.. automethod::  validator.views.ValidatePersonViewSet.person_certificate
-.. automethod::  validator.views.ValidatePersonViewSet.person_document
-.. automethod::  validator.views.ValidateSubscriptorViewSet.person_suscriptor_connected
+.. automethod::  person.validator.views.ValidatePersonViewSet.person_certificate
+.. automethod::  person.validator.views.ValidatePersonViewSet.person_document
+.. automethod::  person.validator.views.ValidateSubscriptorPersonViewSet.person_suscriptor_connected
 
 Login
 ~~~~~~~~
 
-.. automethod::  corebase.views.PersonLoginView.create
+.. automethod::  person.views.PersonLoginView.create

@@ -41,7 +41,7 @@ La llave pública corresponde a la llave pública de DFVA que se utilizará para
 En DFVA se construye dos pares de llaves por cada institución.
 
 * **Llaves de la aplicación:** La llave privada se entrega y la llave pública se guarda y nunca es revelada.
-* **Laves del servicio:** La llave privada se guarda y nunca es revelada y la llave pública se entrega a la institución.
+* **Llaves del servicio:** La llave privada se guarda y nunca es revelada y la llave pública se entrega a la institución.
 
 Debido a que tanto las llaves privadas y las públicas son exclusivas de cada institución y generadas dentro de DFVA la llave pública de la institución nunca es expuesta asegurando aún más la comunicación RSA.
 

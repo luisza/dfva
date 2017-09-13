@@ -5,10 +5,11 @@ Created on 26 jul. 2017
 '''
 
 import logging
-from authenticator.models import AuthenticateDataRequest,\
-    AuthenticatePersonDataRequest
-from signer.models import SignDataRequest, SignPersonDataRequest
 from receptor.notify import send_notification
+
+# FIXME: Resolver estas dependencias 
+from institution.models import AuthenticateDataRequest, SignDataRequest
+from person.models import AuthenticatePersonDataRequest, SignPersonDataRequest
 logger = logging.getLogger('dfva')
 
 

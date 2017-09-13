@@ -10,8 +10,6 @@ from django.conf.urls import url
 from demo.views.authentication import send_notification,\
     AuthenticateDataRequestListView, AuthenticateDataRequestUpdate
 from demo.views import show_simulate_bccr_request, PersonView
-from django.apps import apps
-from cruds_adminlte.urls import crud_for_model
 
 urlpatterns = [
 
@@ -26,4 +24,8 @@ urlpatterns = [
         send_notification, name="send_authrequest_notification"),
 ]
 
-urlpatterns += PersonView().get_urls()
+try:  # Needs to fix import
+    urlpatterns += PersonView().get_urls()
+    
+except:
+    pass

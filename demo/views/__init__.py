@@ -1,9 +1,9 @@
 from demo.forms import AuthenticateForm, SignForm, ValidateForm
 from django.shortcuts import render
 from cruds_adminlte.crud import CRUDView
-from corebase.models import Person
 from django import forms
 from django.contrib.auth.models import User
+from person.models import Person
 
 
 def show_simulate_bccr_request(request, nform):

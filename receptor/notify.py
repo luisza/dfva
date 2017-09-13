@@ -4,13 +4,12 @@ Created on 30 jul. 2017
 @author: luis
 '''
 import requests
-from authenticator.models import AuthenticateDataRequest
-from authenticator.serializer import Authenticate_Response_Serializer
-from signer.models import SignDataRequest
-from signer.serializer import Sign_Response_Serializer
 from rest_framework.renderers import JSONRenderer
 from corebase.rsa import encrypt, get_hash_sum
 import logging
+from institution.models import AuthenticateDataRequest, SignDataRequest
+from institution.authenticator.serializer import Authenticate_Response_Serializer
+from institution.signer.serializer import Sign_Response_Serializer
 
 logger = logging.getLogger('ucr_fva')
 

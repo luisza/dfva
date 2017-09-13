@@ -3,10 +3,11 @@ Created on 15 ago. 2017
 
 @author: luis
 '''
-from corebase.models import Institution, NotificationURL
+
 from corebase.ca_management import gen_cert
 import os
 from django.conf import settings
+from institution.models import Institution, NotificationURL
 
 
 def create_institution(user, domain='dfva.cr',

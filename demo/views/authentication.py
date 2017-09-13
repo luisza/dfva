@@ -11,9 +11,9 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django_ajax.decorators import ajax
-from authenticator.models import AuthenticateDataRequest
 
 from receptor.notify import send_notification as notify_send_notification
+from institution.models import AuthenticateDataRequest
 
 
 @method_decorator(login_required, name='dispatch')
