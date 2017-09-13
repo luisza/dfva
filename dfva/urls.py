@@ -42,8 +42,6 @@ urlpatterns = [
     url(r'^select2/', include('django_select2.urls')),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-    url(r'^docs/',
-        include_docs_urls(title='API de Dfva')),
     url(r'^', include('corebase.urls')),
     url(r'^', include(router.urls)),
 ]+institution_urls
