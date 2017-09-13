@@ -7,9 +7,19 @@ Created on 26 jul. 2017
 import logging
 from receptor.notify import send_notification
 
-# FIXME: Resolver estas dependencias 
-from institution.models import AuthenticateDataRequest, SignDataRequest
-from person.models import AuthenticatePersonDataRequest, SignPersonDataRequest
+DATAREQUEST = []
+
+try:
+    from institution.models import AuthenticateDataRequest, SignDataRequest
+    DATAREQUEST += [AuthenticateDataRequest, SignDataRequest]
+except:
+    pass
+
+try:
+    from person.models import AuthenticatePersonDataRequest, SignPersonDataRequest
+    DATAREQUEST += [AuthenticatePersonDataRequest, SignPersonDataRequest]
+except:
+    pass
 logger = logging.getLogger('dfva')
 
 
@@ -30,10 +40,7 @@ def reciba_notificacion(data):
     logger.debug("Receptor: reciba notificación %r" %
                  (data,))
 
-    for model in [AuthenticateDataRequest,
-                  AuthenticatePersonDataRequest,
-                  SignDataRequest,
-                  SignPersonDataRequest]:
+    for model in DATAREQUEST:
         request = model.objects.filter(
             id_transaction=data['id_solicitud']).first()
         if request is not None:
