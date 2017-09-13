@@ -17,10 +17,10 @@ from validator.serializer import ValidatePersonCertificate_Request_Serializer,\
     ValidatePersonCertificateRequest_Response_Serializer,\
     ValidatePersonDocumentRequest_Response_Serializer,\
     SuscriptorInstitution_Serializer, SuscriptorPerson_Serializer
+from corebase.logging import get_log_person_information
 from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDA_DOCUMENTO
 import logging
-from corebase.logging import get_ip, get_log_institution_information,\
-    get_log_person_information
+from corebase.logging import get_ip, get_log_institution_information
 
 
 logger = logging.getLogger('dfva')

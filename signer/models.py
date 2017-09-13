@@ -2,8 +2,10 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
 from corebase.models import Institution, identification_validator,\
-    Person, BaseInstitutionRequestModel, BasePersonRequestModel
+     BaseInstitutionRequestModel
 
+# PERSON
+from corebase.models import Person, BasePersonRequestModel
 
 class SignDataRequest(models.Model):
     institution = models.ForeignKey(Institution)

@@ -3,10 +3,14 @@ Created on 18 jul. 2017
 
 @author: luis
 '''
-from corebase.rsa import get_hash_sum, decrypt, rsa_encrypt, get_random_token,\
-    encrypt, validate_sign, pem_to_base64, decrypt_person, validate_sign_data
-from corebase.models import NotificationURL, Institution, ALGORITHM, Person,\
-    PersonLogin
+from corebase.rsa import get_hash_sum, encrypt, decrypt, rsa_encrypt, pem_to_base64
+from corebase.models import NotificationURL, Institution, ALGORITHM
+
+# PERSON
+from corebase.rsa import get_random_token,\
+    validate_sign, decrypt_person, validate_sign_data
+from corebase.models import Person, PersonLogin
+
 from corebase.ca_management.check_cert import check_certificate
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
@@ -98,7 +102,6 @@ class CheckBaseBaseSerializer():
                 fields['notification_url'] = self.requestdata['notification_url']
             data = self.validate_data_class.objects.filter(
                 **fields).first()
-
             if data:
                 self.adr = data
                 dev = True

@@ -24,16 +24,17 @@ from corebase.ca_management import gen_cert
 from rest_framework.settings import api_settings
 from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
+
+# PERSON
 from corebase.models import PersonLogin
 from corebase.serializer import PersonLoginSerializer,\
     PersonLoginResponseSerializer
+from corebase.rsa import get_reponse_person_data_encrypted
+
 from pyfva.constants import get_text_representation
 import logging
-from corebase.rsa import get_reponse_institution_data_encrypted,\
-    get_reponse_person_data_encrypted
-
+from corebase.rsa import get_reponse_institution_data_encrypted
 logger = logging.getLogger('dfva')
-
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
     model = NotificationURL

@@ -12,9 +12,10 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from corebase.serializer import InstitutionCheckBaseBaseSerializer
-from corebase.serializer import PersonCheckBaseBaseSerializer
 from django.utils.translation import ugettext_lazy as _
 from signer.models import SignDataRequest, SignRequest
+# PERSON
+from corebase.serializer import PersonCheckBaseBaseSerializer
 from signer.models import SignPersonDataRequest, SignPersonRequest
 from pyfva.clientes.firmador import ClienteFirmador
 from corebase.models import SUPPORTED_DOC_FORMAT
