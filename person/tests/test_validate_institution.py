@@ -1,7 +1,7 @@
-from validator.tests.base_institution_test import BaseValidateInstitutionCase
-from validator.models import ValidateCertificateDataRequest,\
+from institution.tests.base_institution_test import BaseValidateInstitutionCase
+from institution.models import ValidateCertificateDataRequest,\
     ValidateDocumentDataRequest
-from validator.tests.certificate import CERTIFICATE_FILE
+from corebase.test import CERTIFICATE_FILE
 
 
 class ValidateCertificateInstitution(BaseValidateInstitutionCase):

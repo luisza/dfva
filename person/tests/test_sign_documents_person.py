@@ -3,13 +3,10 @@ Created on 19 ago. 2017
 
 @author: luis
 '''
-from signer.tests.xmlfile import XMLFILE
-from signer.models import SignPersonDataRequest
 from corebase.test.person import BasePersonTest
-from signer.tests.odffile import ODFFILE
-from signer.tests.docxfile import DOCXFILE
-from authenticator.tests import WRONG_CERTIFICATE
-from corebase.test.institutio_utils import create_institution
+from corebase.test.documents import XMLFILE, ODFFILE, DOCXFILE
+from person.models import SignPersonDataRequest
+from corebase.test.institution_utils import create_institution
 
 
 class SignPersonCase(BasePersonTest):

@@ -4,9 +4,9 @@ Created on 15 ago. 2017
 @author: luis
 '''
 
-from authenticator.models import AuthenticatePersonDataRequest
 from corebase.test.person import BasePersonTest
-from corebase.test.institutio_utils import create_institution
+from corebase.test.institution_utils import create_institution
+from person.models import AuthenticatePersonDataRequest
 
 
 class AuthenticatorPersonCase(BasePersonTest):

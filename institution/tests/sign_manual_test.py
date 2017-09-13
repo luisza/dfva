@@ -9,10 +9,10 @@ from django.utils import timezone
 import json
 from corebase.rsa import encrypt, get_hash_sum
 import requests
-from .xmlfile import XMLFILE, HASHXML
 from corebase.test.environment import *
-from signer.tests.odffile import ODFFILE, HASHODF
-from signer.tests.docxfile import DOCXFILE, HASHDOCX
+from corebase.test.documents import XMLFILE, HASHXML, ODFFILE, HASHODF, DOCXFILE,\
+    HASHDOCX
+
 
 
 def test_xml_signer(identificacion, url=LISTEN_URL):

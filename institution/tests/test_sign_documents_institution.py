@@ -3,12 +3,9 @@ Created on 16 ago. 2017
 
 @author: luis
 '''
-
-from signer.tests.xmlfile import XMLFILE, HASHXML
-from signer.tests.base_institution_test import SignCase, CheckSignCase
-from signer.tests.odffile import ODFFILE, HASHODF
-from signer.tests.docxfile import DOCXFILE, HASHDOCX
-
+from institution.tests.base_institution_test import SignCase, CheckSignCase
+from corebase.test.documents import XMLFILE, HASHXML, ODFFILE, HASHODF, DOCXFILE,\
+    HASHDOCX
 
 class SignXmlCase(SignCase):
     DOCUMENT = XMLFILE

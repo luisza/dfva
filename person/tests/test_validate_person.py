@@ -3,10 +3,11 @@ Created on 20 ago. 2017
 
 @author: luis
 '''
-from validator.tests.certificate import CERTIFICATE_FILE
-from validator.models import ValidatePersonCertificateDataRequest,\
+from person.tests.base_person_test import BaseValidatePersonCase
+from person.models import ValidatePersonCertificateDataRequest,\
     ValidatePersonDocumentDataRequest
-from validator.tests.base_person_test import BaseValidatePersonCase
+from corebase.test import CERTIFICATE_FILE
+
 
 
 class ValidateCertificatePerson(BaseValidatePersonCase):

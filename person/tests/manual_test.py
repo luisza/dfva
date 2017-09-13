@@ -10,7 +10,8 @@ import json
 from corebase.rsa import encrypt, get_hash_sum
 import requests
 from corebase.test.environment import *
-from validator.tests.certificate import CERTIFICATE_FILE
+from corebase.test import CERTIFICATE_FILE
+
 
 
 def test_validate_certificate(url=LISTEN_URL):
