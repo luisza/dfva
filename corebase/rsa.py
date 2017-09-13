@@ -66,16 +66,14 @@ def decrypt(private_key, cipher_text, as_str=True, session_key=None):
     return decrypted
 
 
-def decrypt_person(session_key, cipher_text, as_str=True):
+def decrypt_person(public_certificate, session_key, cipher_text, as_str=True):
     raw_cipher_data = b64decode(cipher_text)
     file_in = io.BytesIO(raw_cipher_data)
     file_in.seek(0)
-
+    pub_key = RSA.importKey(public_certificate)
     enc_session_key, nonce, tag, ciphertext = \
         [file_in.read(x)
-         for x in (256, 16, 16, -1)]
-    # Fixme: Determinar con el certificado si 256 (2048bit) es el cert pues puede varias, pero para
-    # pruebas actuales queda quemado
+         for x in (pub_key.size_in_bytes(), 16, 16, -1)]
     cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
     decrypted = cipher_aes.decrypt_and_verify(ciphertext, tag)
     if as_str:
@@ -142,12 +140,12 @@ def validate_sign_data(public_certificate, key, cipher_text):
     raw_cipher_data = b64decode(cipher_text)
     file_in = io.BytesIO(raw_cipher_data)
     file_in.seek(0)
-
+    pub_key = RSA.importKey(public_certificate)
     enc_session_key, nonce, tag, ciphertext = \
         [file_in.read(x)
-         for x in (256, 16, 16, -1)]
+         for x in (pub_key.size_in_bytes(), 16, 16, -1)]
 
-    pub_key = RSA.importKey(public_certificate)
+    
     verifier = PKCS1_v1_5.new(pub_key)
     return verifier.verify(digest, enc_session_key)
 

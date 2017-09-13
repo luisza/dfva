@@ -57,7 +57,7 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
 
             try:
                 key = self._get_decrypt_key()
-                self.requestdata = decrypt_person(key,
+                self.requestdata = decrypt_person(self.data['public_certificate'], key,
                                                   self.data['data'])
                 self.check_internal_data(self.requestdata)
             except Exception as e:
