@@ -21,7 +21,7 @@ class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer, Authen
 
     check_show_fields = ['institution',
                          'notification_url',
-                         'identification',
+                         #'identification',
                          'request_datetime']
 
     validate_request_class = AuthenticateRequest

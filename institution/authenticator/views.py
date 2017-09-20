@@ -35,7 +35,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
     def institution(self, request, *args, **kwargs):
         """
         ::
-        
+
           POST /authenticate/institution/
 
         Solicita una petición de autenticación para un usuario 
@@ -71,8 +71,8 @@ class AuthenticateRequestViewSet(ViewSetBase,
     def institution_show(self, request, *args, **kwargs):
         """
         ::
-        
-          POST /authenticate/{code}/institution_show/
+
+          POST /authenticate/{id_transaction}/institution_show/
 
         Solicita el estado de una petición de autenticación para un usuario 
 
@@ -80,10 +80,11 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
         * **institution:** uid de la institucion ver code en detalles de institución,
         * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
-        * **identification:** Identificación de la persona a autenticar,
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **id_transaction** Corresponde al id de la trasnacción del BCCR
 
         Los valores devueltos son: 
 
@@ -120,4 +121,3 @@ class AuthenticateRequestViewSet(ViewSetBase,
                      (dev, ))
 
         return Response(self.get_encrypted_response(dev, serializer))
-

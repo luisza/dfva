@@ -86,8 +86,8 @@ class CheckBaseBaseSerializer():
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {
-                'code': code,
-                'identification': self.requestdata['identification'],
+                'id_transaction': code,
+                #'identification': self.requestdata['identification'],
                 'expiration_datetime__gte': timezone.now()
             }
             if 'notification_url' in self.check_internal_fields:
@@ -98,8 +98,3 @@ class CheckBaseBaseSerializer():
                 self.adr = data
                 dev = True
         return dev
-
-
-
-
-

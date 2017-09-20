@@ -14,13 +14,12 @@ from corebase.test.institution import BaseInstitutionTest
 from corebase.test import WRONG_CERTIFICATE
 
 
-
 class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
     BASE_URL = '/authenticate/%s/institution_show/'
 
     def setUp(self):
         super(CheckAuthenticatorInstitutionCase, self).setUp()
-        response = self.authenticate()
+        response = self.authenticate(identification=self.IDENTIFICATION)
         self.data = response
         # print(self.data)
 
@@ -30,14 +29,16 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         institution = kwargs.get('institution', str(self.institution.code))
         request_datetime = kwargs.get(
             'request_datetime', timezone.now().isoformat())
-
+        identification = kwargs.get('identification', None)
         request_url = kwargs.get('request_url', '/authenticate/institution/')
         data = {
             'institution': institution,
             'notification_url': url,
-            'identification': self.IDENTIFICATION,
             'request_datetime': request_datetime,
         }
+
+        if identification:
+            data['identification'] = identification
 
         params = self.get_request_params(data, **kwargs)
 
@@ -55,34 +56,35 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         return response
 
     def test_authenticate_check(self):
-        response = self.authenticate()
+        response = self.authenticate(identification=self.IDENTIFICATION)
         self.ok_test(response)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             code=response['code']).first())
 
         response = self.authenticate(
-            request_url=self.BASE_URL % (response['code'],))
+            request_url=self.BASE_URL % (response['id_transaction'],))
         self.ok_test(response)
 
     def test_algorithms(self):
 
         for algorithm in ['sha256', 'sha384', 'sha512']:
-            response = self.authenticate(algorithm=algorithm)
+            response = self.authenticate(algorithm=algorithm,
+                                         identification=self.IDENTIFICATION)
             response = self.authenticate(
                 algorithm=algorithm,
-                request_url=self.BASE_URL % (response['code'],))
+                request_url=self.BASE_URL % (response['id_transaction'],))
             self.ok_test(response)
 
     def test_check_wrong_url(self):
         response = self.authenticate(
             url='https://dfva.cr/ups',
-            request_url=self.BASE_URL % (self.data['code'],))
+            request_url=self.BASE_URL % (self.data['id_transaction'],))
         self.check_wrong_url_test(response)
 
     def test_check_wrong_institution(self):
         response = self.authenticate(
             institution='no institution',
-            request_url=self.BASE_URL % (self.data['code'],)
+            request_url=self.BASE_URL % (self.data['id_transaction'],)
         )
         self.check_wrong_institution_test(response)
 
@@ -97,7 +99,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
                                      url=url,
                                      public_certificate=institution2.public_certificate,
                                      request_url=self.BASE_URL % (
-                                         self.data['code'],)
+                                         self.data['id_transaction'],)
                                      )
         response = decrypt(institution2.private_key,
                            response.data['data'])
@@ -105,14 +107,14 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
 
     def test_wrong_hashsum(self):
         response = self.authenticate(request_url=self.BASE_URL % (
-            self.data['code'],),
+            self.data['id_transaction'],),
             hashsum="bd267a725dc16fc0fa33c267af52a25779b8dd628d0df26e5e8813505df8bef05")
         self.wrong_hashsum_test(response)
 
     def test_wrong_certificate(self):
 
         response = self.authenticate(request_url=self.BASE_URL % (
-            self.data['code'],),
+            self.data['id_transaction'],),
             public_certificate=WRONG_CERTIFICATE
         )
         self.wrong_certificate_test(response)

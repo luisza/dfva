@@ -11,6 +11,7 @@ from institution.serializer import InstitutionCheckBaseBaseSerializer
 
 logger = logging.getLogger('dfva')
 
+
 class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSerializer):
 
     check_internal_fields = ['institution',
@@ -24,7 +25,7 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSe
                              'request_datetime']
     check_show_fields = ['institution',
                          'notification_url',
-                         'identification',
+                         #'identification',
                          'request_datetime']
 
     validate_request_class = SignRequest
@@ -47,6 +48,7 @@ class Sign_Response_Serializer(serializers.ModelSerializer):
             'code', 'status', 'identification', 'id_transaction',
             'sign_document', 'duration', 'status_text',
             'request_datetime', 'expiration_datetime', 'received_notification')
+
 
 class LogSingInstitutionRequestSerializer(serializers.ModelSerializer):
     class Meta:

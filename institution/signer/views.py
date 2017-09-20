@@ -20,7 +20,6 @@ import logging
 logger = logging.getLogger('dfva')
 
 
-
 class SignRequestViewSet(ViewSetBase,
                          viewsets.GenericViewSet):
 
@@ -76,7 +75,7 @@ class SignRequestViewSet(ViewSetBase,
         """
         ::
 
-          POST /sign/{code}/institution_show/
+          POST /sign/{id_transaction}/institution_show/
 
         Verifica la firma dado un código y si respectiva identificación
 
@@ -88,6 +87,8 @@ class SignRequestViewSet(ViewSetBase,
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **id_transaction** Corresponde al id de la trasnacción del BCCR
 
         Los valores devueltos son: 
 
@@ -124,4 +125,3 @@ class SignRequestViewSet(ViewSetBase,
         logger.debug('Sign: ERROR Institution %r' %
                      (dev, ))
         return Response(self.get_encrypted_response(dev, serializer))
-
