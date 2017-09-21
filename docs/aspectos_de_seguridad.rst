@@ -98,6 +98,14 @@ Transporte
 
 Se recomienda implementar HTTP Strict Transport Security (HSTS) en el sistemas en producción.
 
+Disponibilidad
+-------------------
+
+DFVA está basado en Django y utiliza todos los mecanismos provistos por este, así también posee todas las bondades en cuanto a escalabilidad. Por ello DFVA es escalable tanto Horizontal como Verticalmente.
+
+Aunque AES EAX no es thread safe, solo se utiliza un hilo por encripción y abonando el hecho que Django es thread safe, se concidera que DFVA posee la capacidad de ejecutarse en entornos multi-hilo, con un pequeño impacto en los tiempos de encripción.
+
+.. note:: Más pruebas del comportamiento multihilo son recomendables.
 
 Emisión de certificados
 --------------------------
@@ -128,6 +136,20 @@ Se utiliza el siguiente comando para generar la CA.
 Este es un archivo openssl.cnf de ejemplo :download:`descargar <_static/openssl.cnf>`.
 
 .. note:: Se espera contar con un HSM para proporcionar mayor seguridad. 
+
+
+Encripción
+-------------
+
+Se recomienda utilizar transporte https para la puesta en producción de esta plataforma, aún así DFVA posee una segunda capa de encripción, utilizando los algoritmos.
+
+- **AES EAX:** Algoritmo simetrico, utilizado para encriptar el contenido, posee un token de sessión y un atributo IV (nonce). Este par debe ser único en cada encripción, osea no se puede repetir el IV con el mismo token de sessión.  Actualmente tanto el token de sessión como el IV son de 16 bytes.
+ 
+- **PKCS1 OAEP:**  Algoritmo de encripción asimétrico, es utilizado para encriptar el token de sessión.   También conocido como RSA/NONE/OAEPWithSHA1AndMGF1Padding en ambiente java.
+
+Estructura de la encripción es:   Token encriptado + IV (nonce) + datos encriptados.
+
+.. warning:: en algunas implementaciones como en java se incluye dentro de los datos encriptados el IV al final, por lo que debe removerse y ponerse después del token encriptado.
 
 
 
