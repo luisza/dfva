@@ -53,6 +53,7 @@ INSTALLED_APPS += [
     'image_cropping',
     'cruds_adminlte',
     'django_ajax',
+    #'django_extensions',
 
 ]
 

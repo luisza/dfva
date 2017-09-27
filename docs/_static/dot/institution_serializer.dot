@@ -1,0 +1,43 @@
+digraph "classes" {
+charset="utf-8"
+rankdir=BT
+"0" [label="{Authenticate_RequestSerializer|adr\lcheck_internal_fields : NoneType\ldata : CharField\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lsave()\lsave_subject()\l}", shape="record"];
+"1" [label="{Authenticate_Request_Serializer|check_internal_fields : list\lcheck_show_fields : list\lvalidate_data_class : AuthenticateDataRequest\lvalidate_request_class : AuthenticateRequest\l|save_subject()\l}", shape="record"];
+"2" [label="{Authenticate_Response_Serializer|\l|}", shape="record"];
+"3" [label="{CheckBaseBaseSerializer|adr\lcheck_internal_fields\l|check_code()\l}", shape="record"];
+"4" [label="{CoreBaseBaseSerializer|requestdata : NoneType, bool\l|check_hash_algorithm()\lcheck_internal_data()\lcheck_subject()\lget_institution()\lis_valid()\lvalidate_certificate()\lvalidate_digest()\l}", shape="record"];
+"5" [label="{ErrorEncontradoSerializer|\l|}", shape="record"];
+"6" [label="{FirmanteSerializer|\l|}", shape="record"];
+"7" [label="{InstitutionBaseSerializer|institution : NoneType\lrequestdata : NoneType, bool\l|check_subject()\lget_institution()\lvalidate_certificate()\l}", shape="record"];
+"8" [label="{InstitutionCheckBaseBaseSerializer|\l|}", shape="record"];
+"9" [label="{LogAuthenticateInstitutionRequestSerializer|\l|}", shape="record"];
+"10" [label="{LogSingInstitutionRequestSerializer|\l|}", shape="record"];
+"24" [label="{Sign_RequestSerializer|adr\ldata : CharField\lreadonly_fields : list\l|call_BCCR()\lsave()\l}", shape="record"];
+"25" [label="{Sign_Request_Serializer|check_internal_fields : list\lcheck_show_fields : list\lvalidate_data_class : SignDataRequest\lvalidate_request_class : SignRequest\l|save_subject()\l}", shape="record"];
+"26" [label="{Sign_Response_Serializer|\l|}", shape="record"];
+"27" [label="{SuscriptorInstitution_Serializer|check_internal_fields : list\l|}", shape="record"];
+"28" [label="{Suscriptor_Serializer|data : CharField\lreadonly_fields : list\l|call_BCCR()\lis_valid()\lsave()\l}", shape="record"];
+"29" [label="{ValidateCertificateRequest_Response_Serializer|\l|}", shape="record"];
+"30" [label="{ValidateCertificate_RequestSerializer|adr\lcert_request\lcheck_internal_fields : NoneType\ldata : CharField\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lsave()\lsave_subject()\l}", shape="record"];
+"31" [label="{ValidateCertificate_Request_Serializer|check_internal_fields : list\lvalidate_data_class : ValidateCertificateDataRequest\lvalidate_request_class : ValidateCertificateRequest\l|save_subject()\l}", shape="record"];
+"32" [label="{ValidateDocumentRequest_Response_Serializer|\l|}", shape="record"];
+"33" [label="{ValidateDocument_RequestSerializer|adr\lcheck_internal_fields : NoneType\ldata : CharField\ldocument_request\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lget_advertencias()\lget_errores_encontrados()\lget_firmantes()\lsave()\lsave_subject()\l}", shape="record"];
+"34" [label="{ValidateDocument_Request_Serializer|check_internal_fields : list\lvalidate_data_class : ValidateDocumentDataRequest\lvalidate_request_class : ValidateDocumentRequest\l|save_subject()\l}", shape="record"];
+"35" [label="{ValidateDocument_ResponseSerializer|advertencias : StringRelatedField\lerrores\lfirmantes\l|}", shape="record"];
+"1" -> "0" [arrowhead="empty", arrowtail="none"];
+"1" -> "8" [arrowhead="empty", arrowtail="none"];
+"7" -> "4" [arrowhead="empty", arrowtail="none"];
+"8" -> "3" [arrowhead="empty", arrowtail="none"];
+"8" -> "7" [arrowhead="empty", arrowtail="none"];
+"25" -> "8" [arrowhead="empty", arrowtail="none"];
+"25" -> "24" [arrowhead="empty", arrowtail="none"];
+"27" -> "7" [arrowhead="empty", arrowtail="none"];
+"27" -> "28" [arrowhead="empty", arrowtail="none"];
+"31" -> "7" [arrowhead="empty", arrowtail="none"];
+"31" -> "30" [arrowhead="empty", arrowtail="none"];
+"32" -> "35" [arrowhead="empty", arrowtail="none"];
+"34" -> "7" [arrowhead="empty", arrowtail="none"];
+"34" -> "33" [arrowhead="empty", arrowtail="none"];
+"5" -> "35" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="errores", style="solid"];
+"6" -> "35" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="firmantes", style="solid"];
+}

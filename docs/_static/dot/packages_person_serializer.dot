@@ -1,0 +1,19 @@
+digraph "packages" {
+charset="utf-8"
+rankdir=BT
+"0" [label="corebase.authenticate", shape="box"];
+"1" [label="corebase.serializer", shape="box"];
+"2" [label="corebase.signer", shape="box"];
+"3" [label="corebase.validator", shape="box"];
+"4" [label="person.authenticator.serializer", shape="box"];
+"5" [label="person.serializer", shape="box"];
+"6" [label="person.signer.serializer", shape="box"];
+"7" [label="person.validator.serializer", shape="box"];
+"4" -> "0" [arrowhead="open", arrowtail="none"];
+"4" -> "5" [arrowhead="open", arrowtail="none"];
+"5" -> "1" [arrowhead="open", arrowtail="none"];
+"6" -> "2" [arrowhead="open", arrowtail="none"];
+"6" -> "5" [arrowhead="open", arrowtail="none"];
+"7" -> "3" [arrowhead="open", arrowtail="none"];
+"7" -> "5" [arrowhead="open", arrowtail="none"];
+}

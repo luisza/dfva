@@ -1,0 +1,16 @@
+digraph "classes" {
+charset="utf-8"
+rankdir=BT
+"0" [label="{AuthenticatePersonRequestViewSet|queryset\lresponse_class : Authenticate_Person_Response_Serializer\lserializer_class : Authenticate_Person_Request_Serializer\l|get_error_response()\lperson()\lperson_show()\l}", shape="record"];
+"1" [label="{BaseSuscriptor|\l|get_error_response()\l}", shape="record"];
+"2" [label="{PersonLoginView|queryset\lresponse_class : PersonLoginResponseSerializer\lserializer_class : PersonLoginSerializer\l|create()\l}", shape="record"];
+"3" [label="{SignPersonRequestViewSet|queryset\lresponse_class : Sign_Person_Response_Serializer\lserializer_class : Sign_Person_Request_Serializer\l|get_error_response()\lperson()\lperson_show()\l}", shape="record"];
+"4" [label="{ValidatePersonViewSet|DEFAULT_ERROR : tuple\lqueryset\lqueryset\lresponse_class : ValidatePersonCertificateRequest_Response_Serializer\lresponse_class : ValidatePersonDocumentRequest_Response_Serializer\lserializer_class : ValidatePersonCertificate_Request_Serializer\lserializer_class : ValidatePersonDocument_Request_Serializer\l|person_certificate()\lperson_document()\l}", shape="record"];
+"5" [label="{ValidateSubscriptorPersonViewSet|queryset\lserializer_class : SuscriptorPerson_Serializer\l|person_suscriptor_connected()\l}", shape="record"];
+"6" [label="{ViewSetBase|\l|get_encrypted_response()\lget_error_response()\lget_success_headers()\lshow()\l}", shape="record"];
+"0" -> "6" [arrowhead="empty", arrowtail="none"];
+"1" -> "6" [arrowhead="empty", arrowtail="none"];
+"3" -> "6" [arrowhead="empty", arrowtail="none"];
+"4" -> "6" [arrowhead="empty", arrowtail="none"];
+"5" -> "1" [arrowhead="empty", arrowtail="none"];
+}

@@ -14,7 +14,8 @@ Bienvenidos a la documentación de DFVA
    instalacion
    aspectos_de_seguridad
    API
-   flujos_de_interaccion.rst
+   flujos_de_interaccion
+   diagrama_de_clases
    Contribuir
 
 
