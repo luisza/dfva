@@ -6,6 +6,8 @@ Created on 26 jul. 2017
 
 import logging
 from receptor.notify import send_notification
+from pyfva.constants import get_text_representation,\
+    ERRORES_AL_NOTIFICAR_FIRMA
 
 DATAREQUEST = []
 
@@ -51,6 +53,8 @@ def reciba_notificacion(data):
         return
 
     request.status = data['codigo_error']
+    request.status_text = get_text_representation(
+        ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])
     request.received_notification = True
     request.sign_document = data['documento']
     request.save()
