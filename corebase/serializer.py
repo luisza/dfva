@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import logging
-from corebase.ca_management.check_cert import check_certificate
+from corebase.ca_management import check_certificate
 
 logger = logging.getLogger('dfva')
 

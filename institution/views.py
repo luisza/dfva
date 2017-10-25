@@ -1,11 +1,8 @@
 from cruds_adminlte.inline_crud import InlineAjaxCRUD
 from institution.models import NotificationURL, Institution
 from cruds_adminlte.crud import UserCRUDView
-from corebase.ca_management import gen_cert
-import os
+from corebase.ca_management import create_certiticate
 from django.http.response import HttpResponseRedirect
-from django.conf import settings
-
 
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
@@ -34,10 +31,8 @@ class InstitutionCRUD(UserCRUDView):
 
             def form_valid(self, form):
                 self.object = form.save(commit=False)
-                self.object = gen_cert(self.object.domain, self.object,
-                                       os.path.join(
-                                           settings.CA_PATH, "ca_cert.pem"),
-                                       os.path.join(settings.CA_PATH, "ca_key.pem"))
+                self.object = create_certiticate(
+                    self.object.domain, self.object)
                 self.object.user = self.request.user
                 self.object.save()
                 return HttpResponseRedirect(self.get_success_url())

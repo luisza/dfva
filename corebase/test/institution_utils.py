@@ -4,9 +4,7 @@ Created on 15 ago. 2017
 @author: luis
 '''
 
-from corebase.ca_management import gen_cert
-import os
-from django.conf import settings
+from corebase.ca_management import create_certiticate
 from institution.models import Institution, NotificationURL
 
 
@@ -19,13 +17,7 @@ def create_institution(user, domain='dfva.cr',
         active=True,
         domain=domain,
         institution_unit=institution_unit)
-    gen_cert(domain,
-             save_model,
-             os.path.join(
-                 settings.CA_PATH, "ca_cert.pem"),
-             os.path.join(settings.CA_PATH, "ca_key.pem")
-             )
-
+    create_certiticate(domain, save_model)
     save_model.save()
 
     return save_model

@@ -6,13 +6,15 @@ Created on 13 sep. 2017
 from corebase.serializer import CheckBaseBaseSerializer, CoreBaseBaseSerializer
 from institution.models import Institution, NotificationURL
 from django.utils.translation import ugettext_lazy as _
-from corebase.ca_management.check_cert import check_certificate
+
 
 import logging
 from corebase.rsa import decrypt
+from corebase.ca_management import check_certificate
 
 
 logger = logging.getLogger('dfva')
+
 
 class InstitutionBaseSerializer(CoreBaseBaseSerializer):
 
