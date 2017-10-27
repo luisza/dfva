@@ -20,6 +20,7 @@ from Crypto.Hash import SHA512
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from django.core.serializers.json import DjangoJSONEncoder
+from django.conf import settings
 
 
 def pem_to_base64(certificate):
@@ -103,6 +104,36 @@ def encrypt(public_key, message):
     return b64encode(file_out.read())
 
 
+def get_salt_session(size=16):
+    key = settings.SECRET_KEY.encode()
+    if len(key) > size:
+        return key[:size]
+    return key
+
+
+def salt_encrypt(message):
+    session_key = get_salt_session()
+    file_out = io.BytesIO()
+    cipher_aes = AES.new(session_key, AES.MODE_EAX)
+    ciphertext, tag = cipher_aes.encrypt_and_digest(message)
+    [file_out.write(x) for x in (cipher_aes.nonce, tag, ciphertext)]
+    file_out.seek(0)
+    return b64encode(file_out.read())
+
+
+def salt_decrypt(message):
+    raw_cipher_data = b64decode(message)
+    file_in = io.BytesIO(raw_cipher_data)
+    file_in.seek(0)
+
+    nonce, tag, ciphertext = [file_in.read(x) for x in (16, 16, -1)]
+
+    session_key = get_salt_session()
+    cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
+    decrypted = cipher_aes.decrypt_and_verify(ciphertext, tag)
+    return decrypted
+
+
 def rsa_encrypt(public_key, message=None):
     if type(message) == str:
         message = message.encode('utf-8')
@@ -145,7 +176,6 @@ def validate_sign_data(public_certificate, key, cipher_text):
         [file_in.read(x)
          for x in (pub_key.size_in_bytes(), 16, 16, -1)]
 
-    
     verifier = PKCS1_v1_5.new(pub_key)
     return verifier.verify(digest, enc_session_key)
 

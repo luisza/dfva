@@ -6,6 +6,17 @@ from institution.presentation import PEMpresentation
 from django.contrib.auth.models import User
 import uuid
 from django.conf import settings
+from corebase.rsa import salt_decrypt, salt_encrypt
+
+
+class EncrytedText(models.TextField):
+
+    def from_db_value(self, value, expression, connection, context):
+        return salt_decrypt(value)
+
+    def pre_save(self, model_instance, add):
+        return salt_encrypt(getattr(model_instance, self.attname))
+
 
 class Institution(models.Model, PEMpresentation):
     user = models.ForeignKey(User)
@@ -20,10 +31,10 @@ class Institution(models.Model, PEMpresentation):
     institution_unit = models.CharField(
         max_length=250, default="ND")  # UO in cert
     private_key = models.TextField()
-    public_key = models.TextField()
-    public_certificate = models.TextField()
-    server_sign_key = models.TextField()
-    server_public_key = models.TextField()
+    public_key = EncrytedText()
+    public_certificate = EncrytedText()
+    server_sign_key = EncrytedText()
+    server_public_key = EncrytedText()
 
     def __str__(self):
         return self.name
@@ -174,7 +185,8 @@ class SignRequest(BaseInstitutionRequestModel):
         permissions = (
             ("view_signrequest", "Can see available Sign Request"),
         )
-        
+
+
 class ValidateCertificateDataRequest(models.Model):
     institution = models.ForeignKey(Institution)
     notification_url = models.URLField()
