@@ -13,6 +13,8 @@ from django.utils.safestring import mark_safe
 class PEMpresentation(object):
 
     def present(self, data):
+        if type(data) == bytes:
+            data = data.decode()
         return mark_safe("<pre>%s</pre>" % (data))
 
     def get_private_key_display(self):

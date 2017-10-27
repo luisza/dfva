@@ -1,0 +1,13 @@
+{% extends "cruds/detail.html" %}
+{% load i18n %}
+{% load crud_tags %}
+
+{% block content %}
+
+<div class="alert alert-danger"> Guarde estas llaves en un lugar seguro, una de ellas no podrá ser consultada más adelante en esta vista.</div>
+
+{{block.super}}
+
+<div class="alert alert-danger"> Guarde estas llaves en un lugar seguro, una de ellas no podrá ser consultada más adelante en esta vista. </div>
+
+{% endblock %}
