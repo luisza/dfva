@@ -4,6 +4,7 @@ from OpenSSL import crypto
 from OpenSSL.SSL import Context, TLSv1_METHOD
 from django.conf import settings
 from django.core.checks import Error, register
+from corebase.ca_management.interface import CAManagerInterface
 
 
 def fix_certificate(certificate):
@@ -25,7 +26,7 @@ def check_ca_in_settings(app_configs, **kwargs):
     return errors
 
 
-class CAManager:
+class CAManager(CAManagerInterface):
     ca_crt = settings.CA_CERT
     ca_key = settings.CA_KEY
 

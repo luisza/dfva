@@ -18,6 +18,10 @@ Existe una relación entre los paquetes que se describe a continuación
 * :download:`dot <_static/dot/packages_person_views.dot>`   :download:`png <_static/png/packages_person_views.png>` Vistas
 
 
+**Manejador de certificados y Simple CA**
+
+* :download:`dot <_static/dot/ca_management_packages.dot>`   :download:`png <_static/png/ca_management_packages.png>` Simple CA 
+
 Clases
 ----------------
 
@@ -37,6 +41,9 @@ DFVA se divide en 2 secciones; personas e instituciones, cada una de éstas se s
 * :download:`dot <_static/dot/person_serializer.dot>`   :download:`png <_static/png/person_serializer.png>`  Serializadores
 * :download:`dot <_static/dot/person_views.dot>`   :download:`png <_static/png/person_views.png>` Vistas
 
+**Manejador de certificados y Simple CA**
 
+
+* :download:`dot <_static/dot/ca_management_clases.dot>`   :download:`png <_static/png/ca_management_clases.png>` Simple CA
 
 

@@ -43,8 +43,10 @@ En DFVA se construye dos pares de llaves por cada institución.
 * **Llaves de la aplicación:** La llave privada se entrega y la llave pública se guarda y nunca es revelada.
 * **Llaves del servicio:** La llave privada se guarda y nunca es revelada y la llave pública se entrega a la institución.
 
+Los juegos de llaves encriptados y el certificado se guardan en la base de datos, excepto la llave privada de la institución, la cual nunca es almacenada en la báse de datos y solo se muestra una vez al usuario.
 Debido a que tanto las llaves privadas y las públicas son exclusivas de cada institución y generadas dentro de DFVA la llave pública de la institución nunca es expuesta asegurando aún más la comunicación RSA.
 
+.. note::  Se utiliza el SECRET_KEY del Django para generar una llave de encripción para los atributos almacenados en la base de datos, por lo que asegurece cambiar el valor por defecto.
 
 Persona
 ~~~~~~~~~~~~~~
@@ -80,6 +82,8 @@ Se pretende que las verificaciones de documentos y certificados y las revisiones
 
 DFVA trabaja con tareas asincrónicas llamadas cada 5 y 20 minutos las cuales se encargan de revisar cuales peticiones han vencido el plazo y deben enviarse a logs, debido a este comportamiento algunas peticiones tendrán una duración entre 5-9 minutos para autenticación y 20 a 39 minutos para firma antes de ser enviadas a logs.   Debido a que se provee la opción de solicitar la información de una petición para clientes no web esta información debe permanecer por un periodo de tiempo, además los mecanismos de control propios impedirá que una petición cuyo tiempo de vida haya caducado pueda ser obtenida por un cliente.
 
+
+
 Bitácoras
 ------------------
 
@@ -107,10 +111,19 @@ Aunque AES EAX no es thread safe, solo se utiliza un hilo por encripción y abon
 
 .. note:: Más pruebas del comportamiento multihilo son recomendables.
 
-Emisión de certificados
---------------------------
+Manejo de los certificados
+---------------------------
 
-.. note:: Actualmente se utiliza una CA interna generada con openSSL, debido a que no tenemos los fondos para un HSM :(.
+DFVA es versatil y permite configurar el manejador de certificados, con ello permite comunicarse con la infraestructura de PKI que se desee.
+
+Actualmente, se trabaja en integración con Dogtag_ y se puede utilizar para desarrollo el manejador **CA simple con OpenSSL**
+
+.. _Dogtag: http://pki.fedoraproject.org/wiki/PKI_Main_Page
+
+CA Simple con OpenSSL
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+La emisión de certificados, se genera 
 
 ::
 
@@ -135,8 +148,10 @@ Se utiliza el siguiente comando para generar la CA.
 
 Este es un archivo openssl.cnf de ejemplo :download:`descargar <_static/openssl.cnf>`.
 
-.. note:: Se espera contar con un HSM para proporcionar mayor seguridad. 
+DogTag
+~~~~~~~~~~~~~~~~~~~~~~~~
 
+Descripción pronto.  Para activar experimental USE_DOCTAG=True en settings.
 
 Encripción
 -------------

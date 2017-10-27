@@ -17,11 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
-from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
-from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
-from soapfish.django_ import django_dispatcher
-dispatcher = django_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 from django.conf import settings
 from institution.urls import get_routes_view as instition_get_routes_view
 from person.urls import get_routes_view as person_get_routes_view
@@ -30,8 +26,6 @@ from institution.urls import urlpatterns as institution_urls
 router = routers.DefaultRouter()
 instition_get_routes_view(router)
 person_get_routes_view(router)
-
-
 
 
 urlpatterns = [
@@ -44,7 +38,7 @@ urlpatterns = [
                                namespace='rest_framework')),
     url(r'^', include('corebase.urls')),
     url(r'^', include(router.urls)),
-]+institution_urls
+] + institution_urls
 
 if settings.DEMO:
     # IF DEMO, remove in production

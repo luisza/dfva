@@ -61,4 +61,13 @@ dot -Tpng $BASEDOT/person_views.dot -o $BASEPNG/person_views.png
 python manage.py graph_models corebase person > $BASEDOT/person_model.dot
 dot -Tpng $BASEDOT/person_model.dot -o $BASEPNG/person_model.png
 
+# CA management
+
+pyreverse corebase/ca_management/
+mv packages.dot $BASEDOT/ca_management_packages.dot
+mv classes.dot $BASEDOT/ca_management_clases.dot
+
+dot -Tpng $BASEDOT/ca_management_packages.dot -o $BASEPNG/ca_management_packages.png
+dot -Tpng $BASEDOT/ca_management_clases.dot -o $BASEPNG/ca_management_clases.png
+
 sed -i s/\'django_extensions\'/\#\'django_extensions\'/g dfva/settings.py

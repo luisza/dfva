@@ -1,0 +1,7 @@
+digraph "classes" {
+charset="utf-8"
+rankdir=BT
+"0" [label="{CAManager|ca_crt\lca_key\l|check_certificate()\lgenerate_certificate()\lrevoke_certificate()\l}", shape="record"];
+"1" [label="{CAManagerInterface|\l|check_certificate()\lgenerate_certificate()\lrevoke_certificate()\l}", shape="record"];
+"0" -> "1" [arrowhead="empty", arrowtail="none"];
+}

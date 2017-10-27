@@ -1,0 +1,9 @@
+digraph "packages" {
+charset="utf-8"
+rankdir=BT
+"0" [label="corebase.ca_management", shape="box"];
+"1" [label="corebase.ca_management.interface", shape="box"];
+"2" [label="corebase.ca_management.simpleCA", shape="box"];
+"0" -> "2" [arrowhead="open", arrowtail="none"];
+"2" -> "1" [arrowhead="open", arrowtail="none"];
+}

@@ -27,11 +27,3 @@ def check_certificate(certificate):
 
 def revoke_certificate(certificate):
     return CA_manag_instance.revoke_certificate(certificate)
-
-
-class CAManagerInterface:
-    def generate_certificate(self, domain, save_model):  # , ca_crt=None, ca_key=None
-        pass
-
-    def check_certificate(self, certificate):
-        pass
