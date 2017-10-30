@@ -16,7 +16,9 @@ Bienvenidos a la documentación de DFVA
    API
    flujos_de_interaccion
    diagrama_de_clases
+   riesgos
    Contribuir
+
 
 
 Índices y tablas
