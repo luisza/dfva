@@ -158,6 +158,9 @@ CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 
+
+ALLOWED_BCCR_IP=[] #['192.168.1.119']
+
 EXPIRED_DELTA = 5  # in minutes
 LOGIN_REDIRECT_URL = '/'
 FVA_HOST = "http://localhost:8001/"

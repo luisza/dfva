@@ -16,9 +16,9 @@ logger = logging.getLogger('ucr_fva')
 
 def get_datarequest_serializer(data):
     if isinstance(data, AuthenticateDataRequest):
-        return Authenticate_Response_Serializer, data.authenticaterequest_set.first()
+        return Authenticate_Response_Serializer, data.authenticaterequest
     elif isinstance(data, SignDataRequest):
-        return Sign_Response_Serializer, data.signrequest_set.first()
+        return Sign_Response_Serializer, data.signrequest
 
 
 def send_notification(data, serializer=None, request=None):

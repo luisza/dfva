@@ -23,10 +23,11 @@ def create_institution(user, domain='dfva.cr',
     return save_model
 
 
-def create_url(institution, url='N/D', description="test url"):
+def create_url(institution, url='N/D', description="test url", is_demo=False):
     return NotificationURL.objects.create(
         description=description,
         url=url,
         institution=institution,
-        not_webapp=url == 'N/D'
+        not_webapp=url == 'N/D',
+        is_demo=is_demo
     )

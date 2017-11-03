@@ -4,6 +4,7 @@ from cruds_adminlte.crud import CRUDView
 from django import forms
 from django.contrib.auth.models import User
 from person.models import Person
+from demo.clientes import check_demo_institution
 
 
 def show_simulate_bccr_request(request, nform):
@@ -23,6 +24,7 @@ def show_simulate_bccr_request(request, nform):
 
     form = forms[nform]
     message = None
+    check_demo_institution()
     if request.method == 'POST':
         form = form(request.POST, request.FILES)
         if form.is_valid():

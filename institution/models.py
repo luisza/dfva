@@ -51,6 +51,7 @@ class NotificationURL(models.Model):
     url = models.URLField(null=True, blank=True)
     institution = models.ForeignKey(Institution)
     not_webapp = models.BooleanField(default=False)
+    is_demo=models.BooleanField(default=False)
 
     def __str__(self):
         return "%s %s" % (

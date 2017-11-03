@@ -34,7 +34,7 @@ class ValidatorClient(object):
         params = {
             "data_hash": hashsum,
             "algorithm": algorithm,
-            "public_certificate": self.institution.public_certificate,
+            "public_certificate": self.institution.public_certificate.decode(),
             'institution': str(self.institution.code),
             "data": edata,
         }
