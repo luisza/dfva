@@ -8,9 +8,10 @@ Created on 18 jul. 2017
 
 from django.conf.urls import url
 
-from soapfish.django_ import django_dispatcher
+
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
-dispatcher = django_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
+from corebase.bccr_checks import soap_dispatcher
+dispatcher = soap_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 
 
 

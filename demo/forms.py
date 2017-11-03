@@ -14,7 +14,7 @@ from institution.models import NotificationURL
 
 
 class AuthenticateForm(forms.Form):
-    url = forms.ModelChoiceField(queryset=NotificationURL.objects.all())
+    url = forms.ModelChoiceField(queryset=NotificationURL.objects.filter(is_demo=True))
     identificacion = forms.CharField(max_length=16, min_length=11)
 
     def send(self):
@@ -29,7 +29,7 @@ class AuthenticateForm(forms.Form):
 
 
 class SignForm(forms.Form):
-    url = forms.ModelChoiceField(queryset=NotificationURL.objects.all())
+    url = forms.ModelChoiceField(queryset=NotificationURL.objects.filter(is_demo=True))
     identificacion = forms.CharField(max_length=16, min_length=11)
     documento = forms.FileField()
     formato = forms.ChoiceField(choices=(
@@ -60,7 +60,7 @@ class SignForm(forms.Form):
 
 
 class ValidateForm(forms.Form):
-    url = forms.ModelChoiceField(queryset=NotificationURL.objects.all())
+    url = forms.ModelChoiceField(queryset=NotificationURL.objects.filter(is_demo=True))
     documento = forms.CharField(widget=forms.Textarea)
     tipo = forms.ChoiceField(choices=(
         ('documento', 'Documento XML'),
