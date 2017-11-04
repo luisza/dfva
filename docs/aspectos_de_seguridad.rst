@@ -46,7 +46,7 @@ En DFVA se construye dos pares de llaves por cada institución.
 Los juegos de llaves encriptados y el certificado se guardan en la base de datos, excepto la llave privada de la institución, la cual nunca es almacenada en la báse de datos y solo se muestra una vez al usuario.
 Debido a que tanto las llaves privadas y las públicas son exclusivas de cada institución y generadas dentro de DFVA la llave pública de la institución nunca es expuesta asegurando aún más la comunicación RSA.
 
-.. note::  Se utiliza el SECRET_KEY del Django para generar una llave de encripción para los atributos almacenados en la base de datos, por lo que asegurece cambiar el valor por defecto.
+.. note::  Se utiliza el SECRET_KEY de Django para generar una llave de encripción para los atributos almacenados en la base de datos, por lo que asegurece cambiar el valor por defecto.
 
 Persona
 ~~~~~~~~~~~~~~
