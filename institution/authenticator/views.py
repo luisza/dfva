@@ -55,6 +55,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
         * **request_datetime:** Hora de recepción de la solicitud
         * **id_transaction:** Id de trasnacción en el FVA del BCCR
         * **status:** Código de error de la transacción
+        * **status_text** Descripción para humanos del código de error
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
@@ -92,6 +93,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
         * **request_datetime:** Hora de recepción de la solicitud
         * **id_transaction:** Id de trasnacción en el FVA del BCCR
         * **status:** Código de error de la transacción
+        * **status_text** Descripción para humanos del código de error
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
@@ -121,3 +123,34 @@ class AuthenticateRequestViewSet(ViewSetBase,
                      (dev, ))
 
         return Response(self.get_encrypted_response(dev, serializer))
+
+    @detail_route(methods=['post'])
+    def institution_delete(self, request, *args, **kwargs):
+        """
+        ::
+
+          POST /authenticate/{id_transaction}/institution_delete/
+
+        Elimina una petición de autenticación para un usuario 
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **institution:** uid de la institucion ver code en detalles de institución,
+        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **id_transaction** Corresponde al id de la trasnacción del BCCR
+
+        Los valores devueltos son: 
+        
+        * **result** True/False si se eliminó la petición o no
+        
+        """
+        ip = get_ip(request)
+        logger.debug('Authentication: Delete Institution request %s %r' %
+                     (ip, request.data))
+        logger.info('Authentication: Delete Institution request %s %s %s %s' %
+                    get_log_institution_information(request))
+        return self.delete(request, *args, **kwargs)

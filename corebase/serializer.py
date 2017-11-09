@@ -73,6 +73,7 @@ class CoreBaseBaseSerializer(object):
             self, raise_exception=raise_exception)
         self.validate_digest()
         self.validate_certificate()
+
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
@@ -86,6 +87,7 @@ class CheckBaseBaseSerializer():
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {
+                'institution': self.institution,
                 'id_transaction': code,
                 #'identification': self.requestdata['identification'],
                 'expiration_datetime__gte': timezone.now()

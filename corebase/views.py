@@ -79,6 +79,18 @@ class ViewSetBase:
                     (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
         return self.get_error_response(serializer)
 
+
+    def delete(self, request, *args, **kwargs):
+        dev = False
+        serializer = self.get_serializer(data=request.data)
+        if serializer.check_code(kwargs['pk'], raise_exception=False):
+            serializer.object.delete()
+            dev = True
+        response ={'result': dev}
+        headers = self.get_success_headers(response)
+        return Response(self.get_encrypted_response(response, serializer),
+                            status=status.HTTP_201_CREATED, headers=headers)  
+            
     def get_error_response(self, serializer):
         dev = {"error_info": serializer._errors,
                'code': 'N/D',

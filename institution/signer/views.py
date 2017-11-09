@@ -57,6 +57,7 @@ class SignRequestViewSet(ViewSetBase,
         * **id_transaction:** Id de trasnacción en el FVA del BCCR
         * **sign_document:** Normalmente None, es un campo para almacenar el documento, pero no se garantiza que venga el documento firmado
         * **status:** Código de error de la transacción
+        * **status_text** Descripción para humanos del código de error
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
@@ -97,6 +98,7 @@ class SignRequestViewSet(ViewSetBase,
         * **id_transaction:** Id de trasnacción en el FVA del BCCR
         * **sign_document:** Normalmente None, es un campo para almacenar el documento, pero no se garantiza que venga el documento firmado
         * **status:** Código de error de la transacción
+        * **status_text** Descripción para humanos del código de error
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
@@ -108,6 +110,40 @@ class SignRequestViewSet(ViewSetBase,
         logger.info('Sign: Show Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
+
+    @detail_route(methods=['post'])
+    def institution_delete(self, request, *args, **kwargs):
+        """
+        ::
+
+          POST /sign/{id_transaction}/institution_delete/
+
+        Elimina una petición de firma dado un código de transacción del BCCR
+
+        Los valores a suministrar en el parámetro data son:
+
+        * **institution:** uid de la institucion ver code en detalles de institución,
+        * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,   
+        * **identification:** Identificación de la persona a autenticar,
+        * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+        Data es un diccionario, osea un objeto de tipo clave -> valor
+
+        **id_transaction** Corresponde al id de la trasacción del BCCR
+
+        Los valores devueltos son: 
+       
+        * **result** True/False si se eliminó la petición o no
+        
+        """
+        ip = get_ip(request)
+        logger.debug('Sign: Delete Institution %s %r' %
+                     (ip, request.data))
+        logger.info('Sign: Delete Institution %s %s %s %s' %
+                    get_log_institution_information(request))
+        return self.show(request, *args, **kwargs)
+
+
 
     def get_error_response(self, serializer):
         dev = {
