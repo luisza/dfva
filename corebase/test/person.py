@@ -11,7 +11,7 @@ import json
 from corebase.rsa import get_hash_sum, encrypt, decrypt as decrypt_base
 from client_fva.person import PersonClient
 from client_fva.rsa import decrypt
-from client_fva import Settings
+from client_fva.user_settings import UserSettings as Settings
 from base64 import b64encode
 from django.utils import timezone
 from person.models import Person
@@ -46,7 +46,7 @@ class BasePersonTest(TestCase):
         create_url(self.institution)
         self.request_client = HTTPClient(APIClient())
         self.settings = Settings()
-        self.settings.FVA_SERVER_URL = ''
+        self.settings.fva_server_url = ''
 
         self.client = PersonClient(settings=self.settings,
                                    request_client=self.request_client)
@@ -116,8 +116,8 @@ class BasePersonTest(TestCase):
         }
         params = self.get_request_params(data, **kwargs)
         result = self.request_client.post(
-            self.settings.FVA_SERVER_URL +
-            self.settings.AUTHENTICATE_PERSON, json=params)
+            self.settings.fva_server_url +
+            self.settings.authenticate_person, json=params)
 
         data = result.json()
         data = self._decrypt(data['data'])
@@ -157,7 +157,7 @@ class BasePersonTest(TestCase):
                    'Content-Type': 'application/json'}
 
         result = self.request_client.post(
-            self.settings.FVA_SERVER_URL + self.settings.SIGN_PERSON,
+            self.settings.fva_server_url + self.settings.sign_person,
             json=params, headers=headers)
 
         data = result.json()

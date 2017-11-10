@@ -16,6 +16,12 @@ Tantos las personas como las instituciones pueden:
 - Validar un documento xml. 
 
 
+Documentación
+===============
+
+Por supuesto la documentación está en [aquí](http://dfva.readthedocs.io)
+
+
 Proyectos complementarios
 ==============================
 

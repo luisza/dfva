@@ -10,7 +10,7 @@ Introduzca los nombres de los servidores Kerberos en el reino DFVA.CR de Kerbero
 
 @author: luis
 '''
-
+"""
 from corebase.ca_management.interface import CAManagerInterface
 from ipapython.certmonger import get_request_value, stop_tracking, request_cert
 from ipaplatform.paths import paths
@@ -30,3 +30,5 @@ class CAManager(CAManagerInterface):
 
     def revoke_certificate(self, certificate):
         pass
+
+"""
