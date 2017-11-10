@@ -99,4 +99,5 @@ class CheckBaseBaseSerializer():
             if data:
                 self.adr = data
                 dev = True
+                
         return dev

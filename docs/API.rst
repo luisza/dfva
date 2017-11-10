@@ -9,12 +9,14 @@ Autenticación
 
 .. automethod::  institution.authenticator.views.AuthenticateRequestViewSet.institution 
 .. automethod::  institution.authenticator.views.AuthenticateRequestViewSet.institution_show
+.. automethod::  institution.authenticator.views.AuthenticateRequestViewSet.institution_delete
 
 Firma
 ~~~~~~~~~~~~~~~
 
 .. automethod::  institution.signer.views.SignRequestViewSet.institution 
 .. automethod::  institution.signer.views.SignRequestViewSet.institution_show
+.. automethod::  institution.signer.views.SignRequestViewSet.institution_delete
 
 Validación
 ~~~~~~~~~~~~~~~

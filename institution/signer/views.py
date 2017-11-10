@@ -141,7 +141,7 @@ class SignRequestViewSet(ViewSetBase,
                      (ip, request.data))
         logger.info('Sign: Delete Institution %s %s %s %s' %
                     get_log_institution_information(request))
-        return self.show(request, *args, **kwargs)
+        return self.delete(request, *args, **kwargs)
 
 
 

@@ -15,7 +15,7 @@ from corebase.test import WRONG_CERTIFICATE
 
 
 class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
-    BASE_URL = '/authenticate/%s/institution_show/'
+    BASE_URL = '/authenticate/%s/institution_delete/'
 
     def setUp(self):
         super(CheckAuthenticatorInstitutionCase, self).setUp()
@@ -55,16 +55,20 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
 
         return response
 
+    def check_result(self, response, status=True):
+        self.assertEqual(response['result'], status)
+        
     def test_authenticate_check(self):
         response = self.authenticate(identification=self.IDENTIFICATION)
         self.ok_test(response)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             code=response['code']).first())
+        id_transaction = response['id_transaction']
         response = self.authenticate(
             request_url=self.BASE_URL % (response['id_transaction'],))
-        
-        self.ok_test(response)
-
+        self.check_result(response)
+        self.assertIsNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=id_transaction).first()) 
 
     def test_algorithms(self):
 
@@ -74,21 +78,25 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
             response = self.authenticate(
                 algorithm=algorithm,
                 request_url=self.BASE_URL % (response['id_transaction'],))
-            self.ok_test(response)
+            self.check_result(response)
 
     def test_check_wrong_url(self):
         response = self.authenticate(
             url='https://dfva.cr/ups',
             request_url=self.BASE_URL % (self.data['id_transaction'],))
-        self.check_wrong_url_test(response)
-
+        self.check_result(response, False)
+        self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=self.data['id_transaction']).first())
+        
     def test_check_wrong_institution(self):
         response = self.authenticate(
             institution='no institution',
             request_url=self.BASE_URL % (self.data['id_transaction'],)
         )
-        self.check_wrong_institution_test(response)
-
+        self.check_result(response, False)
+        self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=self.data['id_transaction']).first())
+        
     def test_check_wrong_sign(self):
         """if all credential are well but data is encrypted with other private
         key"""
@@ -104,23 +112,30 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
                                      )
         response = decrypt(institution2.private_key,
                            response.data['data'])
-        self.check_wrong_sign_test(response)
-
+        self.check_result(response, False)
+        self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=self.data['id_transaction']).first())
+        
     def test_wrong_hashsum(self):
         response = self.authenticate(request_url=self.BASE_URL % (
             self.data['id_transaction'],),
             hashsum="bd267a725dc16fc0fa33c267af52a25779b8dd628d0df26e5e8813505df8bef05")
-        self.wrong_hashsum_test(response)
-
+        self.check_result(response, False)
+        self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=self.data['id_transaction']).first())
+        
     def test_wrong_certificate(self):
 
         response = self.authenticate(request_url=self.BASE_URL % (
             self.data['id_transaction'],),
             public_certificate=WRONG_CERTIFICATE
         )
-        self.wrong_certificate_test(response)
-
+        self.check_result(response, False)
+        self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
+            id_transaction=self.data['id_transaction']).first())
+                
     def test_wrong_id_trasaction(self):
         response = self.authenticate(
             request_url=self.BASE_URL % ("02345232",))
-        self.check_wrong_idtransaction_test(response)
+        self.check_result(response, False)
+

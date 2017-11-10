@@ -57,6 +57,11 @@ class BaseInstitutionTest(TestCase):
         self.assertEqual(response['status'], 2)
         self.assertEqual(response['id_transaction'], 0)
 
+    def check_wrong_idtransaction_test(self, response):
+        self.assertEqual(response['code'], 'N/D')
+        self.assertEqual(response['status'], 2)
+        self.assertEqual(response['id_transaction'], 0)
+
     def check_wrong_institution_test(self, response):
         self.assertEqual(response['code'], 'N/D')
         self.assertTrue('institution' in response['error_info'])

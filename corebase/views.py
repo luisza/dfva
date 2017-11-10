@@ -84,7 +84,11 @@ class ViewSetBase:
         dev = False
         serializer = self.get_serializer(data=request.data)
         if serializer.check_code(kwargs['pk'], raise_exception=False):
-            serializer.object.delete()
+            if hasattr(serializer.adr, "authenticaterequest"):
+                serializer.adr.authenticaterequest.delete()
+            if hasattr(serializer.adr, "signrequest"):
+                serializer.adr.signrequest.delete()
+            serializer.adr.delete()
             dev = True
         response ={'result': dev}
         headers = self.get_success_headers(response)
