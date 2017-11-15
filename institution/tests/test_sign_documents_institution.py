@@ -10,10 +10,15 @@ from corebase.test.documents import XMLFILE, HASHXML, ODFFILE, HASHODF, DOCXFILE
 
 
 # ---- Sign -------
-class SignXmlCase(SignCase):
+class SignXmlCoFirmaCase(SignCase):
     DOCUMENT = XMLFILE
     HASH = HASHXML
-    FORMAT = 'xml'
+    FORMAT = 'xml_cofirma'
+
+class SignXmlContraFirmaCase(SignCase):
+    DOCUMENT = XMLFILE
+    HASH = HASHXML
+    FORMAT = 'xml_contrafirma'
 
 
 class SignODFCase(SignCase):
@@ -28,10 +33,15 @@ class SignMSOfficeCase(SignCase):
     FORMAT = 'msoffice'
 
 # --------- Check sign ---------
-class CheckSignXmlCase(CheckSignCase):
+class CheckSignXmlCoFirmaCase(CheckSignCase):
     DOCUMENT = XMLFILE
     HASH = HASHXML
-    FORMAT = 'xml'
+    FORMAT = 'xml_cofirma'
+
+class CheckSignXmlContraFirmaCase(CheckSignCase):
+    DOCUMENT = XMLFILE
+    HASH = HASHXML
+    FORMAT = 'xml_contrafirma'
 
 
 class CheckSignODFCase(CheckSignCase):
@@ -46,11 +56,15 @@ class CheckSignMSOfficeCase(CheckSignCase):
     FORMAT = 'msoffice'
 
 # ----- DELETE -----------------
-class DeleteSignXmlCase(DeleteSignCase):
+class DeleteSignXmlCoFirmaCase(DeleteSignCase):
     DOCUMENT = XMLFILE
     HASH = HASHXML
-    FORMAT = 'xml'
+    FORMAT = 'xml_cofirma'
 
+class DeleteSignXmlContraFirmaCase(DeleteSignCase):
+    DOCUMENT = XMLFILE
+    HASH = HASHXML
+    FORMAT = 'xml_contrafirma'
 
 class DeleteSignODFCase(DeleteSignCase):
     DOCUMENT = ODFFILE

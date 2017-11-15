@@ -7,7 +7,9 @@ from rest_framework import serializers
 from pyfva.clientes.validador import ClienteValidador
 from django.utils.dateparse import parse_datetime
 from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,\
-    ERRORES_VALIDA_DOCUMENTO
+    ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\
+    ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE
+    
 from corebase.models import Firmante, ErrorEncontrado, Advertencia
 import logging
 from django.core.exceptions import ValidationError
@@ -93,6 +95,18 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
     def save_subject(self):
         pass
 
+    def get_default_error(self):
+        dev = ERRORES_VALIDAR_XMLCOFIRMA
+        if self.requestdata['format']=='cofirma':
+            dev = ERRORES_VALIDAR_XMLCOFIRMA
+        elif self.requestdata['format']=='contrafirma':
+            dev = ERRORES_VALIDAR_XMLCONTRAFIRMA
+        elif self.requestdata['format']=='msoffice':
+            dev = ERRORES_VALIDAR_MSOFFICE
+        elif self.requestdata['format']=='odf':
+            dev = ERRORES_VALIDAR_ODF
+        return dev
+
     def call_BCCR(self):
         client = ClienteValidador(
             negocio=self.institution.bccr_bussiness,
@@ -100,12 +114,12 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         )
         if client.validar_servicio('documento'):
 
-            data = client.validar_documento_xml(
-                self.requestdata['document'])
+            data = client.validar_documento(
+                self.requestdata['document'], self.requestdata['format'])
 
         else:
             logger.warning("Validate document BCCR not available")
-            data = client.DEFAULT_DOCUMENT_ERROR
+            data = client.DEFAULT_DOCUMENT_ERROR(self.get_default_error())
 
         logger.debug("Validator BCCR:  document %r" % (data, ))
         self.save_subject()
@@ -117,7 +131,7 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
             self.adr.status_text = data['texto_codigo_error']
         else:
             self.adr.status_text = get_text_representation(
-                ERRORES_VALIDA_DOCUMENTO,  data['codigo_error'])
+                self.get_default_error(),  data['codigo_error'])
         self.adr.fue_exitosa = data['exitosa']
 
         self.adr.save()

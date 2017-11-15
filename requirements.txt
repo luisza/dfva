@@ -32,7 +32,7 @@ requests==2.13.0
 six==1.10.0
 uritemplate==3.0.0
 dateutils
-pyfva>=0.0.7
+pyfva>=0.0.9
 pycryptodome
 celery==4.1.0
 

@@ -59,7 +59,7 @@ class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSeria
 class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDocument_RequestSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
-                             'document',
+                             'document', 'format',
                              'request_datetime']
 
     validate_request_class = ValidateDocumentRequest

@@ -16,7 +16,7 @@ from corebase.test import WRONG_CERTIFICATE
 class SignCase(BaseInstitutionTest):
     DOCUMENT = None
     HASH = None
-    FORMAT = 'xml'
+    FORMAT = None
 
     def sign(self, **kwargs):
         url = kwargs.get('url', self.URL_NOTIFICATION)
@@ -458,6 +458,7 @@ class DeleteSignCase(BaseInstitutionTest):
 class BaseValidateInstitutionCase(BaseInstitutionTest):
     REQUEST_URL = None
     DATAREQUEST = None
+    FORMAT=None
 
     def validate(self, **kwargs):
         url = kwargs.get('url', self.URL_NOTIFICATION)
@@ -473,7 +474,8 @@ class BaseValidateInstitutionCase(BaseInstitutionTest):
             'document': certificate,
             'request_datetime': request_datetime,
         }
-
+        if self.FORMAT:
+            data['format']=self.FORMAT
         params = self.get_request_params(data, **kwargs)
 
         response = self.client.post(request_url,

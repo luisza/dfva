@@ -33,10 +33,11 @@ class SignForm(forms.Form):
     identificacion = forms.CharField(max_length=16, min_length=11)
     documento = forms.FileField()
     formato = forms.ChoiceField(choices=(
-        ('xml', 'XML'),
+        ('xml_cofirma', 'XML Cofirma'),
+        ('xml_contrafirma', 'XML Contra firma'),
         ('odf', 'ODF'),
         ('msoffice', 'Microsoft Office')),
-        initial='xml')
+        initial='xml_cofirma')
     algoritmo = forms.ChoiceField(choices=(
         ('Sha256', 'sha256'),
         ('Sha384', 'sha384'),
@@ -63,9 +64,15 @@ class ValidateForm(forms.Form):
     url = forms.ModelChoiceField(queryset=NotificationURL.objects.filter(is_demo=True))
     documento = forms.CharField(widget=forms.Textarea)
     tipo = forms.ChoiceField(choices=(
-        ('documento', 'Documento XML'),
+        ('documento', 'Documento'),
         ('certificado', 'Certificado'),
     ), initial='documento')
+    formato = forms.ChoiceField(choices=(
+        ('cofirma', 'XML Cofirma'),
+        ('contrafirma', 'XML Contra firma'),
+        ('odf', 'ODF'),
+        ('msoffice', 'Microsoft Office')),
+        initial='cofirma')
 
     def send(self):
         url = self.cleaned_data['url']
@@ -76,6 +83,7 @@ class ValidateForm(forms.Form):
 
         dev = client.validate(
             self.cleaned_data['documento'],
-            self.cleaned_data['tipo']
+            self.cleaned_data['tipo'],
+            self.cleaned_data['formato']
         )
         return dev

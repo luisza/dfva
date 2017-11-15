@@ -14,7 +14,8 @@ from person.models import ValidatePersonCertificateRequest,\
     ValidatePersonDocumentRequest
 from rest_framework.decorators import list_route
 from corebase.logging import get_ip, get_log_person_information
-from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDA_DOCUMENTO
+from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
+    ERRORES_VALIDAR_XMLCOFIRMA
 import logging
 
 logger = logging.getLogger('dfva')
@@ -78,6 +79,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
 
         * **person:** Identificación de la persona validante,
         * **document:** Archivo en base64 del certificado, 
+        * **format:** Format of document available are cofirma, contrafirma, msoffice, odf
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
@@ -88,6 +90,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **request_datetime:**  Hora de recepción de la solicitud
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
+        * **status_text:**  Descripción en texto del estado
         * **advertencias:** Lista de advertencias
         * **errores:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
         * **firmantes:** Lista con la información de los firmantes [ {'cedula': '08-8888-8888', 'nombre_completo': 'nombre del suscriptor', 'fecha_de_firma': timezone.now()}, ... ]
@@ -105,7 +108,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.serializer_class = ValidatePersonDocument_Request_Serializer
         self.queryset = ValidatePersonDocumentRequest.objects.all()
         self.response_class = ValidatePersonDocumentRequest_Response_Serializer
-        self.DEFAULT_ERROR = ERRORES_VALIDA_DOCUMENTO
+        self.DEFAULT_ERROR = ERRORES_VALIDAR_XMLCOFIRMA
         return self._create(request, *args, **kwargs)
 
 

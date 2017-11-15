@@ -10,7 +10,26 @@ class ValidateCertificateInstitution(BaseValidateInstitutionCase):
     DOCUMENT = CERTIFICATE_FILE
 
 
-class ValidateDocumentInstitution(BaseValidateInstitutionCase):
+class ValidateDocumentCofirmaInstitution(BaseValidateInstitutionCase):
     REQUEST_URL = '/validate/institution_document/'
     DATAREQUEST = ValidateDocumentDataRequest
     DOCUMENT = CERTIFICATE_FILE
+    FORMAT='cofirma'
+    
+class ValidateDocumentContrafirmaInstitution(BaseValidateInstitutionCase):
+    REQUEST_URL = '/validate/institution_document/'
+    DATAREQUEST = ValidateDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='contrafirma'
+    
+class ValidateDocumentMSOfficeInstitution(BaseValidateInstitutionCase):
+    REQUEST_URL = '/validate/institution_document/'
+    DATAREQUEST = ValidateDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='msoffice'
+    
+class ValidateDocumentODFInstitution(BaseValidateInstitutionCase):
+    REQUEST_URL = '/validate/institution_document/'
+    DATAREQUEST = ValidateDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='odf'

@@ -33,6 +33,7 @@ class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
                                                 ValidateDocument_RequestSerializer):
     check_internal_fields = ['person',
                              'document',
+                             'format',
                              'request_datetime']
 
     validate_request_class = ValidatePersonDocumentRequest

@@ -13,7 +13,7 @@ from institution.validator.serializer import ValidateCertificate_Request_Seriali
     SuscriptorInstitution_Serializer
 from institution.models import ValidateCertificateRequest,\
     ValidateDocumentRequest
-from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDA_DOCUMENTO
+from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDAR_XMLCOFIRMA
 from rest_framework.decorators import list_route
 from corebase.logging import get_ip, get_log_institution_information
 
@@ -81,6 +81,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **institution:** uid de la institucion ver code en detalles de institución,
         * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
         * **document:** Archivo en base64 del certificado, 
+        * **format:** Format of document available are cofirma, contrafirma, msoffice, odf
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
@@ -109,7 +110,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.serializer_class = ValidateDocument_Request_Serializer
         self.queryset = ValidateDocumentRequest.objects.all()
         self.response_class = ValidateDocumentRequest_Response_Serializer
-        self.DEFAULT_ERROR = ERRORES_VALIDA_DOCUMENTO
+        self.DEFAULT_ERROR = ERRORES_VALIDAR_XMLCOFIRMA
         return self._create(request, *args, **kwargs)
 
 

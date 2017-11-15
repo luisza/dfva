@@ -16,7 +16,7 @@ class ValidatorClient(object):
         self.institution = institution
         self.url_notify = url_notify
 
-    def validate(self, document, _type):
+    def validate(self, document, _type, format='cofirma'):
 
         data = {
             'institution': str(self.institution.code),
@@ -24,6 +24,9 @@ class ValidatorClient(object):
             'document': document,
             'request_datetime': timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
+        
+        if _type !='certificado':
+            data['format']=format
 
         algorithm = 'sha512'
         str_data = json.dumps(data)

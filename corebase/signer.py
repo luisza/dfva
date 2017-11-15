@@ -26,15 +26,13 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
             entidad=self.institution.bccr_entity,
         )
         if signclient.validar_servicio():
-
             data = signclient.firme(
                 self.requestdata['identification'],
                 self.requestdata['document'],
                 self.requestdata['format'],
                 algoritmo_hash=self.requestdata['algorithm_hash'].title(),
                 hash_doc=self.requestdata['document_hash'],
-                resumen=self.requestdata['resumen'])
-
+                resumen=self.requestdata['resumen'])           
         else:
             logger.warning("Sign BCCR not available")
             data = signclient.DEFAULT_ERROR

@@ -280,9 +280,16 @@ class ValidateDocumentDataRequest(BaseDocument):
 
 
 class ValidateDocumentRequest(BaseInstitutionRequestModel):
+    FORMATS=(
+        ('cofirma', 'CoFirma'),
+        ('contrafirma', 'ContraFirma'),
+        ('msoffice', 'MS Office'),
+        ('odf', 'Open Document Format')
+        )
     data_request = models.OneToOneField(ValidateDocumentDataRequest,
                                         on_delete=models.CASCADE,
                                         null=True, blank=True)
+    format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
 
     class Meta:
         ordering = ('arrived_time',)
