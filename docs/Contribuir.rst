@@ -32,6 +32,8 @@ Ejecute las pruebas
 
 .. note:: Es importante que el PIN sea correcto de lo contrario bloqueará la tarjeta y no podrá utilizarla más.
 
+.. warning:: Asegurese de correr el simulador de FVA y que el la respuesta automática para el certificado sea exitosa con el número de cédula de la tarjeta.
+
 Recuerde que una contribución con pruebas será mejor aceptada y contribuye a la estabilidad del sistema.
 
 También puede hacer pruebas individuales ejecutando por ejemplo.

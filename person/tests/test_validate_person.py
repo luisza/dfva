@@ -16,7 +16,26 @@ class ValidateCertificatePerson(BaseValidatePersonCase):
     DOCUMENT = CERTIFICATE_FILE
 
 
-class ValidateDocumentPerson(BaseValidatePersonCase):
+class ValidateDocumentCoFirmaPerson(BaseValidatePersonCase):
     REQUEST_URL = '/validate/person_document/'
     DATAREQUEST = ValidatePersonDocumentDataRequest
     DOCUMENT = CERTIFICATE_FILE
+    FORMAT='cofirma'
+
+class ValidateDocumentContraFirmaPerson(BaseValidatePersonCase):
+    REQUEST_URL = '/validate/person_document/'
+    DATAREQUEST = ValidatePersonDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='contrafirma'
+    
+class ValidateDocumentMSOfficePerson(BaseValidatePersonCase):
+    REQUEST_URL = '/validate/person_document/'
+    DATAREQUEST = ValidatePersonDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='msoffice'
+
+class ValidateDocumentODFPerson(BaseValidatePersonCase):
+    REQUEST_URL = '/validate/person_document/'
+    DATAREQUEST = ValidatePersonDocumentDataRequest
+    DOCUMENT = CERTIFICATE_FILE
+    FORMAT='odf'

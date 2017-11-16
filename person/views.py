@@ -61,4 +61,4 @@ class PersonLoginView(mixins.CreateModelMixin,
         }
         logger.info('Response login ERROR %r' % (serializer._errors, ))
         logger.debug('Data login Response error: %r' % (dev,))
-        return Response(dev, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(dev, status=status.HTTP_201_CREATED )

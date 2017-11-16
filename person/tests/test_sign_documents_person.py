@@ -17,7 +17,7 @@ class SignPersonCase(BasePersonTest):
         algorithm = kwargs.get('algorithm', 'sha512')
         file_path = kwargs.get('file_path', None)
         is_base64 = kwargs.get('is_base64', False)
-        _format = kwargs.get('_format', 'xml')
+        _format = kwargs.get('_format', 'xml_cofirma')
         resume = kwargs.get('resume', 'Resumen de documento')
         response = self.client.sign(
             identification,
@@ -28,16 +28,22 @@ class SignPersonCase(BasePersonTest):
 
         return response
 
-    def test_sign_xml(self):
-        self._test_sign_xml()
+    def test_sign_xml_cofirma(self):
+        self._test_sign_xml(_format='xml_cofirma')
 
-    def _test_sign_xml(self, algorithm='sha512'):
+
+        
+    def _test_sign_xml(self, algorithm='sha512', _format='xml_cofirma'):
         response = self.sign(document=XMLFILE,
                              algorithm=algorithm,
+                             _format=_format,
                              is_base64=True)
         self.ok_test(response)
         self.assertIsNotNone(SignPersonDataRequest.objects.filter(
             code=response['code']).first())
+
+    def test_sign_xml_contrafirma(self):
+        self._test_sign_xml(_format='xml_contrafirma')
 
     def test_sign_odf(self):
         self._test_sign_odf()
@@ -62,9 +68,13 @@ class SignPersonCase(BasePersonTest):
         self.assertIsNotNone(SignPersonDataRequest.objects.filter(
             code=response['code']).first())
 
-    def test_algorithms_xml(self):
+    def test_algorithms_xml_cofirma(self):
         for algorithm in ['sha256', 'sha384', 'sha512']:
-            self._test_sign_xml(algorithm=algorithm)
+            self._test_sign_xml(algorithm=algorithm, _format='xml_cofirma')
+
+    def test_algorithms_xml_contrafirma(self):
+        for algorithm in ['sha256', 'sha384', 'sha512']:
+            self._test_sign_xml(algorithm=algorithm, _format='xml_contrafirma')
 
     def test_algorithms_odf(self):
         for algorithm in ['sha256', 'sha384', 'sha512']:

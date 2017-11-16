@@ -247,11 +247,12 @@ class ValidateCertificateRequest(BaseInstitutionRequestModel):
 
 
 class ValidateDocumentDataRequest(BaseDocument):
-    institution = models.ForeignKey(Institution)
-    notification_url = models.URLField()
-    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
-    code = models.CharField(max_length=20, default='N/D')
+    FORMATS=(
+        ('cofirma', 'CoFirma'),
+        ('contrafirma', 'ContraFirma'),
+        ('msoffice', 'MS Office'),
+        ('odf', 'Open Document Format')
+        )
 
     STATUS = ((1, 'Solicitud recibida correctamente'),
               (2, 'Ha ocurrido algún problema al solicitar la firma'),
@@ -263,6 +264,13 @@ class ValidateDocumentDataRequest(BaseDocument):
               (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
+        
+    institution = models.ForeignKey(Institution)
+    notification_url = models.URLField()
+    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
+    request_datetime = models.DateTimeField()
+    format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
+    code = models.CharField(max_length=20, default='N/D')
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     fue_exitosa = models.BooleanField(default=True)
@@ -280,17 +288,10 @@ class ValidateDocumentDataRequest(BaseDocument):
 
 
 class ValidateDocumentRequest(BaseInstitutionRequestModel):
-    FORMATS=(
-        ('cofirma', 'CoFirma'),
-        ('contrafirma', 'ContraFirma'),
-        ('msoffice', 'MS Office'),
-        ('odf', 'Open Document Format')
-        )
+
     data_request = models.OneToOneField(ValidateDocumentDataRequest,
                                         on_delete=models.CASCADE,
                                         null=True, blank=True)
-    format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
-
     class Meta:
         ordering = ('arrived_time',)
         permissions = (

@@ -16,6 +16,7 @@ from django.conf import settings
 import logging
 # FIXME: Quitar de aquí institution
 from institution.models import Institution
+from django.contrib.auth.models import User
 
 logger = logging.getLogger('dfva')
 
@@ -95,10 +96,21 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_institution(self):
         self.institution = Institution.objects.first()
-        # Fixme: check person in self.data first
-        self.person = Person.objects.get(
-            identification=self.data['person'])
-
+        
+        if 'person' in self.data:
+            self.person = Person.objects.filter(
+            identification=self.data['person']).first()
+            if self.person is None:
+                ok, data=self.validate_certificate()
+                if ok:
+                    user=User.objects.create_user(self.data['person'])
+                    user.first_name=data['nombre']
+                    user.save()
+                    #Fixme: mejor forma de captar el nombre
+                    self.person = Person.objects.create(
+                        user=user,
+                        identification=self.data['person'])
+    
     def validate_certificate(self):
         client = ClienteValidador(
             negocio=self.institution.bccr_bussiness,
@@ -112,13 +124,16 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
         else:
             logger.warning("Login certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR
-
+        dev=True
         if data['codigo_error'] != 1 or not data['exitosa']:
             self._errors['public_certificate'] = [_('Invalid certificate')]
+            dev=False
 
         elif data['certificado']['identificacion'] != self.data['person']:
             self._errors['public_certificate'] = [
                 _('Signer certificate is not owned by person who request')]
+            dev=False
+        return dev, data
 
     def validate_digest(self):
         # Fixme: Solo funciona para register

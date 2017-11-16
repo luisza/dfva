@@ -13,6 +13,7 @@ class BaseValidatePersonCase(BasePersonTest):
     REQUEST_URL = None
     DATAREQUEST = None
     DOCUMENT = None
+    FORMAT=None
 
     def validate(self, **kwargs):
         person = kwargs.get('person', self.person)
@@ -26,6 +27,8 @@ class BaseValidatePersonCase(BasePersonTest):
             'document': certificate,
             'request_datetime': request_datetime,
         }
+        if self.FORMAT:
+            data['format'] = self.FORMAT
 
         params = self.get_request_params(data, **kwargs)
 

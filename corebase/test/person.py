@@ -134,7 +134,7 @@ class BasePersonTest(TestCase):
         document = kwargs.get('document', None)
         algorithm = kwargs.get('algorithm', 'sha512')
         is_base64 = kwargs.get('is_base64', False)
-        _format = kwargs.get('_format', 'xml')
+        _format = kwargs.get('_format', 'xml_cofirma')
         resume = kwargs.get('resume', 'resumen magnifico')
         request_datetime = kwargs.get(
             'request_datetime', timezone.now().isoformat())

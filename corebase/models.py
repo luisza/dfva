@@ -13,7 +13,7 @@ ALGORITHM = (
     ('sha512', 'sha512')
 )
 
-SUPPORTED_DOC_FORMAT = ['xml', 'odf', 'msoffice']
+SUPPORTED_DOC_FORMAT = ['xml_cofirma', 'xml_contrafirma', 'odf', 'msoffice']
 
 
 class BaseRequestModel(models.Model):
