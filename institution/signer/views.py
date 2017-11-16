@@ -124,7 +124,6 @@ class SignRequestViewSet(ViewSetBase,
 
         * **institution:** uid de la institucion ver code en detalles de institución,
         * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,   
-        * **identification:** Identificación de la persona a autenticar,
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
