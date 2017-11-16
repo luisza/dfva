@@ -79,7 +79,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
 
         * **person:** Identificación de la persona validante,
         * **document:** Archivo en base64 del certificado, 
-        * **format:** Format of document available are cofirma, contrafirma, msoffice, odf
+        * **format:** Formato del documento a validar disponibles (cofirma, contrafirma, msoffice, odf)
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor

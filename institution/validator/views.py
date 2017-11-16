@@ -81,7 +81,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **institution:** uid de la institucion ver code en detalles de institución,
         * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
         * **document:** Archivo en base64 del certificado, 
-        * **format:** Format of document available are cofirma, contrafirma, msoffice, odf
+        * **format:** Formato de documento a validar disponibles (cofirma, contrafirma, msoffice, odf)
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
