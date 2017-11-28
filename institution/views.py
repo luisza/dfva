@@ -4,7 +4,7 @@ from cruds_adminlte.crud import UserCRUDView
 from corebase.ca_management import create_certiticate, revoke_certificate
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-
+from django.contrib import messages
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
     model = NotificationURL
@@ -33,8 +33,12 @@ class InstitutionCRUD(UserCRUDView):
         class CreateView(CView):
             def form_valid(self, form):
                 self.object = form.save(commit=False)
-                self.object = create_certiticate(
-                    self.object.domain, self.object)
+                try:
+                    self.object = create_certiticate(
+                        self.object.domain, self.object)
+                except:
+                    messages.warning(self.request, 'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo')
+                    return self.form_invalid(form)
                 self.object.user = self.request.user
                 private_key = self.object.private_key
                 self.object.private_key = "La llave privada no es almacenada, si la olvidó haga click en generar nuevas llaves"

@@ -6,6 +6,10 @@ from django.conf import settings
 from django.core.checks import Error, register
 from corebase.ca_management.interface import CAManagerInterface, fix_certificate
 
+import logging
+from django.db.models.functions.base import Coalesce
+logger = logging.getLogger('dfva')
+
 @register()
 def check_ca_in_settings(app_configs, **kwargs):
     errors = []
@@ -22,6 +26,8 @@ class CAManager(CAManagerInterface):
         """This function takes a domain name as a parameter and then creates a certificate and key with the
         domain name(replacing dots by underscores), finally signing the certificate using specified CA and 
         returns the path of key and cert files. If you are yet to generate a CA then check the top comments"""
+
+        logger.info("SimpleCA: certificate creation request %s"%(domain,))
 
         # Serial Generation - Serial number must be unique for each certificate,
         # so serial is generated based on domain name
@@ -68,15 +74,18 @@ class CAManager(CAManagerInterface):
             crypto.FILETYPE_PEM, server_key)
         save_model.server_public_key = crypto.dump_publickey(
             crypto.FILETYPE_PEM, server_key)
-
+        
+        logger.debug("SimpleCA: New certificate for %s is %r"%(domain, save_model.public_certificate))
         return save_model
 
     def check_certificate(self, certificate):
         dev = False
         try:
             dev = self._check_certificate(certificate)
-        except:
+        except Exception as e:
+            logger.error("SimpleCA: validate EXCEPTION ", e)
             dev = False
+        
         return dev
 
     def _check_certificate(self, certificate):
@@ -84,10 +93,10 @@ class CAManager(CAManagerInterface):
 
         certificate = crypto.load_certificate(
             crypto.FILETYPE_PEM, new_cert)
-
+        serialnumber=certificate.get_serial_number()
         context = Context(TLSv1_METHOD)
         context.load_verify_locations(settings.CA_CERT)
-
+        dev=False
         try:
             store = context.get_cert_store()
 
@@ -99,11 +108,15 @@ class CAManager(CAManagerInterface):
             # certificate
             store_ctx.verify_certificate()
 
-            return True
+            dev=True
 
         except Exception as e:
-            pass
-        return False
+            logger.error("SimpleCA: validate EXCEPTION %r"%(e,))
+            dev=False
+        
+        logger.info("SimpleCA: validate cert %r == %r"%(serialnumber, dev ))
+        return dev
 
     def revoke_certificate(self, certificate):
-        pass
+        logger.info("SimpleCA: revoke certificate, don't make anything")
+        

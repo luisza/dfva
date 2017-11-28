@@ -8,6 +8,10 @@ import pki.client
 import pki.profile
 import pki.cert
 
+import logging
+logger = logging.getLogger('dfva')
+
+
 @register()
 def check_ca_in_settings(app_configs, **kwargs):
     errors = []
@@ -38,6 +42,7 @@ class CAManager(CAManagerInterface):
         return conn
     
     def generate_certificate(self, domain, save_model):  # , ca_crt=None, ca_key=None
+        logger.info("Dogtag: certificate creation request %s"%(domain,))
         crt = crypto.X509Req()
         subject = crt.get_subject()
         for field in settings.DOGTAG_CERTIFICATE_SCHEME:
@@ -62,6 +67,8 @@ class CAManager(CAManagerInterface):
               "requestor_email": settings.DOGTAG_CERT_REQUESTER_EMAIL,
             }
         
+        logger.debug("Dogtag: request certificate %r" % (inputs,))
+        
         conn=self.get_connection()   
         cert_client = pki.cert.CertClient(conn)
         certificates = cert_client.enroll_cert("caServerCert", inputs)
@@ -75,12 +82,14 @@ class CAManager(CAManagerInterface):
         save_model.server_public_key = crypto.dump_publickey(
             crypto.FILETYPE_PEM, server_key)
 
+        logger.debug("Dogtag: New certificate for %s is %r"%(domain, save_model.public_certificate))
         return save_model
         
     def check_certificate(self, certificate):
         try:
             dev=self._check_certificate(certificate)
-        except:
+        except Exception as e:
+            logger.error("Dogtag: validate EXCEPTION ", e)
             dev=False
         return dev
     
@@ -94,7 +103,9 @@ class CAManager(CAManagerInterface):
         res=cert_client.review_cert( serialnumber )
         ca_cert_info=self.issuer_dn_to_dic(res.issuer_dn)
         user_cert_info=self.extract_dic_from_X509Name(certificate.get_issuer(), ca_cert_info)
-        return res.status=='VALID' and ca_cert_info==user_cert_info
+        dev=res.status=='VALID' and ca_cert_info==user_cert_info
+        logger.info("Dogtag: validate cert %r == %r"%(serialnumber, dev ))
+        return dev
         
     def revoke_certificate(self, certificate):
         try:
@@ -102,9 +113,8 @@ class CAManager(CAManagerInterface):
                 crypto.FILETYPE_PEM, certificate)
             cert_client = pki.cert.CertClient(self.get_connection())
             t=cert_client.revoke_cert(certificate.get_serial_number())
-            print(t)
         except Exception as e:
-            print("EXCEPTION ", e)
+            logger.error("Dogtag: revoke EXCEPTION ", e)
          
         
     def issuer_dn_to_dic(self, dn):
