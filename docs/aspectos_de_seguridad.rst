@@ -116,7 +116,7 @@ Manejo de los certificados
 
 DFVA es versatil y permite configurar el manejador de certificados, con ello permite comunicarse con la infraestructura de PKI que se desee.
 
-Actualmente, se trabaja en integración con Dogtag_ y se puede utilizar para desarrollo el manejador **CA simple con OpenSSL**
+Actualmente, se soporta la integración con Dogtag_ y también se soporta CA's creadas con OpenSSL para desarrollo utilizando el manejador **CA simple con OpenSSL**
 
 .. _Dogtag: http://pki.fedoraproject.org/wiki/PKI_Main_Page
 
@@ -151,7 +151,21 @@ Este es un archivo openssl.cnf de ejemplo :download:`descargar <_static/openssl.
 DogTag
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Descripción pronto.  Para activar experimental USE_DOCTAG=True en settings.
+.. note:: Para la instalación ver la sección de instalación de DFVA.
+
+Dogtag es una aplicación que se integra con FreeIPA para proporcionar una robusta infraestructura PKI, actualmente el cliente desarrollado se integra con el API rest de Dogtag para generar, validar y revocar certificados.
+
+Una aspecto importante de la implementación es que requiere que el usuario utilizado sea un agente de Dogtag capaz de solicitar y aprovar certificados, por lo que la aplicación será capaz de generar certificados en Dogtag de forma automática, debe contemparse esta situación dentro de la política de la PKI.
+
+Dentro del proceso de solicitud de certificados se genera un objeto X509Request (certificate signing request csr) utilizando el esquema proporcionado en `DOGTAG_CERTIFICATE_SCHEME` exceptuando los campos OU y CN que corresponden a:
+
+- OU =  institution unit
+- CN = domain
+
+Ambos recolectados desde la interfaz.
+
+En la validación del certificado se utiliza el `serial_number` del certificado para solicitar el estado del mismo en Dogtag. Además se valida el issuer sea identico al issuer de la instalación de Dogtag, así se garantiza que dicho certificado fue emitido por el issuer y que el serial_number es el adecuado.
+
 
 Encripción
 -------------
