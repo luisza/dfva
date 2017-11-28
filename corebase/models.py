@@ -3,9 +3,8 @@ from django.core.validators import RegexValidator
 import uuid
 
 identification_validator = RegexValidator(
-    r'^(\d{9,11})$',
-    message="Debe contener 9 dígitos o 11 para extranjeros y 10 para cédulas jurídicas por ejemplo: 102340456 para "
-            "nacionales o 10234045611 para extranjeros")
+    r'"(^[1|5]\d{11}$)|(^\d{2}-\d{4}-\d{4}$)"',
+    message="Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000")
 
 ALGORITHM = (
     ('sha256', 'sha256'),

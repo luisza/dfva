@@ -10,11 +10,14 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 
-from corebase.ca_management.simpleCA import CAManager
+from importlib import import_module
+
+if hasattr(settings, 'CAMANAGER_CLASS'):
+    CAManager = import_module(settings.CAMANAGER_CLASS).CAManager
+else:
+    from corebase.ca_management.simpleCA import CAManager 
+
 CA_manag_instance = CAManager()
-# When dogtag module is done this has sense
-if hasattr(settings, 'USE_DOCTAG'):
-    pass
 
 
 def create_certiticate(domain, save_model):

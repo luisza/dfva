@@ -158,6 +158,16 @@ CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 
+#CAMANAGER_CLASS="corebase.ca_management.dogtag"
+DOGTAG_HOST='ipa.mifirmacr.org'
+DOGTAG_PORT='8443'
+DOGTAG_SCHEME='https'
+DOGTAG_AGENT_PEM_CERTIFICATE_PATH=os.path.join(BASE_DIR, 'admin_cert.pem')
+DOGTAG_CERTIFICATE_SCHEME={
+'O': 'MIFIRMACR.ORG'    
+}
+DOGTAG_CERT_REQUESTER='dfva'
+DOGTAG_CERT_REQUESTER_EMAIL='dfva@mifirmacr.org'
 
 ALLOWED_BCCR_IP=[] #['192.168.1.119']
 
@@ -269,12 +279,12 @@ from celery.schedules import crontab
 CELERYBEAT_SCHEDULE = {
     # execute 12:30 pm
     'remove_autenticacion': {
-        'task': 'authenticator.tasks.remove_expired_authentications',
+        'task': 'institution.tasks.remove_expired_authentications',
         #'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(minute='*/%d' % (DFVA_REMOVE_AUTHENTICATION, )),
     },
     'remove_sign': {
-        'task': 'signer.tasks.remove_expired_signs',
+        'task': 'institution.tasks.remove_expired_signs',
         #'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },

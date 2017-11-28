@@ -4,19 +4,7 @@ from OpenSSL import crypto
 from OpenSSL.SSL import Context, TLSv1_METHOD
 from django.conf import settings
 from django.core.checks import Error, register
-from corebase.ca_management.interface import CAManagerInterface
-
-
-def fix_certificate(certificate):
-    certificate = certificate.replace("-----BEGIN CERTIFICATE-----", '')
-    certificate = certificate.replace("-----END CERTIFICATE-----", '')
-    certificate = certificate.replace(" ", '\n')
-    return "%s%s%s" % (
-        "-----BEGIN CERTIFICATE-----",
-        certificate,
-        "-----END CERTIFICATE-----"
-    )
-
+from corebase.ca_management.interface import CAManagerInterface, fix_certificate
 
 @register()
 def check_ca_in_settings(app_configs, **kwargs):

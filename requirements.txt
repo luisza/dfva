@@ -7,7 +7,7 @@ cryptography==1.9
 Django>1.11
 django-appconf==1.0.2
 django-crispy-forms==1.6.1
-django-cruds-adminlte
+git+https://github.com/luisza/django-cruds-adminlte.git
 django-filter==1.0.2
 django-image-cropping==1.0.4
 Django-Select2==5.9.0
@@ -35,4 +35,4 @@ dateutils
 pyfva>=0.0.9
 pycryptodome
 celery==4.1.0
-
+dogtag-pki==10.3.5.1

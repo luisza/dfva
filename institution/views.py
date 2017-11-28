@@ -61,7 +61,7 @@ class InstitutionCRUD(UserCRUDView):
             def delete(self, request, *args, **kwargs):
                 self.object = self.get_object()
                 success_url = self.get_success_url()
-                revoke_certificate(self.object.public_certificate)
+                revoke_certificate(self.object.public_certificate.decode('utf-8'))
                 self.object.delete()
                 return HttpResponseRedirect(success_url)
         return DeleteView
