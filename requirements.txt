@@ -35,4 +35,3 @@ dateutils
 pyfva>=0.0.9
 pycryptodome
 celery==4.1.0
-dogtag-pki==10.3.5.1
