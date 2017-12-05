@@ -1,4 +1,4 @@
-Flujos de interación
+Flujos de interacción
 =======================
 
 Instituciones
