@@ -36,7 +36,9 @@ class SignForm(forms.Form):
         ('xml_cofirma', 'XML Cofirma'),
         ('xml_contrafirma', 'XML Contra firma'),
         ('odf', 'ODF'),
-        ('msoffice', 'Microsoft Office')),
+        ('msoffice', 'Microsoft Office'),
+        ("pdf", "PDF")
+        ),
         initial='xml_cofirma')
     algoritmo = forms.ChoiceField(choices=(
         ('Sha256', 'sha256'),
@@ -71,7 +73,9 @@ class ValidateForm(forms.Form):
         ('cofirma', 'XML Cofirma'),
         ('contrafirma', 'XML Contra firma'),
         ('odf', 'ODF'),
-        ('msoffice', 'Microsoft Office')),
+        ('msoffice', 'Microsoft Office'),
+        ("pdf", "pdf")
+        ),
         initial='cofirma')
 
     def send(self):
