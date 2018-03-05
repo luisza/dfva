@@ -44,3 +44,8 @@ if settings.DEMO:
     # IF DEMO, remove in production
     from demo.urls import urlpatterns as demourls
     urlpatterns += demourls
+
+if settings.DOCKER:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  db:
+    image: postgres
+  fva_bccr:
+    hostname: fva_bccr
+    image: dfva/fva_bccr
+#    restart: always
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - ADMIN_USER=luisza
+      - ADMIN_PASS=admin12345
+      - WSDL_HOST=http://fva.mifirmacr.org/
+      - ALLOWED_HOSTS=localhost,fva_bccr
+      - RECEPTOR_HOST=dfva:8000
+  dfva:
+    hostname: dfva
+    image: dfva/dfva
+#    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbit
+      - fva_bccr
+    environment:
+      - ADMIN_USER=luisza
+      - ADMIN_PASS=admin12345
+      - FVA_HOST=http://fva.mifirmacr.org/
+      - RABBIT_USER=admin
+      - RABBIT_PASS=mypass
+      - RABBIT_HOST=rabbit
+      - STUB_HOST=fva_bcr:8000
+      - DJANGO_SETTINGS_MODULE=dfva.settings_docker
+      - ALLOWED_HOSTS=localhost,dfva
+      - LOG_BASE_DIR=/dfva/
+      - NOLOGGING=1
+    links:
+       - rabbit
+       - fva_bccr
+  rabbit:
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5673:5672"
+
+
