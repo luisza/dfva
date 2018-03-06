@@ -25,7 +25,7 @@ SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEMO = True  # Set False in production
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dfva.mifirmacr.org']
 
 
 # Application definition
@@ -132,6 +132,7 @@ USE_L10N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -146,7 +147,13 @@ STATIC_MEDIA = os.path.join(BASE_DIR, 'media/')
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 IMAGE_CROPPING_JQUERY_URL = None
 
+# Mutual Authentication (remove if not need it on development)
+DFVA_CA_PATH='/home/luisza/dfva_certs/ca.crt'
+DFVA_CA_CHECK=True
+DFVA_CERT_PATH='/home/luisza/dfva_certs/dfva.mifirmacr.org.crt'
+DFVA_KEY_PATH='/home/luisza/dfva_certs/dfva.mifirmacr.org.key'
 
+# tumbnails 
 INTERNAL_IPS = ('127.0.0.1',)
 
 from easy_thumbnails.conf import Settings as thumbnail_settings
@@ -154,10 +161,14 @@ THUMBNAIL_PROCESSORS = (
     'image_cropping.thumbnail_processors.crop_corners',
 ) + thumbnail_settings.THUMBNAIL_PROCESSORS
 
+
+# Simple CA (remove if not used)
 CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 
+
+# DOGTAG settings (remove if not used)
 #CAMANAGER_CLASS="corebase.ca_management.dogtag"
 DOGTAG_HOST='ipa.mifirmacr.org'
 DOGTAG_PORT='8443'
@@ -173,12 +184,12 @@ ALLOWED_BCCR_IP=[] #['192.168.1.119']
 
 EXPIRED_DELTA = 5  # in minutes
 LOGIN_REDIRECT_URL = '/'
-FVA_HOST = "http://localhost:8001/"
-# FVA_HOST = 'http://bccr.fva.cr/'
-STUB_SCHEME = 'http'
-STUB_HOST = "localhost:8001"
-RECEPTOR_HOST = "http://localhost:8000/"
-#RECEPTOR_HOST = 'http://bccr.fva.cr/'
+# FVA_HOST = "http://localhost:8001/"
+FVA_HOST = 'http://bccr.fva.cr/'
+STUB_SCHEME = 'https'
+STUB_HOST = "fva.mifirmacr.org"
+#RECEPTOR_HOST = "http://localhost:8000/"
+RECEPTOR_HOST = 'http://bccr.fva.cr/'
 
 DEFAULT_BUSSINESS = 1
 DEFAULT_ENTITY = 1
@@ -186,7 +197,7 @@ DEFAULT_ENTITY = 1
 RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
-UCR_FVA_SERVER_URL = 'http://localhost:8000'
+DEMO_DFVA_SERVER_URL = 'https://dfva.mifirmacr.org'
 DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
 
 if DO_LOGGIN:

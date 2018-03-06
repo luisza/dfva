@@ -8,6 +8,7 @@ import json
 from corebase.rsa import encrypt, get_hash_sum, decrypt
 import requests
 from django.conf import settings
+from corebase.requests_utils import get_requests_ssl_context
 
 
 class AuthenticatorClient(object):
@@ -36,8 +37,13 @@ class AuthenticatorClient(object):
             'institution': str(self.institution.code),
             "data": edata,
         }
+        kwargs={
+            'json': params
+        }
+        kwargs.update(get_requests_ssl_context())
+
         result = requests.post(
-            settings.UCR_FVA_SERVER_URL + '/authenticate/institution/', json=params)
+            settings.DEMO_DFVA_SERVER_URL + '/authenticate/institution/', **kwargs)
 
         data = result.json()
         data = decrypt(self.institution.private_key, data['data'], as_str=True)

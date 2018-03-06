@@ -9,6 +9,7 @@ from corebase.rsa import encrypt, get_hash_sum, decrypt
 import requests
 
 from django.conf import settings
+from corebase.requests_utils import get_requests_ssl_context
 
 
 class ValidatorClient(object):
@@ -48,8 +49,14 @@ class ValidatorClient(object):
             url = '/validate/institution_document/'
         headers = {'Accept': 'application/json',
                    'Content-Type': 'application/json'}
+        
+        kwargs = {
+            "json": params, 
+            "headers": headers
+        }
+        kwargs.update(get_requests_ssl_context())
         result = requests.post(
-            settings.UCR_FVA_SERVER_URL + url, json=params, headers=headers)
+            settings.DEMO_DFVA_SERVER_URL + url, **kwargs)
         data = result.json()
         data = decrypt(self.institution.private_key, data['data'], as_str=True)
         return data
