@@ -166,10 +166,11 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         if advertencias is None:
             return
         for advertencia in advertencias:
-            adv, _ = Advertencia.objects.get_or_create(
-                descripcion=advertencia
-            )
-            self.adr.advertencias.add(adv)
+            if advertencia:
+                adv, _ = Advertencia.objects.get_or_create(
+                    descripcion=advertencia
+                )
+                self.adr.advertencias.add(adv)
 
     def save(self, **kwargs):
         odata = {}
