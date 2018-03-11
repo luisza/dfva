@@ -148,10 +148,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 IMAGE_CROPPING_JQUERY_URL = None
 
 # Mutual Authentication (remove if not need it on development)
-DFVA_CA_PATH='/home/luisza/dfva_certs/ca.crt'
+DFVA_CA_PATH=os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
 DFVA_CA_CHECK=True
-DFVA_CERT_PATH='/home/luisza/dfva_certs/dfva.mifirmacr.org.crt'
-DFVA_KEY_PATH='/home/luisza/dfva_certs/dfva.mifirmacr.org.key'
+DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.mifirmacr.org.crt')
+DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.mifirmacr.org.key')
 
 # tumbnails 
 INTERNAL_IPS = ('127.0.0.1',)
