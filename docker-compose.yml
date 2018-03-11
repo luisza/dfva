@@ -19,6 +19,7 @@ services:
       - RECEPTOR_HOST=dfva:8000
   dfva:
     hostname: dfva
+    tty: true
     image: dfva/dfva
 #    restart: always
     ports:
@@ -38,10 +39,13 @@ services:
       - DJANGO_SETTINGS_MODULE=dfva.settings_docker
       - ALLOWED_HOSTS=localhost,dfva
       - LOG_BASE_DIR=/dfva/
-      - NOLOGGING=1
     links:
        - rabbit
        - fva_bccr
+    volumes:
+       - .:/dfva_app
+       # Include this if SIMPLE CA
+       - ./internal_ca:/dfva/internal_ca/
   rabbit:
     hostname: rabbitmq
     image: rabbitmq:latest
