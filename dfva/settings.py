@@ -25,7 +25,9 @@ SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEMO = True  # Set False in production
-ALLOWED_HOSTS = ['dfva.mifirmacr.org']
+DOCKER = False  # Is running in docker container
+ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
+
 
 
 # Application definition
@@ -199,6 +201,7 @@ RECEPTOR_CLIENT = 'receptor.client'
 # Remove on production
 DEMO_DFVA_SERVER_URL = 'https://dfva.mifirmacr.org'
 DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
+LOG_BASE_DIR=os.environ.get('LOG_BASE_DIR', BASE_DIR)
 
 if DO_LOGGIN:
     LOGGING = {
@@ -208,25 +211,25 @@ if DO_LOGGIN:
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+                'filename': os.path.join(LOG_BASE_DIR, 'logs/debug.log'),
                 'formatter': 'verbose',
             },
             'file_info': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'logs/info.log'),
+                'filename': os.path.join(LOG_BASE_DIR, 'logs/info.log'),
                 'formatter': 'simple',
             },
             'remove_authentication': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'logs/authentication.log'),
+                'filename': os.path.join(LOG_BASE_DIR, 'logs/authentication.log'),
                 'formatter': 'quiet',
             },
             'remove_sign': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'logs/sign.log'),
+                'filename': os.path.join(LOG_BASE_DIR, 'logs/sign.log'),
                 'formatter': 'quiet',
             },
             'console': {

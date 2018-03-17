@@ -25,7 +25,7 @@ de docker de la siguiente forma.
    -p 53:53/udp -p 53:53 \
    -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 \
    -p 88:88/udp -p 464:464/udp -p 123:123/udp -p 7389:7389 \
-   -p 8443:8443-p 8080:8080 -p 9445:9445 \
+   -p 8443:8443 -p 8080:8080 -p 9445:9445 \
    --security-opt seccomp=unconfined \
    --tmpfs /run --tmpfs /tmp \
    -v /var/lib/ipa-data:/data:Z freeipa/freeipa-server \

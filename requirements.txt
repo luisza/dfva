@@ -4,10 +4,10 @@ cffi==1.10.0
 coreapi==2.3.0
 coreschema==0.0.4
 cryptography==1.9
-Django>1.11
+Django==1.11
 django-appconf==1.0.2
 django-crispy-forms==1.6.1
-git+https://github.com/luisza/django-cruds-adminlte.git
+django-cruds-adminlte==0.0.9
 django-filter==1.0.2
 django-image-cropping==1.0.4
 Django-Select2==5.9.0
@@ -35,3 +35,5 @@ dateutils
 pyfva>=0.0.9
 pycryptodome
 celery==4.1.0
+gunicorn
+psycopg2-binary

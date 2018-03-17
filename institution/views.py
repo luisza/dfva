@@ -5,6 +5,8 @@ from corebase.ca_management import create_certiticate, revoke_certificate
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import messages
+import logging
+logger = logging.getLogger('dfva')
 
 class NotificationURLAjaxCRUD(InlineAjaxCRUD):
     model = NotificationURL
@@ -36,7 +38,8 @@ class InstitutionCRUD(UserCRUDView):
                 try:
                     self.object = create_certiticate(
                         self.object.domain, self.object)
-                except:
+                except Exception as e:
+                    logger.debug('Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo %r' % (e,))
                     messages.warning(self.request, 'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo')
                     return self.form_invalid(form)
                 self.object.user = self.request.user
