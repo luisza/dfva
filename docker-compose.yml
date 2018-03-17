@@ -5,6 +5,7 @@ services:
     image: postgres
   fva_bccr:
     hostname: fva_bccr
+    command: gunicorn fva_bccr.wsgi_docker:application --ca-certs /certs/ca.pem --certfile /certs/dfva_cert.pem --keyfile /certs/dfva_key.pem  --bind 0.0.0.0:8000 --workers 1
     image: dfva/fva_bccr
 #    restart: always
     ports:
