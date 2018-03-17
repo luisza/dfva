@@ -18,7 +18,7 @@ useradd --system --gid webapps --shell /bin/bash --home /home/dfva dfva
 mkdir -p /home/dfva
 chown dfva:webapps /home/dfva
 
-apt-get install -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
+apt-get install -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev libnss3-dev
 
 
 su - dfva -c "git clone https://github.com/luisza/dfva.git"
@@ -57,5 +57,5 @@ cp /home/dfva/dfva/deploy/nginx.conf /etc/nginx/sites-available/dfva.conf
 ln -s /etc/nginx/sites-available/dfva.conf /etc/nginx/sites-enabled/dfva.conf
 
 service nginx restart 
-apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev
+apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev libnss3-dev
 apt-get -y autoremove
