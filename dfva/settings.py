@@ -26,9 +26,13 @@ SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 DEBUG = True
 DEMO = True  # Set False in production
 DOCKER = False  # Is running in docker container
-ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
+if os.getenv('ALLOWED_HOSTS', ''):
+    ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
+else:
+    ALLOWED_HOSTS = []
 
-
+MUTUAL_AUTH=os.getenv('MUTUAL_AUTH', '') == 'True'
+USE_DOGTAG=os.getenv('USE_DOGTAG', '') == 'True'
 
 # Application definition
 
@@ -150,10 +154,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 IMAGE_CROPPING_JQUERY_URL = None
 
 # Mutual Authentication (remove if not need it on development)
-DFVA_CA_PATH=os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
-DFVA_CA_CHECK=True
-DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.mifirmacr.org.crt')
-DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.mifirmacr.org.key')
+if MUTUAL_AUTH:
+    DFVA_CA_PATH=os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
+    DFVA_CA_CHECK=True
+    DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.crt')
+    DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.key')
 
 # tumbnails 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -171,27 +176,28 @@ CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 
 
 # DOGTAG settings (remove if not used)
-#CAMANAGER_CLASS="corebase.ca_management.dogtag"
-DOGTAG_HOST='ipa.mifirmacr.org'
-DOGTAG_PORT='8443'
-DOGTAG_SCHEME='https'
-DOGTAG_AGENT_PEM_CERTIFICATE_PATH=os.path.join(BASE_DIR, 'admin_cert.pem')
-DOGTAG_CERTIFICATE_SCHEME={
-'O': 'MIFIRMACR.ORG'    
-}
-DOGTAG_CERT_REQUESTER='dfva'
-DOGTAG_CERT_REQUESTER_EMAIL='dfva@mifirmacr.org'
+if USE_DOGTAG:
+    CAMANAGER_CLASS="corebase.ca_management.dogtag"
+    DOGTAG_HOST='ipa.mifirmacr.org'
+    DOGTAG_PORT='8443'
+    DOGTAG_SCHEME='https'
+    DOGTAG_AGENT_PEM_CERTIFICATE_PATH=os.path.join(BASE_DIR, 'admin_cert.pem')
+    DOGTAG_CERTIFICATE_SCHEME={
+        'O': 'MIFIRMACR.ORG'    
+    }
+    DOGTAG_CERT_REQUESTER='dfva'
+    DOGTAG_CERT_REQUESTER_EMAIL='dfva@mifirmacr.org'
 
 ALLOWED_BCCR_IP=[] #['192.168.1.119']
 
 EXPIRED_DELTA = 5  # in minutes
 LOGIN_REDIRECT_URL = '/'
-# FVA_HOST = "http://localhost:8001/"
+#FVA_HOST = "http://localhost:8001/"
 FVA_HOST = 'http://bccr.fva.cr/'
-STUB_SCHEME = 'https'
-STUB_HOST = "fva.mifirmacr.org"
-#RECEPTOR_HOST = "http://localhost:8000/"
-RECEPTOR_HOST = 'http://bccr.fva.cr/'
+STUB_SCHEME = 'http'
+STUB_HOST = "localhost:8001"
+RECEPTOR_HOST = "http://localhost:8000/"
+#RECEPTOR_HOST = 'http://bccr.fva.cr/'
 
 DEFAULT_BUSSINESS = 1
 DEFAULT_ENTITY = 1
@@ -199,7 +205,7 @@ DEFAULT_ENTITY = 1
 RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
-DEMO_DFVA_SERVER_URL = 'https://dfva.mifirmacr.org'
+DEMO_DFVA_SERVER_URL = 'http://localhost:8000'
 DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
 LOG_BASE_DIR=os.environ.get('LOG_BASE_DIR', BASE_DIR)
 
