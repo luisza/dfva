@@ -22,6 +22,8 @@ from Crypto.PublicKey import RSA
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 
+import logging
+logger = logging.getLogger('dfva')
 
 def pem_to_base64(certificate):
     return certificate.replace("-----BEGIN CERTIFICATE-----\n", '').replace(
@@ -161,8 +163,9 @@ def validate_sign(public_certificate, key, cipher_text):
 
     pub_key = RSA.importKey(public_certificate)
     verifier = PKCS1_v1_5.new(pub_key)
-    return verifier.verify(digest, cipher_text)
-
+    result=verifier.verify(digest, cipher_text)
+    logger.debug("validate_sign %i "%(result,))
+    return result
 
 def validate_sign_data(public_certificate, key, cipher_text):
     digest = SHA512.new()
@@ -177,7 +180,9 @@ def validate_sign_data(public_certificate, key, cipher_text):
          for x in (pub_key.size_in_bytes(), 16, 16, -1)]
 
     verifier = PKCS1_v1_5.new(pub_key)
-    return verifier.verify(digest, enc_session_key)
+    result = verifier.verify(digest, enc_session_key)
+    logger.debug("validate_sign_data %i "%(result,))
+    return result
 
 
 def get_reponse_institution_data_encrypted(data, institution, algorithm='sha512'):

@@ -58,6 +58,7 @@ def reciba_notificacion(data):
     request.received_notification = True
     request.sign_document = data['documento']
     request.save()
+    print(request)
     if hasattr(request, 'institution'):
         send_notification(request)
 

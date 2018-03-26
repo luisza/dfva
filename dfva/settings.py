@@ -127,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -157,8 +157,10 @@ IMAGE_CROPPING_JQUERY_URL = None
 if MUTUAL_AUTH:
     DFVA_CA_PATH=os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
     DFVA_CA_CHECK=True
-    DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.crt')
-    DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.key')
+
+# requerido para personas
+DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.crt')
+DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.key')
 
 # tumbnails 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -245,21 +247,21 @@ if DO_LOGGIN:
 
         },
         'loggers': {
-            #         'dfva': {
-            #             'handlers': ['file'],
-            #             'level': 'DEBUG',
-            #             'propagate': True,
-            #         },
+             'dfva': {
+                        'handlers': ['file'],
+                        'level': 'DEBUG',
+                        'propagate': True,
+             },
             'pyfva':  {
                 'handlers': ['file_info'],
                 'level': 'INFO',
                 'propagate': True,
             },
-            'dfva': {
-                'handlers': ['file_info'],  # 'console',
-                'level': 'INFO',
-                'propagate': True,
-            },
+          #  'dfva': {
+          #      'handlers': ['file_info'],  # 'console',
+          #      'level': 'INFO',
+          #      'propagate': True,
+          #  },
             'dfva_authentication': {
                 'handlers': ['remove_authentication'],  # 'log/authentication',
                 'level': 'INFO',

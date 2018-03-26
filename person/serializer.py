@@ -13,11 +13,11 @@ from person.models import Person, PersonLogin
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.conf import settings
-import logging
-# FIXME: Quitar de aquí institution
-from institution.models import Institution
 from django.contrib.auth.models import User
+from base64 import  b64encode
 
+import logging
+from institution.models import Institution
 logger = logging.getLogger('dfva')
 
 
@@ -27,8 +27,9 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
         super(PersonBaseSerializer, self).validate_digest()
         try:
             plain_text = self._get_decrypt_key()
-        except:
+        except Exception as enc:
             self._errors['data'] = [_('Sign, wrong encryption')]
+            logger.debug("Sign, wrong encryption %r "%(enc,))
             return
         if not validate_sign_data(self.data['public_certificate'], plain_text, self.data['data']):
             self._errors['data_hash'] = [
@@ -37,8 +38,8 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
     def validate_certificate(self):
         self.get_institution()
         client = ClienteValidador(
-            negocio=self.institution.bccr_bussiness,
-            entidad=self.institution.bccr_entity,
+            negocio=settings.DEFAULT_BUSSINESS,
+            entidad=settings.DEFAULT_ENTITY,
         )
         if client.validar_servicio('certificado'):
 
@@ -66,27 +67,39 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
                     _('Data was not decrypted well %r') % (e,)]
                 return False
 
-    def get_institution(self):
-        self.institution = Institution.objects.first()
+    def get_person(self):
         self.person = Person.objects.filter(
             identification=self.data['person']).first()
+        if self.person is None:
+                self._errors['data'] = [
+                    _('User not registered in the system') ]            
 
     def check_subject(self):
         return True
     # Fixme: Revisar que pesona exista
 
+    def get_private_key(self):
+        keyenc=None
+        with open(settings.DFVA_KEY_PATH, 'rb') as arch:
+            keyenc=arch.read()
+        return keyenc        
+
     def _get_decrypt_key(self):
-        self.get_institution()
-        key = decrypt(self.institution.private_key,
+        
+        self.get_person()
+        key = decrypt(self.get_private_key(),
                       self.person.cipher_token, as_str=False)
         return key
 
     def _check_internal_data(self, data, fields=[]):
-        self.person = Person.objects.filter(
-            identification=data['person']).first()
+        self.get_person()
         if self.person is None:
             self._errors['person'] = [_('Person not found')]
 
+
+    def get_institution(self):
+        self.institution= Institution.objects.first()
+        return self.institution
 
 class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializer):
     pass
@@ -94,8 +107,8 @@ class PersonCheckBaseBaseSerializer(PersonBaseSerializer,  CheckBaseBaseSerializ
 
 class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
-    def get_institution(self):
-        self.institution = Institution.objects.first()
+
+    def get_person(self):
         
         if 'person' in self.data:
             self.person = Person.objects.filter(
@@ -110,11 +123,12 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
                     self.person = Person.objects.create(
                         user=user,
                         identification=self.data['person'])
+
     
     def validate_certificate(self):
         client = ClienteValidador(
-            negocio=self.institution.bccr_bussiness,
-            entidad=self.institution.bccr_entity,
+            negocio=settings.DEFAULT_BUSSINESS,
+            entidad=settings.DEFAULT_ENTITY,
         )
         if client.validar_servicio('certificado'):
 
@@ -146,19 +160,27 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
         serializers.HyperlinkedModelSerializer.is_valid(
             self, raise_exception=raise_exception)
 
-        self.get_institution()
+        self.get_person()
         self.validate_certificate()
         self.validate_digest()
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
 
+    def get_public_key(self):
+        public_key=None
+        with open(settings.DFVA_CERT_PATH, 'r') as arch:
+            public_key = arch.read()
+        
+        return public_key
+
     def save(self):
         person = Person.objects.get(identification=self.data['person'])
         random_token = get_random_token()
-        person.cipher_token = encrypt(self.institution.public_key,
+        person.cipher_token = encrypt(self.get_public_key(),
                                       random_token
                                       )
+        logger.debug("Token: "+person.identification+" => "+b64encode(random_token).decode('utf-8'))
         person.token = rsa_encrypt(
             self.data['public_certificate'], message=random_token).decode()
         person.authenticate_certificate = self.data['public_certificate']
