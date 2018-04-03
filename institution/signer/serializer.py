@@ -38,7 +38,7 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSe
     class Meta:
         model = SignRequest
         fields = ('institution', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
+                  'public_certificate', 'data', 'encrypt_method')
 
 
 class Sign_Response_Serializer(serializers.ModelSerializer):

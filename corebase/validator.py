@@ -8,7 +8,8 @@ from pyfva.clientes.validador import ClienteValidador
 from django.utils.dateparse import parse_datetime
 from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\
-    ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE
+    ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE,\
+    ERRORES_VALIDAR_PDF
     
 from corebase.models import Firmante, ErrorEncontrado, Advertencia
 import logging
@@ -69,7 +70,8 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
         for field in self.Meta.fields:
             if field == 'data':
                 continue
-            odata[field] = self.data[field]
+            if field in self.data:
+                odata[field] = self.data[field]
 
         self.cert_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()
@@ -105,6 +107,8 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
             dev = ERRORES_VALIDAR_MSOFFICE
         elif self.requestdata['format']=='odf':
             dev = ERRORES_VALIDAR_ODF
+        elif self.requestdata['format']=='pdf':
+            dev = ERRORES_VALIDAR_PDF
         return dev
 
     def call_BCCR(self):
@@ -177,7 +181,8 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         for field in self.Meta.fields:
             if field == 'data':
                 continue
-            odata[field] = self.data[field]
+            if field in self.data:
+                odata[field] = self.data[field]
 
         self.document_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()

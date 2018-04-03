@@ -16,7 +16,7 @@ logger = logging.getLogger('dfva')
 
 
 class CoreBaseBaseSerializer(object):
-
+    
     def validate_digest(self):
         hashsum = get_hash_sum(self.data['data'], self.data['algorithm'])
         if hashsum != self.data['data_hash']:
@@ -60,7 +60,8 @@ class CoreBaseBaseSerializer(object):
             try:
                 
                 self.requestdata = decrypt(self._get_decrypt_key(),
-                                           self.data['data'])
+                                           self.data['data'],
+                                           method=self.encrypt_method)
                 logger.debug("Data: %r" % (self.requestdata,))
                 self.check_internal_data(self.requestdata)
             except Exception as e:

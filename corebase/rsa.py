@@ -23,6 +23,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 
 import logging
+from corebase.ciphers import Available_ciphers
 logger = logging.getLogger('dfva')
 
 def pem_to_base64(certificate):
@@ -49,21 +50,15 @@ def get_hash_sum(data, algorithm):
     return hashsum
 
 
-def decrypt(private_key, cipher_text, as_str=True, session_key=None):
+def decrypt(private_key, cipher_text, as_str=True,
+            session_key=None, method='aes_eax'):
     raw_cipher_data = b64decode(cipher_text)
     file_in = io.BytesIO(raw_cipher_data)
     file_in.seek(0)
-    if session_key is None:
-        private_key = RSA.import_key(private_key)
 
-        enc_session_key, nonce, tag, ciphertext = \
-            [file_in.read(x)
-             for x in (private_key.size_in_bytes(), 16, 16, -1)]
+    decrypted =  Available_ciphers[method].decrypt(
+                        file_in, private_key, session_key=session_key)
 
-        cipher_rsa = PKCS1_OAEP.new(private_key)
-    session_key = cipher_rsa.decrypt(enc_session_key)
-    cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
-    decrypted = cipher_aes.decrypt_and_verify(ciphertext, tag)
     if as_str:
         return json.loads(decrypted.decode())
     return decrypted
@@ -84,22 +79,20 @@ def decrypt_person(public_certificate, session_key, cipher_text, as_str=True):
     return decrypted
 
 
-def encrypt(public_key, message):
+def encrypt(public_key, message, method='aes_eax'):
     if type(message) == str:
         message = message.encode('utf-8')
 
     file_out = io.BytesIO()
     recipient_key = RSA.importKey(public_key)
-    session_key = get_random_bytes(16)
+    session_key = get_random_bytes(32)
 
     # Encrypt the session key with the public RSA key
     cipher_rsa = PKCS1_OAEP.new(recipient_key)
     file_out.write(cipher_rsa.encrypt(session_key))
 
     # Encrypt the data with the AES session key
-    cipher_aes = AES.new(session_key, AES.MODE_EAX)
-    ciphertext, tag = cipher_aes.encrypt_and_digest(message)
-    [file_out.write(x) for x in (cipher_aes.nonce, tag, ciphertext)]
+    Available_ciphers[method].encrypt(message, session_key, file_out)
 
     file_out.seek(0)
 
@@ -185,10 +178,11 @@ def validate_sign_data(public_certificate, key, cipher_text):
     return result
 
 
-def get_reponse_institution_data_encrypted(data, institution, algorithm='sha512'):
+def get_reponse_institution_data_encrypted(data, institution,
+                                           algorithm='sha512', method='aes_eax'):
     sdata = json.dumps(data, cls=DjangoJSONEncoder)
     if institution and institution.public_key:
-        edata = encrypt(institution.public_key, sdata)
+        edata = encrypt(institution.public_key, sdata, method=method)
     else:
         edata = sdata
     dev = {

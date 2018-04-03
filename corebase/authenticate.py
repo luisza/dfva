@@ -60,7 +60,8 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
         for field in self.Meta.fields:
             if field == 'data':
                 continue
-            odata[field] = self.data[field]
+            if field in self.data:
+                odata[field] = self.data[field]
 
         auth_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()

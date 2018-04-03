@@ -67,10 +67,18 @@ class NotificationURL(models.Model):
 
 
 class BaseInstitutionRequestModel(BaseRequestModel):
+    CIPHERS=( 
+            ("aes_eax", "aes_eax (recomendado)"),
+            ("aes-256-cfb", "aes-256-cfb")             
+             )
     public_certificate = models.TextField(
         help_text="""Certificado público de la institución (ver Institución) """)
     institution = models.CharField(
         max_length=50, help_text="UUID de la institución")
+    encrypt_method=models.CharField(max_length=25, 
+                                    choices=CIPHERS, 
+                                    default='aes_eax',
+                                    blank=True)
 
     class Meta:
         abstract = True

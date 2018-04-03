@@ -34,7 +34,7 @@ class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer, Authen
     class Meta:
         model = AuthenticateRequest
         fields = ('institution', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
+                  'public_certificate', 'data', 'encrypt_method')
 
 
 class Authenticate_Response_Serializer(serializers.ModelSerializer):

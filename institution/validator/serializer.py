@@ -30,7 +30,7 @@ class ValidateCertificate_Request_Serializer(InstitutionBaseSerializer,
     class Meta:
         model = ValidateCertificateRequest
         fields = ('institution', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
+                  'public_certificate', 'data', 'encrypt_method')
 
 
 class ValidateCertificateRequest_Response_Serializer(serializers.ModelSerializer):
@@ -72,7 +72,7 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDoc
     class Meta:
         model = ValidateDocumentRequest
         fields = ('institution', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
+                  'public_certificate', 'data', 'encrypt_method')
 
 class SuscriptorInstitution_Serializer(Suscriptor_Serializer, InstitutionBaseSerializer):
     check_internal_fields = ['institution',

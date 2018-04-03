@@ -31,7 +31,8 @@ class ViewSetBase:
         if "institution" in serializer.fields:
             dev = get_reponse_institution_data_encrypted(
                 data, serializer.institution,
-                algorithm=serializer.data.get('algorithm', "sha512"))
+                algorithm=serializer.data.get('algorithm', "sha512"),
+                method=serializer.encrypt_method)
         else:  # person
             dev = get_reponse_person_data_encrypted(
                 data,

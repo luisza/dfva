@@ -25,6 +25,14 @@ except:
 logger = logging.getLogger('dfva')
 
 
+def get_encrypt_method(datarequest):
+    encrypt_method='aes_eax'
+    if isinstance(datarequest, AuthenticateDataRequest):
+        encrypt_method = datarequest.authenticaterequest.encrypt_method
+    elif isinstance(datarequest, SignDataRequest):
+        encrypt_method = datarequest.signrequest.encrypt_method
+    return encrypt_method
+
 def reciba_notificacion(data):
     """
     Recibe la notificación del BCCR
@@ -58,9 +66,9 @@ def reciba_notificacion(data):
     request.received_notification = True
     request.sign_document = data['documento']
     request.save()
-    print(request)
+
     if hasattr(request, 'institution'):
-        send_notification(request)
+        send_notification(request, encrypt_method=get_encrypt_method(request))
 
 
 def valide_servicio():

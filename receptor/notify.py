@@ -21,7 +21,7 @@ def get_datarequest_serializer(data):
         return Sign_Response_Serializer, data.signrequest
 
 
-def send_notification(data, serializer=None, request=None):
+def send_notification(data, serializer=None, request=None, encrypt_method='aes_eax'):
 
     if data.notification_url == 'N/D':
         return
@@ -31,7 +31,7 @@ def send_notification(data, serializer=None, request=None):
 
     ars = serializer(data)
     datajson = JSONRenderer().render(ars.data)
-    edata = encrypt(data.institution.public_key, datajson)
+    edata = encrypt(data.institution.public_key, datajson, method=encrypt_method)
     hashsum = get_hash_sum(edata, req.algorithm)
     error = None
     try:

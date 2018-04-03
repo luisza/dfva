@@ -1,5 +1,5 @@
 {% extends "cruds/base.html" %}
-
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block title %}{% trans "Adminlte Login" %} {% endblock %}
@@ -10,7 +10,7 @@
 	  <h2>{% trans "Login" %}</h2>
 	  <form method="post">
 	    {% csrf_token %}
-	    {{ form.as_p }}
+	    {{ form|crispy  }}
 	    <input type="hidden" name="next" value="{{next}}" />
 	    <button class="btn btn-success" type="submit"> {% trans "Login" %}</button>
 	  </form>
