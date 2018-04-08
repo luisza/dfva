@@ -83,4 +83,4 @@ class SuscriptorInstitution_Serializer(Suscriptor_Serializer, InstitutionBaseSer
     class Meta:
         model = ValidateDocumentRequest
         fields = ('institution', 'data_hash', 'algorithm',
-                  'public_certificate', 'data')
+                  'public_certificate', 'data', 'encrypt_method')
