@@ -48,7 +48,7 @@ DOGTAG_CERTIFICATE_SCHEME={
 DOGTAG_CERT_REQUESTER=os.getenv('DOGTAG_CERT_REQUESTER','dfva')
 DOGTAG_CERT_REQUESTER_EMAIL=os.getenv('DOGTAG_CERT_REQUESTER_EMAIL','dfva@mifirmacr.org')
 
-ALLOWED_BCCR_IP=[c for c in os.getenv('ALLOWED_BCCR_IP', '').split(',')] #[] #['192.168.1.119']
+ALLOWED_BCCR_IP=[c for c in os.getenv('ALLOWED_BCCR_IP', '').split(',') if c] #[] #['192.168.1.119']
 
 EXPIRED_DELTA = int(os.getenv('EXPIRED_DELTA', 5))  # in minutes
 

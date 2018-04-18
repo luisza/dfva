@@ -173,8 +173,10 @@ Encripción
 
 Se recomienda utilizar transporte https para la puesta en producción de esta plataforma, aún así DFVA posee una segunda capa de encripción, utilizando los algoritmos.
 
-- **AES EAX:** Algoritmo simetrico, utilizado para encriptar el contenido, posee un token de sessión y un atributo IV (nonce). Este par debe ser único en cada encripción, osea no se puede repetir el IV con el mismo token de sessión.  Actualmente tanto el token de sessión como el IV son de 16 bytes.
- 
+- **AES EAX:** Algoritmo simetrico, utilizado para encriptar el contenido, posee un token de sessión y un atributo IV (nonce), así como un Tag parameter. Este par debe ser único en cada encripción, osea no se puede repetir el IV con el mismo token de sessión.  Actualmente tanto el token de sessión, el Tag parameter y el IV son de 16 bytes.
+
+- **AES 256 CBF:** Algoritmo simetrico, utilizado para encriptar el contenido, posee un token de sessión y un atributo IV (nonce). Este par debe ser único en cada encripción, osea no se puede repetir el IV con el mismo token de sessión.  Actualmente tanto el token de sessión es de 32 bytes y el IV son de 16 bytes. (usar solamente si EAX no está disponible en el lenguaje).
+
 - **PKCS1 OAEP:**  Algoritmo de encripción asimétrico, es utilizado para encriptar el token de sessión.   También conocido como RSA/NONE/OAEPWithSHA1AndMGF1Padding en ambiente java.
 
 Estructura de la encripción es:   Token encriptado + IV (nonce) + datos encriptados.
