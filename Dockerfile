@@ -21,6 +21,6 @@ RUN apt-get -y clean
 RUN python manage.py collectstatic --settings=dfva.settings_docker
 
 # EXPOSE port 8000 to allow communication to/from server
-EXPOSE 8000
+EXPOSE 443
 
 
