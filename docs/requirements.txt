@@ -3,3 +3,4 @@ sphinx-rtd-theme==0.2.4
 Django==1.11
 easy-thumbnails==2.4.1
 celery==4.1.0
+djangorestframework==3.6.2
