@@ -56,6 +56,10 @@ supervisorctl update
 cp /home/dfva/dfva/deploy/nginx.conf /etc/nginx/sites-available/dfva.conf
 ln -s /etc/nginx/sites-available/dfva.conf /etc/nginx/sites-enabled/dfva.conf
 
+mkdir /etc/nginx/certs/
+openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
+
+
 service nginx restart 
 apt-get remove -y git build-essential libssl-dev libffi-dev python3-dev libpq-dev libnss3-dev
 apt-get -y autoremove
