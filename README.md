@@ -11,9 +11,9 @@ Proporciona soporte para instituciones y personas utilizando:
 Tantos las personas como las instituciones pueden:
 
 - Solicitar una autenticación.
-- Firmar un documento xml (transacciones), ODF, MS Office.
+- Firmar un documento xml (transacciones), ODF, MS Office, PDF.
 - Validar un certificado emitido.
-- Validar un documento xml. 
+- Validar un documento xml, odf, Ms Office, pdf. 
 
 
 Documentación
@@ -29,5 +29,7 @@ Proyectos complementarios
 * [dfva_client](https://github.com/luisza/dfva_client/) : Cliente en python para interactuar con DFVA con soporte a PKCS11 para personas.
 * [dfva_java](https://github.com/luisza/dfva_java/) : Cliente en java para interactuar con DFVA para instituciones.
 * [dfva_python](https://github.com/luisza/dfva_python/) : Cliente en python para interactuar con DFVA para instituciones.
+* [dfva_c](https://github.com/luisza/dfva_c/) : Cliente en c/c++ para interactuar con DFVA para instituciones.
+* [dfva_csharp](https://github.com/luisza/dfva_csharp/) : Cliente en C# para interactuar con DFVA para instituciones.
 * [dfva_html](https://github.com/luisza/dfva_html/) : Cliente en javascript/html/css para captar información del usuario y mostrar los códigos provistos por dfva para instituciones.
 
