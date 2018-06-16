@@ -1,0 +1,183 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+    {% block title_outer %}
+        <title>{% block title %}{{ site.name }}{% endblock %}</title>
+    {% endblock %}
+
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{% static 'css/bootstrap_4.1.1.min.css' %}" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'css/bootstrap_4.1.1.theme.css' %}" >
+        <link rel="stylesheet" href="{% static 'css/fontawesome_v5.0.13.css' %}" >
+        <style>
+        footer{
+        	margin-top: 20px;
+        }
+        </style>
+
+    {% endblock %}
+
+	<script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="hold-transition skin-blue sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+
+{% block body %}
+    <div class="wrapper">
+        {% block nav_header %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{% url 'home' %}">DFVA</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+    {% if perms.institution.change_institution %}
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'institution_list' %}">{% trans 'My Applications' %} <span class="sr-only">{% trans 'My applications' %}</span></a>
+     	<a >
+      </li>
+    {% endif %}
+      {% if perms.institution.add_institution %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'institution_create' %}" title="{% trans 'Add new application' %}">
+        <i class="fas fa-plus-circle"></i>
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="http://dfva.readthedocs.io/">
+        {% trans 'Documentation' %} 
+        </a>
+      </li>
+
+    </ul>
+    
+    <ul class="navbar-nav mr-2">
+       <li class="nav-item">
+       
+       {% if request.user.is_authenticated %}
+        <a class="nav-link" href="{% url 'logout' %}" title="{% trans 'Logout' %}">
+        <i class="fas fa-sign-out-alt"></i>
+        {% trans 'Logout' %}
+        </a>
+        {% else %}
+        <a class="nav-link" href="{% url 'login' %}" title="{% trans 'Login' %}">
+        	<i class="fas fa-sign-in-alt"></i>
+        	{% trans 'Login' %}
+        </a>
+        
+        {% endif %}
+      </li>
+    </ul>
+    
+  </div>
+</nav>            
+            
+             
+        {% endblock %}
+
+        {% block nav_sidebar %}
+             
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+                <section class="content-header">
+                    <h1>
+                        {% block page_name %}{% endblock %}
+                        {% block no_description %}
+                        <small>{% block page_description %}{% endblock %}</small>
+                        {% endblock %}
+                    </h1>
+                    {% block breadcrumbs %}
+                        {# Breadcrumb implementation left to developers #}
+                    {% endblock %}
+                </section>
+            {% endblock %}
+
+            {% block content_outer %}
+            <section class="content" role="main">
+                {% block messages %}
+                    {% if messages %}
+    <div class="box">
+        <div class="box-body">
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    	<span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    	<span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                {% else %}
+                <div class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    	<span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+               	 {% endif %}
+            	{% endfor %}
+			        </div>
+			    </div>
+				{% endif %}
+                {% endblock %}
+
+                {% block content_block_wrap %}
+                <div class="container">
+                    {% block content %}{% endblock %}
+                </div>
+                {% endblock %}
+            </section>
+            {% endblock %}
+
+        </div>
+        {% endblock content_wrapper %}
+
+        {% block nav_footer %}
+       
+  <footer class="footer">
+  <div class="card-footer text-muted text-center">
+   		<span > &copy; Copyleft {% now 'Y' %}</span>
+   		DFVA es Software Libre, se permite su copia total y parcial, sin garantias. 
+  		 
+  </div>
+  </footer>
+        {% endblock %}
+
+    </div>
+{% endblock body %}
+
+    {% block javascript %}
+<script src="{% static 'js/popper_1.14.3.min.js' %}" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="{% static 'js/bootstrap.4.1.1.min.js' %}" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    {% endblock %}
+
+{% block extra_foot %}{% endblock %}
+{% block javascript_extra %}{% endblock %}
+
+<script>
+{% if messages %} $('.alert').alert(); {% endif %}
+</script>
+
+</body>
+</html>

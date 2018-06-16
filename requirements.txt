@@ -6,14 +6,7 @@ coreschema==0.0.4
 cryptography==1.9
 Django==1.11
 django-appconf==1.0.2
-django-crispy-forms==1.6.1
-django-cruds-adminlte==0.0.9
-django-filter==1.0.2
-django-image-cropping==1.0.4
-Django-Select2==5.9.0
-djangoajax==2.3.7
 djangorestframework==3.6.2
-easy-thumbnails==2.4.1
 idna==2.5
 itypes==1.1.0
 Jinja2==2.9.6
@@ -37,3 +30,5 @@ pycryptodome
 celery==4.1.0
 gunicorn
 psycopg2-binary
+https://github.com/Solvosoft/soapfish/archive/v0.6.0.zip
+django-crispy-forms==1.7.2

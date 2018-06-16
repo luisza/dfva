@@ -13,11 +13,11 @@
 </p>
 <p>
 	Para poder crear un proceso de inicio de sesión con firma digital se necesita tener registrada una
-	institución y sus respectivas URLs de notificación (ver opción editar de institución). <br>
-	Una vez creada la institución se podrá acceder a los detalles de la misma para observar las claves de accesos.<br>
+	aplicación y sus respectivas URLs de notificación. <br>
+	Una vez creada la aplicación se podrá acceder a los detalles de la misma para observar las claves de accesos.<br>
 	Se proporciona lo siguiente en formato PEM:
 	<ul>
-		<li><b>private key:</b> Clave privada para desencriptar mensajes.</li>
+		<li><b>private key:</b> Clave privada para desencriptar mensajes. (Solo al crear)</li>
 		<li><b>server public key:</b> Clave pública para encriptar mensajes del servidor.</li>
 		<li><b>public certificate:</b> Certificado de validación de servicio.</li>
 	</ul>
@@ -28,8 +28,13 @@
 </p>
 
 <ul>
+{% if not request.user.is_authenticated %}
 	<li><a href="{% url 'login' %}">Iniciar sesión</a></li>
-	<li><a href="{% url 'institution_institution_list' %}">Crear una institución </a></li>
+{% endif %}
+	{% if perms.institution.add_institution %}
+	<li>
+	<a href="{% url 'institution_create' %}">Crear una aplicación </a></li>
+	{% endif %}
 	<li><a href="http://dfva.readthedocs.io/es/latest/API.html">Revisar la documentación</a></li>
 </ul>
 		</div>

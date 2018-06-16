@@ -1,0 +1,44 @@
+{% extends "adminlte/base.html" %}
+
+{% load i18n static %}
+
+{% block title %}{% trans "Delete Institution" %} {% endblock %}
+
+{% block content %}
+<h1>{% trans 'Attention: this operation is irreversible' %}</h1>
+{% if perms_lacking %}
+    <p>{% blocktrans with escaped_object=object %}Deleting the {{ object_name }} '{{ escaped_object }}' would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktrans %}</p>
+    <ul>
+    {% for obj in perms_lacking %}
+        <li>{{ obj }}</li>
+    {% endfor %}
+    </ul>
+{% elif protected %}
+    <p>{% blocktrans with escaped_object=object %}Deleting the {{ object_name }} '{{ escaped_object }}' would require deleting the following protected related objects:{% endblocktrans %}</p>
+    <ul>
+    {% for obj in protected %}
+        <li>{{ obj }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>{% blocktrans with escaped_object=object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"? All of the following related items will be deleted:{% endblocktrans %}</p>
+
+	<ul class="list-group list-group-flush">
+	{% for app in object.notificationurl_set.all%}
+		<li class="list-group-item" >{{app}}</li>
+	{% empty %}
+		<li class="list-group-item" >{% trans 'No apps will be deleted' %}</li>
+	{% endfor %}
+	</ul>
+	<br><br>
+    <form method="post">{% csrf_token %}
+    <div>
+    <input type="hidden" name="post" value="yes">
+    {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+    {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+    <input class="btn btn-success" type="submit" value="{% trans "Yes, I'm sure" %}">
+    <a href="{% url 'institution_list' %}" class="btn btn-danger">{% trans "No, take me back" %}</a>
+    </div>
+    </form>
+{% endif %}
+{% endblock %}

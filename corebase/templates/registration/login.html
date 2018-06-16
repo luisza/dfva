@@ -1,19 +1,72 @@
-{% extends "cruds/base.html" %}
-{% load crispy_forms_tags %}
-{% load i18n %}
+{% extends "adminlte/base.html" %}
+
+{% load i18n static %}
 
 {% block title %}{% trans "Adminlte Login" %} {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-	  <h2>{% trans "Login" %}</h2>
-	  <form method="post">
-	    {% csrf_token %}
-	    {{ form|crispy  }}
-	    <input type="hidden" name="next" value="{{next}}" />
-	    <button class="btn btn-success" type="submit"> {% trans "Login" %}</button>
-	  </form>
+<div class="row justify-content-md-center">
+	<div class="col-md-auto">
+		<div class="card " style="width: 25rem;">
+			<ul class="nav nav-pills" id="logintab" role="tablist">
+				<li class="nav-item"><a class="nav-link active" id="fd-tab"
+					data-toggle="tab" href="#fd" role="tab" aria-controls="home-fd"
+					aria-selected="true">{% trans 'Digital Signature' %}</a></li>
+				<li class="nav-item"><a class="nav-link" id="up-tab"
+					data-toggle="tab" href="#up" role="tab" aria-controls="home-up"
+					aria-selected="true">{% trans 'User/Password' %}</a></li>
+			</ul>
+			<div class="card-body tab-content">
+				
+				<div class="tab-pane fade show active" id="fd" role="tabpanel" aria-labelledby="fd-tab">
+					<img class="card-img-top" width="18em" src="{% static 'Imagenes/Firma.png' %}"
+						alt="{% trans 'Digital signature logo' %}"> <br>
+					<br>
+					<h5 class="card-title">{% trans "Login with digital signature" %}</h5>
+					<p class="card-text">
+					{% trans "To administrate this site you need to use Digital signature" %}</p>
+					<br>
+					<br>
+					<button class="btn btn-primary" id="BotonDeAutenticar"
+						data-fva="true" data-url="/autenticar"
+						data-dominio="{{ request.scheme }}://{{ request.get_host }}"
+						data-successurl="{% if next %}{{next}}{% else %}/{% endif %}"
+						data-parautenticarse="al Sitio de Verificaci&oacute;n"
+						data-mensajedeerror="No se pudo realizar la autenticaci&oacute;n en el sitio de verificaci&oacute;n."
+						type="button" class="botonVerificacion botonVerificacion-Inicio">
+						{% trans "Login" %}</button>
+
+				</div>
+
+	
+				<div class="tab-pane " id="up" role="tabpanel" aria-labelledby="up-tab">
+					<h5 class="card-title text-center text-green">{% trans "Login" %}</h5>
+					<div class="card-text">
+					<form method="post">
+						{% csrf_token %}
+						<table class="table">{{ form }} </table>
+						<input type="hidden" name="next" value="{{next}}" />
+						<br><br>
+						<button class="btn btn-success" type="submit">
+						{% trans "Login" %}</button>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+<br>
+{% endblock %}
+
+{% block extra_head %}
+    <link href="{% static 'css/firma.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/verificacion.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block javascript_extra %}
+
+    <script src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
+    <script src="{% static 'js/Bccr.Fva.ClienteInterno.Firmador-1.0.1.js' %}" type="text/javascript"></script>
+	<script src="{% static 'js/autenticador-1.0.0.js' %}"></script>
 {% endblock %}

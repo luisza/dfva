@@ -1,0 +1,42 @@
+{% extends "adminlte/base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n static %}
+
+{% block title %}{% trans "Manage notification urls" %} {% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    {{object.name}}
+  </div>
+	<div class="card-body text-center">
+		<h5 class="card-title">{% trans 'Create or Edit notification url' %}</h5>
+		<div class="col-md-6 offset-md-3">
+     	<div class="card ">
+			  <div class="card-body">
+			   {% crispy form %}
+			  </div>
+		</div>
+    </div>
+    </div>
+
+  {% if object_list %}
+   <ul class="list-group list-group-flush">
+   <li class="list-group-item bg-success"> {% trans 'Available notification urls' %} </li>
+   {% for obj in object_list %}
+    <li class="list-group-item"> 
+    {{obj.description}} {% if obj.url %} -- {{obj.url}} {% endif %}
+    
+     <a class="float-right text-danger" title="{% trans 'Edit notification urls' %}"
+	  href="{% url 'notification_urls' pk=object.pk  nu=obj.pk %}">
+	  <i class="fas fa-edit"></i> </a>
+    
+    </li>
+   {% endfor %}
+  </ul>
+  {% endif %}
+  
+</div>
+
+
+{% endblock %}

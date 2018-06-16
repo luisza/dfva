@@ -31,15 +31,14 @@ if os.getenv('ALLOWED_HOSTS', ''):
 else:
     ALLOWED_HOSTS = []
 
-MUTUAL_AUTH=os.getenv('MUTUAL_AUTH', '') == 'True'
-USE_DOGTAG=os.getenv('USE_DOGTAG', '') == 'True'
+MUTUAL_AUTH = os.getenv('MUTUAL_AUTH', '') == 'True'
+USE_DOGTAG = os.getenv('USE_DOGTAG', '') == 'True'
 
 # Application definition
 
 
 INSTALLED_APPS = []
-if DEMO is True:
-    INSTALLED_APPS.append('demo')  # remove in production)
+
 
 INSTALLED_APPS += [
     'django.contrib.admin',
@@ -48,17 +47,12 @@ INSTALLED_APPS += [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'corebase',
     'institution',
     'person',
     'receptor',
     'rest_framework',
-    'crispy_forms',
-    'django_select2',
-    'easy_thumbnails',
-    'image_cropping',
-    'cruds_adminlte',
-    'django_ajax',
     #'django_extensions',
 
 ]
@@ -138,38 +132,27 @@ USE_L10N = True
 USE_TZ = True
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_MEDIA = os.path.join(BASE_DIR, 'media/')
 
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-IMAGE_CROPPING_JQUERY_URL = None
-
 # Mutual Authentication (remove if not need it on development)
 if MUTUAL_AUTH:
-    DFVA_CA_PATH=os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
-    DFVA_CA_CHECK=True
+    DFVA_CA_PATH = os.path.join(BASE_DIR, 'dfva_certs/ca.crt')
+    DFVA_CA_CHECK = True
 
 # requerido para personas
-DFVA_CERT_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.crt')
-DFVA_KEY_PATH=os.path.join(BASE_DIR, 'dfva_certs/dfva.key')
+DFVA_CERT_PATH = os.path.join(BASE_DIR, 'dfva_certs/dfva.crt')
+DFVA_KEY_PATH = os.path.join(BASE_DIR, 'dfva_certs/dfva.key')
 
-# tumbnails 
+# tumbnails
 INTERNAL_IPS = ('127.0.0.1',)
-
-from easy_thumbnails.conf import Settings as thumbnail_settings
-THUMBNAIL_PROCESSORS = (
-    'image_cropping.thumbnail_processors.crop_corners',
-) + thumbnail_settings.THUMBNAIL_PROCESSORS
-
 
 # Simple CA (remove if not used)
 CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
@@ -179,18 +162,19 @@ CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 
 # DOGTAG settings (remove if not used)
 if USE_DOGTAG:
-    CAMANAGER_CLASS="corebase.ca_management.dogtag"
-    DOGTAG_HOST='ipa.mifirmacr.org'
-    DOGTAG_PORT='8443'
-    DOGTAG_SCHEME='https'
-    DOGTAG_AGENT_PEM_CERTIFICATE_PATH=os.path.join(BASE_DIR, 'admin_cert.pem')
-    DOGTAG_CERTIFICATE_SCHEME={
-        'O': 'MIFIRMACR.ORG'    
+    CAMANAGER_CLASS = "corebase.ca_management.dogtag"
+    DOGTAG_HOST = 'ipa.mifirmacr.org'
+    DOGTAG_PORT = '8443'
+    DOGTAG_SCHEME = 'https'
+    DOGTAG_AGENT_PEM_CERTIFICATE_PATH = os.path.join(
+        BASE_DIR, 'admin_cert.pem')
+    DOGTAG_CERTIFICATE_SCHEME = {
+        'O': 'MIFIRMACR.ORG'
     }
-    DOGTAG_CERT_REQUESTER='dfva'
-    DOGTAG_CERT_REQUESTER_EMAIL='dfva@mifirmacr.org'
+    DOGTAG_CERT_REQUESTER = 'dfva'
+    DOGTAG_CERT_REQUESTER_EMAIL = 'dfva@mifirmacr.org'
 
-ALLOWED_BCCR_IP=[] #['192.168.1.119']
+ALLOWED_BCCR_IP = []  # ['192.168.1.119']
 
 EXPIRED_DELTA = 5  # in minutes
 LOGIN_REDIRECT_URL = '/'
@@ -209,7 +193,7 @@ RECEPTOR_CLIENT = 'receptor.client'
 # Remove on production
 DEMO_DFVA_SERVER_URL = 'http://localhost:8000'
 DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
-LOG_BASE_DIR=os.environ.get('LOG_BASE_DIR', BASE_DIR)
+LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR)
 
 if DO_LOGGIN:
     LOGGING = {
@@ -247,21 +231,21 @@ if DO_LOGGIN:
 
         },
         'loggers': {
-             'dfva': {
-                        'handlers': ['file'],
-                        'level': 'DEBUG',
-                        'propagate': True,
-             },
+            'dfva': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
             'pyfva':  {
                 'handlers': ['file_info'],
                 'level': 'INFO',
                 'propagate': True,
             },
-          #  'dfva': {
-          #      'handlers': ['file_info'],  # 'console',
-          #      'level': 'INFO',
-          #      'propagate': True,
-          #  },
+            #  'dfva': {
+            #      'handlers': ['file_info'],  # 'console',
+            #      'level': 'INFO',
+            #      'propagate': True,
+            #  },
             'dfva_authentication': {
                 'handlers': ['remove_authentication'],  # 'log/authentication',
                 'level': 'INFO',

@@ -1,56 +1,60 @@
 {% extends "adminlte/base.html" %}
 {% load i18n %}
-
-{% block title %}{% trans "New application details" %} {% endblock %}
-
+{% block title %}{% trans "Application details" %} {% endblock %}
 {% block content %}
 
-<div class="alert alert-danger"> Guarde estas llaves en un lugar seguro, una de ellas no podrá ser consultada más adelante en esta vista.</div>
 <div class="container">
+	<div class="row">
+	<div class="col-md-3 offset-md-9">
+	<a class="btn" href="{% url 'institution_list' %}" title="{% trans 'Go back'%}">
+	<i class="fas fa-reply"></i> </a>
+	
+	<a class="btn" href="{% url 'institution_edit' object.pk %}"  title="{% trans 'Edit institution'%}">
+	
+	<i class="fas fa-edit"></i> </a>
+	
+	</div>
+</div>
   <div class="row">
 
-    <div class="col-4"> {% trans 'Name' %}: </div>
-    <div class="col-8">{{object.name}}  </div>
+    <div class="col-4 "> {% trans 'Name' %}: </div>
+    <div class="col-8">{{object.name}} --{{object.active}}  </div>
      
+  
     <div class="col-4 border-bottom my-3"> {% trans 'Identification code' %}:</div>
     <div class="col-8 border-bottom my-3"> {{object.code}}</div>
      
+ 
     <div class="col-4"> {% trans 'Notification email' %}: </div>
     <div class="col-8">{{object.email}} </div>
      
+
     <div class="col-4 border-bottom my-3"> {% trans 'Notification phone' %}: </div>
     <div class="col-8 border-bottom my-3">{{object.phone}}</div>
        
+
     <div class="col-4"> {% trans 'Domain Name' %}: </div>
     <div class="col-8">{{object.domain}}</div>
-
+       
+    
     <div class="col-4 border-bottom my-3"> {% trans 'Institution unit' %}: </div>
     <div class="col-8 border-bottom my-3">{{object.institution_unit}} </div>
-           
+       
+      
  </div>    
     
    
  <div class="row align-items-start"> 
-  
-    <div class="col-4"> {% trans 'Private key' %}:  </div>
-    <div class="col-8 my-5"> {{object.get_private_key_display}}  </div>
-  
-    <div class="col-4"> {% trans 'Public key' %} </div>
-    <div class="col-8 my-3"> {{object.get_server_public_key_display}} </div>
- 	
+    <div class="col-4 "> {% trans 'Public key' %} </div>
+    <div class="col-8 my-5"> <textarea rows="17" cols="60">{{object.server_public_key}}</textarea> </div>
     <div class="col-4"> {% trans 'Public certificate' %}: </div>
-    <div class="col-8 my-5">{{object.get_public_certificate_display }}</div>
-     	
- 	  
+    <div class="col-8 my-3"><textarea rows="25" cols="60">{{object.public_certificate}}</textarea></div>  
   </div>
-  
+</div>
+
 <div class="row">
 <div class="col-md-4 offset-md-6">
-<a class="btn btn-info" href="{% url 'institution_list' %}" alt="{% trans 'Go back'%}">{% trans 'Go back'%} </a>
+<a class="btn btn-info" href="{% url 'institution_list' %}" title="{% trans 'Go back'%}">{% trans 'Go back'%} </a>
 </div>
 </div>
-<br><br>
-</div>
-<div class="alert alert-danger"> Guarde estas llaves en un lugar seguro, una de ellas no podrá ser consultada más adelante en esta vista. </div>
-
 {% endblock %}

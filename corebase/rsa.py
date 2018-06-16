@@ -26,6 +26,7 @@ import logging
 from corebase.ciphers import Available_ciphers
 logger = logging.getLogger('dfva')
 
+
 def pem_to_base64(certificate):
     return certificate.replace("-----BEGIN CERTIFICATE-----\n", '').replace(
         '\n-----END CERTIFICATE-----', ''
@@ -56,8 +57,8 @@ def decrypt(private_key, cipher_text, as_str=True,
     file_in = io.BytesIO(raw_cipher_data)
     file_in.seek(0)
 
-    decrypted =  Available_ciphers[method].decrypt(
-                        file_in, private_key, session_key=session_key)
+    decrypted = Available_ciphers[method].decrypt(
+        file_in, private_key, session_key=session_key)
 
     if as_str:
         return json.loads(decrypted.decode())
@@ -107,6 +108,8 @@ def get_salt_session(size=16):
 
 
 def salt_encrypt(message):
+    if type(message) == str:
+        message = message.encode()
     session_key = get_salt_session()
     file_out = io.BytesIO()
     cipher_aes = AES.new(session_key, AES.MODE_EAX)
@@ -156,9 +159,10 @@ def validate_sign(public_certificate, key, cipher_text):
 
     pub_key = RSA.importKey(public_certificate)
     verifier = PKCS1_v1_5.new(pub_key)
-    result=verifier.verify(digest, cipher_text)
-    logger.debug("validate_sign %i "%(result,))
+    result = verifier.verify(digest, cipher_text)
+    logger.debug("validate_sign %i " % (result,))
     return result
+
 
 def validate_sign_data(public_certificate, key, cipher_text):
     digest = SHA512.new()
@@ -174,7 +178,7 @@ def validate_sign_data(public_certificate, key, cipher_text):
 
     verifier = PKCS1_v1_5.new(pub_key)
     result = verifier.verify(digest, enc_session_key)
-    logger.debug("validate_sign_data %i "%(result,))
+    logger.debug("validate_sign_data %i " % (result,))
     return result
 
 

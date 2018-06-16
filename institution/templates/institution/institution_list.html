@@ -1,0 +1,120 @@
+{% extends "adminlte/base.html" %}
+
+{% load i18n static %}
+
+{% block title %}{% trans "Application list" %} {% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header ">
+
+    
+	<div class="row">
+	<div class="col-md-3 offset-md-5">
+	    {% trans 'Your Applications' %}
+	</div>
+	<div class="col-md-2 offset-md-2">
+		<a href="{% url 'institution_create' %}"
+		 title="{% trans 'Create application' %}">
+		{% trans 'Create Application' %}</a>
+	
+	</div>    
+    </div>
+  </div>
+  <div class="card-body">
+{% if object_list %}
+<div class="card-deck">
+<div class="row">
+{% for obj in object_list %}
+<div class="col-sm-4">
+	<div class="card {% if obj.active %} border-info {% else %} border-dark {% endif %} mb-3"
+	 >
+	  <div class="card-header  {% if obj.active %} bg-transparent border-success{% else %} border-dark {% endif %} ">
+	  <a title="{% trans 'Show application details' %}" class="text-muted"
+	href="{% url 'institution_show' obj.pk %}">
+	  {{obj.name}}</a>
+	  <a class="float-right text-danger" title="{% trans 'Remove application' %}"
+	  href="{% url 'institution_delete' obj.pk %}">
+	  <i class="fas fa-window-close"></i> </a>
+	  </div>
+	  <div class="card-body {% if obj.active %} bg-transparent {% else %} bg-light {% endif %} ">
+	    <h5 class="card-title text-success">
+	    {% if obj.notificationurl_set.count %}
+	    <span class="badge badge-secondary">{{obj.notificationurl_set.count}} </span>
+	    {% trans 'Notifications urls' %}
+	    
+	  	<span class="badge badge-primary badge-pill float-right">
+			<a href="{% url 'notification_urls' obj.pk %}" title="{% trans 'Manage notification urls' %}"
+			style="color: #fff;font-size: 1.5em;">
+			<i class="fas fa-file-code"></i></a>
+		</span>
+	    
+	    
+	   {% else %}
+	   <div class="alert alert-warning">
+	    <a href="{% url 'notification_urls' obj.pk %}" title="{% trans 'Manage notification urls' %}">
+	    <i class="fas fa-exclamation-triangle"></i>
+	    {% trans "Create new notification url" %} </a>
+	    </div>
+	    {% endif %}
+
+	    
+	    </h5>
+	    <p class="card-text text-justify my-4">
+	    {% blocktrans %}
+	    Application are how you identify your application credential, and notification urls are
+	    where and how application connect with DFVA.
+	    {% endblocktrans %}
+	    </p>
+	    
+	  </div>	 
+	  <div class="card-footer text-muted">
+	 
+	 <div class="row">
+  <div class="mx-auto">
+ 	<a title="{% trans 'Edit application: ' %}{{obj.name}}" 
+		href="{% url 'institution_edit' obj.pk %}"
+		 class="card-link  text-dark">
+		 <i class="fas fa-edit"></i>
+		{% trans 'Edit application' %}
+		</a>
+  
+  </div>
+  <div class="float-right text-danger">
+  <a type="button" href="#" class="btn" data-toggle="modal" data-target="#modal_{{obj.pk}}">
+  <i class="fas fa-key"></i>
+</a>
+	{% include 'institution/key_modal.html' %}
+  </div>
+</div>
+
+	  </div>
+	  
+	</div>
+</div>
+{% endfor %}
+</div>
+</div>
+{% else %}
+<div class="row">
+  <div class="mx-auto">
+  {% trans 'You have not application yet, you need to create one to continue' %}
+  <br><br>
+ 	<a title="{% trans 'Create application' %}" 
+		href="{% url 'institution_create'  %}"
+		 class="btn btn-success" style="margin-left: 30%">
+		 <i class="fas fa-edit"></i>
+		{% trans 'Create application' %}
+		</a>
+  </div>
+</div>
+{% endif %}
+  </div>
+  <div class="card-footer text-muted">
+   {% trans "Don't forget update the notification urls" %}
+  </div>
+</div>
+<br>
+
+{% endblock %}

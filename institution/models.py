@@ -36,6 +36,9 @@ class Institution(models.Model, PEMpresentation):
     server_sign_key = EncrytedText()
     server_public_key = EncrytedText()
 
+    email = models.EmailField()
+    phone = models.CharField(max_length=25, null=True, blank=False)
+
     def __str__(self):
         return self.name
 
@@ -49,9 +52,9 @@ class Institution(models.Model, PEMpresentation):
 class NotificationURL(models.Model):
     description = models.CharField(max_length=250)
     url = models.URLField(null=True, blank=True)
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     not_webapp = models.BooleanField(default=False)
-    is_demo=models.BooleanField(default=False)
+    is_demo = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s %s" % (
@@ -67,18 +70,18 @@ class NotificationURL(models.Model):
 
 
 class BaseInstitutionRequestModel(BaseRequestModel):
-    CIPHERS=( 
-            ("aes_eax", "aes_eax (recomendado)"),
-            ("aes-256-cfb", "aes-256-cfb")             
-             )
+    CIPHERS = (
+        ("aes_eax", "aes_eax (recomendado)"),
+        ("aes-256-cfb", "aes-256-cfb")
+    )
     public_certificate = models.TextField(
         help_text="""Certificado público de la institución (ver Institución) """)
     institution = models.CharField(
         max_length=50, help_text="UUID de la institución")
-    encrypt_method=models.CharField(max_length=25, 
-                                    choices=CIPHERS, 
-                                    default='aes_eax',
-                                    blank=True)
+    encrypt_method = models.CharField(max_length=25,
+                                      choices=CIPHERS,
+                                      default='aes_eax',
+                                      blank=True)
 
     class Meta:
         abstract = True
@@ -255,13 +258,13 @@ class ValidateCertificateRequest(BaseInstitutionRequestModel):
 
 
 class ValidateDocumentDataRequest(BaseDocument):
-    FORMATS=(
+    FORMATS = (
         ('cofirma', 'CoFirma'),
         ('contrafirma', 'ContraFirma'),
         ('msoffice', 'MS Office'),
         ('odf', 'Open Document Format'),
         ('pdf', 'PDF')
-        )
+    )
 
     STATUS = ((1, 'Solicitud recibida correctamente'),
               (2, 'Ha ocurrido algún problema al solicitar la firma'),
@@ -273,7 +276,7 @@ class ValidateDocumentDataRequest(BaseDocument):
               (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
-        
+
     institution = models.ForeignKey(Institution)
     notification_url = models.URLField()
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
@@ -301,6 +304,7 @@ class ValidateDocumentRequest(BaseInstitutionRequestModel):
     data_request = models.OneToOneField(ValidateDocumentDataRequest,
                                         on_delete=models.CASCADE,
                                         null=True, blank=True)
+
     class Meta:
         ordering = ('arrived_time',)
         permissions = (
