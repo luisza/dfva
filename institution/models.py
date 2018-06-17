@@ -38,6 +38,7 @@ class Institution(models.Model, PEMpresentation):
 
     email = models.EmailField()
     phone = models.CharField(max_length=25, null=True, blank=False)
+    administrative_institution = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -88,7 +89,7 @@ class BaseInstitutionRequestModel(BaseRequestModel):
 
 
 class AuthenticateDataRequest(models.Model):
-    institution = models.ForeignKey(Institution, null=True, blank=False)
+    institution = models.ForeignKey(Institution)
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],

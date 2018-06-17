@@ -10,9 +10,10 @@ from django.conf import settings
 import logging
 from django.views.decorators.http import require_http_methods
 import json
-from institution.models import AuthenticateDataRequest
+from institution.models import AuthenticateDataRequest, Institution
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
+import institution
 logger = logging.getLogger('dfva')
 
 
@@ -32,6 +33,8 @@ def login_with_bccr(request):
             data = authclient.DEFAULT_ERROR
 
         obj = AuthenticateDataRequest.objects.create(
+            institution=Institution.objects.filter(
+                administrative_institution=True).first(),
             notification_url='N/D',
             identification=identification,
             request_datetime=timezone.now(),

@@ -69,7 +69,7 @@ def reciba_notificacion(data):
     request.save()
 
     if hasattr(request, 'institution'):
-        if request.institution is not None:
+        if not request.institution.administrative_institution:
             send_notification(
                 request, encrypt_method=get_encrypt_method(request))
 
