@@ -26,12 +26,13 @@ logger = logging.getLogger('dfva')
 
 
 def get_encrypt_method(datarequest):
-    encrypt_method='aes_eax'
+    encrypt_method = 'aes_eax'
     if isinstance(datarequest, AuthenticateDataRequest):
         encrypt_method = datarequest.authenticaterequest.encrypt_method
     elif isinstance(datarequest, SignDataRequest):
         encrypt_method = datarequest.signrequest.encrypt_method
     return encrypt_method
+
 
 def reciba_notificacion(data):
     """
@@ -68,7 +69,9 @@ def reciba_notificacion(data):
     request.save()
 
     if hasattr(request, 'institution'):
-        send_notification(request, encrypt_method=get_encrypt_method(request))
+        if request.institution is not None:
+            send_notification(
+                request, encrypt_method=get_encrypt_method(request))
 
 
 def valide_servicio():

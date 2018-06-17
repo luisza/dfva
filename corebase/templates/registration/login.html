@@ -28,7 +28,8 @@
 					<br>
 					<br>
 					<button class="btn btn-primary" id="BotonDeAutenticar"
-						data-fva="true" data-url="/autenticar"
+						data-fva="true" data-url="{% url 'login_fd' %}"
+						data-urlconsultafirma="{% url 'consute_firma' %}"
 						data-dominio="{{ request.scheme }}://{{ request.get_host }}"
 						data-successurl="{% if next %}{{next}}{% else %}/{% endif %}"
 						data-parautenticarse="al Sitio de Verificaci&oacute;n"

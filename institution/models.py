@@ -88,7 +88,7 @@ class BaseInstitutionRequestModel(BaseRequestModel):
 
 
 class AuthenticateDataRequest(models.Model):
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, null=True, blank=False)
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],

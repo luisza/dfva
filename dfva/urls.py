@@ -36,8 +36,8 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('home')),
         name='logout'),
     url(r'^admin/', admin.site.urls),
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
+    #     url(r'^api-auth/', include('rest_framework.urls',
+    #                                namespace='rest_framework')),
     url(r'^', include('corebase.urls')),
     url(r'^', include(router.urls)),
 ] + institution_urls

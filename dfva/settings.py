@@ -295,3 +295,9 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
 }
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'corebase.authBackend.DFVABackend'
+)
