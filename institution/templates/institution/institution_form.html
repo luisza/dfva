@@ -9,3 +9,11 @@
 {% crispy form %}
 
 {% endblock%}
+
+
+{% block javascript_extra %}
+<script>
+$("#general").collapse('show');
+$('a[href="#avanzado"]').addClass("float-right");
+</script>
+{% endblock %}
