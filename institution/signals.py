@@ -12,7 +12,6 @@ from institution.models import AuthenticateDataRequest, InstitutionStats,\
 
 @receiver(post_save, sender=AuthenticateDataRequest)
 def create_auth_stats(sender, instance, created, **kwargs):
-    print(instance.received_notification, instance, instance.status,  created)
     if created:
         InstitutionStats.objects.create(
             institution=instance.institution,
@@ -90,6 +89,6 @@ def create_validatedocument_stats(sender, instance, created, **kwargs):
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=3).update(
             status=instance.status,
-            notified=instance.received_notification,
+            notified=True,
             fue_exitosa=instance.fue_exitosa
         )
