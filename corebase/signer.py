@@ -32,7 +32,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 self.requestdata['format'],
                 algoritmo_hash=self.requestdata['algorithm_hash'].title(),
                 hash_doc=self.requestdata['document_hash'],
-                resumen=self.requestdata['resumen'])           
+                resumen=self.requestdata['resumen'])
         else:
             logger.warning("Sign BCCR not available")
             data = signclient.DEFAULT_ERROR
@@ -51,6 +51,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
         self.adr.status = data['codigo_error']
         self.adr.id_transaction = data['id_solicitud']
         self.adr.code = data['codigo_verificacion']
+        self.adr.document_format = self.requestdata['format']
 
     def save(self, **kwargs):
         odata = {}

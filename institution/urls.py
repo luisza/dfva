@@ -10,6 +10,7 @@ from institution.validator.views import ValidateInstitutionViewSet,\
 
 from django.conf.urls import include, url
 from institution import views
+from institution.views.graphs import get_institution_stats
 
 
 def get_routes_view(router):
@@ -33,5 +34,8 @@ urlpatterns = [
     url(r"keys/(?P<pk>[0-9A-Fa-f-]+)/new",
         views.get_new_certificates, name="new_institution_keys"),
     url(r"notificationurls/(?P<pk>[0-9A-Fa-f-]+)/(?P<nu>\d+)?$",
-        views.manage_notificationurls, name="notification_urls")
+        views.manage_notificationurls, name="notification_urls"),
+
+    url(r'institution/(?P<pk>[0-9A-Fa-f-]+)/stats$',
+        get_institution_stats, name="institution_stats")
 ]

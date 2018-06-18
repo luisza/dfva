@@ -70,6 +70,25 @@ class NotificationURL(models.Model):
         )
 
 
+class InstitutionStats(models.Model):
+    institution = models.ForeignKey(Institution)
+    datetime = models.DateTimeField(auto_now_add=True)
+    status = models.SmallIntegerField(default=1)
+    notified = models.BooleanField(default=False)
+    transaction_id = models.IntegerField()
+    data_type = models.SmallIntegerField(choices=(
+        (0, 'Autenticación'),
+        (1, 'Firma'),
+        (2, 'Validación de certificado'),
+        (3, 'Validación de documento')
+    ))
+    document_type = models.CharField(
+        max_length=15, default="n/d"
+    )
+
+    fue_exitosa = models.BooleanField(default=False)
+
+
 class BaseInstitutionRequestModel(BaseRequestModel):
     CIPHERS = (
         ("aes_eax", "aes_eax (recomendado)"),
@@ -93,9 +112,11 @@ class AuthenticateDataRequest(models.Model):
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
+        help_text="Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000"
+    )
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
+    request_datetime = models.DateTimeField(
+        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
 
     STATUS = ((1, 'Solicitud recibida correctamente'),
@@ -149,9 +170,11 @@ class SignDataRequest(models.Model):
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
+        help_text="Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000"
+    )
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
+    request_datetime = models.DateTimeField(
+        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
 
     STATUS = ((1, 'Solicitud recibida correctamente'),
@@ -172,6 +195,7 @@ class SignDataRequest(models.Model):
     sign_document = models.TextField(null=True, blank=True)
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
+    document_format = models.CharField(max_length=25, default='n/d')
 
     @property
     def left_time(self):
@@ -205,9 +229,11 @@ class ValidateCertificateDataRequest(models.Model):
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, null=True, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
+        help_text="Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000"
+    )
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
+    request_datetime = models.DateTimeField(
+        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
 
     STATUS = ((1, 'Solicitud recibida correctamente'),
