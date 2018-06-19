@@ -10,16 +10,20 @@ from institution.models import AuthenticateDataRequest, InstitutionStats,\
     SignDataRequest, ValidateCertificateDataRequest, ValidateDocumentDataRequest
 
 from django.contrib.auth.management import create_permissions
-from django.contrib.auth.models import Group, Permission
+
 from django.conf import settings
 
 
 @receiver(post_migrate, )
 def create_group(sender, **kwargs):
     apps = kwargs.get('apps')
-    schema_editor = kwargs.get("schema_editor")
+    Group = apps.get_model('auth', 'Group')
+    Permission = apps.get_model('auth', 'Permission')
     for app_config in apps.get_app_configs():
-        create_permissions(app_config, apps=apps, verbosity=0)
+        if app_config.name == 'institution':
+            app_config.models_module = True
+            create_permissions(app_config, apps=apps, verbosity=0)
+            app_config.models_module = None
 
     group, created = Group.objects.get_or_create(
         name=settings.INSTITUTION_GROUP_NAME)
