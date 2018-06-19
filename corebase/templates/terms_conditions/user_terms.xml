@@ -1,0 +1,9 @@
+<declaration>
+<citizen>
+ <first_name>{{user.first_name}}</first_name>
+ <last_name>{{user.last_name}}</last_name>
+ <identification>{{user.username}}</identification>
+</citizen>
+<acceptance>True</acceptance>
+<text>{% include 'terms_conditions/user_terms.html' %}</text>
+</declaration>

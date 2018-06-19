@@ -1,6 +1,7 @@
 {% extends 'adminlte/base.html'%}
-{% block content %}
+{% load crispy_forms_tags %}
 
+{% block content %}
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
@@ -10,6 +11,17 @@
 
 <div class="col-8">
 <h1 class="mx-auto text-center"> Bienvenid@</h1>
+
+{% if update_profile %}
+
+<div class="jumbotron ">
+  <h4 class="alert-heading text-center text-success"> 
+Solo faltan algunos pasos más para poder crear sus aplicaciones.
+</h4>
+{% crispy form %}
+</div>
+
+{% endif %}
 
 <p>
 

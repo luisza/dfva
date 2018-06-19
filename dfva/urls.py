@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.views.generic.base import TemplateView
 from rest_framework import routers
 from django.conf import settings
 from institution.urls import get_routes_view as instition_get_routes_view
@@ -23,6 +22,7 @@ from person.urls import get_routes_view as person_get_routes_view
 from institution.urls import urlpatterns as institution_urls
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls.base import reverse_lazy
+from corebase.views import home
 
 router = routers.DefaultRouter()
 instition_get_routes_view(router)
@@ -30,7 +30,7 @@ person_get_routes_view(router)
 
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name="index.html"), name="home"),
+    url(r'^$', home, name="home"),
     url(r'^accounts/login/$', LoginView.as_view(),
         {'redirect_to': reverse_lazy("institution_list")}, name='login'),
     url(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('home')),

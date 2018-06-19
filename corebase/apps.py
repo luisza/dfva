@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class UcrfvaCoreConfig(AppConfig):
-    name = 'ucrfva_core'
+class CoreBaseConfig(AppConfig):
+    name = 'corebase'

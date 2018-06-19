@@ -11,7 +11,7 @@ from institution.models import AuthenticateDataRequest, SignDataRequest
 from institution.authenticator.serializer import Authenticate_Response_Serializer
 from institution.signer.serializer import Sign_Response_Serializer
 
-logger = logging.getLogger('ucr_fva')
+logger = logging.getLogger('dfva')
 
 
 def get_datarequest_serializer(data):
@@ -31,7 +31,8 @@ def send_notification(data, serializer=None, request=None, encrypt_method='aes_e
 
     ars = serializer(data)
     datajson = JSONRenderer().render(ars.data)
-    edata = encrypt(data.institution.public_key, datajson, method=encrypt_method)
+    edata = encrypt(data.institution.public_key,
+                    datajson, method=encrypt_method)
     hashsum = get_hash_sum(edata, req.algorithm)
     error = None
     try:

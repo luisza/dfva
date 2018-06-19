@@ -4,10 +4,30 @@ Created on 17 jun. 2018
 @author: luis
 '''
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 from institution.models import AuthenticateDataRequest, InstitutionStats,\
     SignDataRequest, ValidateCertificateDataRequest, ValidateDocumentDataRequest
+
+from django.contrib.auth.management import create_permissions
+from django.contrib.auth.models import Group, Permission
+from django.conf import settings
+
+
+@receiver(post_migrate, )
+def create_group(sender, **kwargs):
+    apps = kwargs.get('apps')
+    schema_editor = kwargs.get("schema_editor")
+    for app_config in apps.get_app_configs():
+        create_permissions(app_config, apps=apps, verbosity=0)
+
+    group, created = Group.objects.get_or_create(
+        name=settings.INSTITUTION_GROUP_NAME)
+    if created:
+        for perm in ['add_institution', 'change_institution', 'delete_institution']:
+            add_thing = Permission.objects.get(codename=perm)
+            group.permissions.add(add_thing)
+        group.save()
 
 
 @receiver(post_save, sender=AuthenticateDataRequest)

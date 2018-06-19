@@ -13,7 +13,6 @@ import json
 from institution.models import AuthenticateDataRequest, Institution
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
-import institution
 logger = logging.getLogger('dfva')
 
 
@@ -92,6 +91,7 @@ def consute_firma(request):
     status = authdata.status == 1
     realizada = authdata.received_notification
     if status and realizada:
+        request.session.pop('authenticatedata')
         user = authenticate(token=pk)
         if user is not None:
             login(request, user)

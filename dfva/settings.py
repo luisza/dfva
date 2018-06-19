@@ -300,3 +300,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'corebase.authBackend.DFVABackend'
 )
+
+INSTITUTION_GROUP_NAME = 'Application Autors'
+INSTITUION_AUTHORIZATION = 'corebase.terms_conditions.simple_authorization'

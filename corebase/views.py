@@ -19,9 +19,57 @@ from pyfva.constants import get_text_representation
 import logging
 from corebase.rsa import get_reponse_institution_data_encrypted
 from rest_framework import status
+from django.shortcuts import render
+from corebase.forms import RegistationForm, UserConditionsAndTermsForm
+from corebase.models import UserConditionsAndTerms
+from django.template.loader import render_to_string
 logger = logging.getLogger('dfva')
 
 
+def home(request):
+    context = {
+        'update_profile': False
+    }
+    user = request.user
+    form_post = None
+    form = None
+    check_form = True
+    method = request.method
+    if method == 'POST':
+        form_post = request.POST
+    if user.is_authenticated():
+
+        while check_form:
+            check_form = False
+            if not user.has_perm('institution.change_institution'):
+                context['update_profile'] = True
+                if not user.email or not user.first_name or not user.last_name:
+                    form = RegistationForm(form_post, instance=user)
+                else:
+                    ucat = UserConditionsAndTerms.objects.filter(
+                        user=user).first()
+                    if ucat is None or ucat.signed is False:
+                        form = UserConditionsAndTermsForm(
+                            form_post,
+                            instance=ucat,
+                            initial={'text': render_to_string(
+                                'terms_conditions/user_terms.html',
+                                context={'user': user}
+                            )})
+
+            if method == 'POST' and form is not None:
+                if form.is_valid():
+                    form.save()
+                    form = None
+                    method = 'GET'
+                    check_form = True
+                    form_post = None
+
+    if form:
+        context['form'] = form
+    else:
+        context['update_profile'] = False
+    return render(request, 'index.html', context)
 
 
 class ViewSetBase:
@@ -80,7 +128,6 @@ class ViewSetBase:
                     (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
         return self.get_error_response(serializer)
 
-
     def delete(self, request, *args, **kwargs):
         dev = False
         serializer = self.get_serializer(data=request.data)
@@ -91,11 +138,11 @@ class ViewSetBase:
                 serializer.adr.signrequest.delete()
             serializer.adr.delete()
             dev = True
-        response ={'result': dev}
+        response = {'result': dev}
         headers = self.get_success_headers(response)
         return Response(self.get_encrypted_response(response, serializer),
-                            status=status.HTTP_201_CREATED, headers=headers)  
-            
+                        status=status.HTTP_201_CREATED, headers=headers)
+
     def get_error_response(self, serializer):
         dev = {"error_info": serializer._errors,
                'code': 'N/D',
@@ -107,8 +154,6 @@ class ViewSetBase:
         logger.debug('ViewSetBase Error %r' %
                      (dev, ))
         return Response(self.get_encrypted_response(dev, serializer))
-
-
 
 
 class BaseSuscriptor(ViewSetBase):
@@ -127,4 +172,3 @@ class BaseSuscriptor(ViewSetBase):
             'is_connected':  False,
             'info_error': serializer._errors
         }, status=status.HTTP_200_OK)
-
