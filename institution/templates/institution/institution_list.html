@@ -27,7 +27,7 @@
 <div class="card-deck">
 <div class="row">
 {% for obj in object_list %}
-<div class="col-sm-6">
+<div class="{% if object_list.count > 1 %}col-sm-6{%else%}col-sm-12{%endif%}">
 	<div class="card {% if obj.active %} border-info {% else %} border-dark {% endif %} mb-3"
 	 >
 	  <div class="card-header  {% if obj.active %} bg-transparent border-success{% else %} border-dark {% endif %} ">
