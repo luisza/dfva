@@ -33,7 +33,7 @@
 	  <div class="card-header  {% if obj.active %} bg-transparent border-success{% else %} border-dark {% endif %} ">
 	  <a title="{% trans 'Show application details' %}" class="text-muted"
 	href="{% url 'institution_show' obj.pk %}">
-	  {{obj.name}}</a>
+	  {{obj.name}} </a>
 	  <a class="float-right text-danger" title="{% trans 'Remove application' %}"
 	  href="{% url 'institution_delete' obj.pk %}">
 	  <i class="fas fa-window-close"></i> </a>
@@ -88,6 +88,7 @@
   </div>
   <div class="float-right text-danger">
   <a type="button" href="#" class="btn" data-toggle="modal" data-target="#modal_{{obj.pk}}">
+  Val. {{obj.get_expiration_date|date:"Y/m/d" }}
   <i class="fas fa-key"></i>
 </a>
 	{% include 'institution/key_modal.html' %}

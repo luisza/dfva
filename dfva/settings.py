@@ -119,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Costa_Rica'
 
 USE_I18N = True
 
@@ -290,6 +290,11 @@ CELERYBEAT_SCHEDULE = {
         #'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
+    'check_certificates': {
+        'task': 'institution.tasks.notify_certs_expiration',
+        #'schedule': crontab(minute=30, hour=0),
+        'schedule': crontab(day_of_week="*"),
+    }
 }
 
 
@@ -300,3 +305,7 @@ AUTHENTICATION_BACKENDS = (
 
 INSTITUTION_GROUP_NAME = 'Application Autors'
 INSTITUION_AUTHORIZATION = 'corebase.terms_conditions.simple_authorization'
+
+
+EMAIL_PORT = 1025
+EMAIL_HOST = 'localhost'

@@ -1,0 +1,14 @@
+{% extends 'institution/email/email_base.html' %}
+
+{% block content %}
+<h1 class="header">Tus certificados están próximos a vencer</h1>
+<p class="text">
+La aplicación <strong>{{object.name}}</strong> requiere actualizar sus certificados,
+por favor solicite un nuevo certificado en el sitio administrativo.
+</p>
+<br>
+<a class="btn" href="{{domain}}{% url 'institution_edit' object.pk %}" title="Ir a editar aplicación">
+Editar mis certificados
+</a>
+<p class="thanks">Gracias</p>
+{% endblock %}

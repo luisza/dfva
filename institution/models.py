@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 import uuid
 from django.conf import settings
 from corebase.rsa import salt_decrypt, salt_encrypt
+from OpenSSL import crypto
+from dateutil.parser._parser import parse
 
 
 class EncrytedText(models.TextField):
@@ -42,6 +44,16 @@ class Institution(models.Model, PEMpresentation):
 
     def __str__(self):
         return self.name
+
+    def get_expiration_date(self):
+        if not self.administrative_institution:
+            cert = crypto.load_certificate(
+                crypto.FILETYPE_PEM, self.public_certificate)
+            tzinfo = timezone.get_current_timezone()
+            certdate = parse(cert.get_notAfter(), tzinfos=[tzinfo])
+        else:
+            certdate = timezone.now() + relativedelta(years=1)
+        return certdate
 
     class Meta:
         ordering = ('pk',)
