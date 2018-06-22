@@ -11,7 +11,7 @@ ADD requirements/dogtag_requirements.txt  /dfva_app
 # Install any needed packages specified in requirements.txt
 RUN apt-get update
 RUN apt-get install -y  build-essential libssl-dev libffi-dev libnss3-dev
-RUN pip install https://github.com/luisza/soapfish/archive/v0.5.2.tar.gz
+RUN pip install https://github.com/Solvosoft/soapfish/archive/v0.6.0.tar.gz
 RUN pip install --trusted-host pypi.python.org --no-cache-dir -r requirements.txt
 RUN pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt
 RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev
