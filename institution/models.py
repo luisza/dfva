@@ -8,7 +8,7 @@ import uuid
 from django.conf import settings
 from corebase.rsa import salt_decrypt, salt_encrypt
 from OpenSSL import crypto
-from dateutil.parser._parser import parse
+from dateutil.parser import parse
 
 
 class EncrytedText(models.TextField):
