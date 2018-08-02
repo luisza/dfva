@@ -2,6 +2,8 @@ digraph "classes" {
 charset="utf-8"
 rankdir=BT
 "0" [label="{CAManager|ca_crt\lca_key\l|check_certificate()\lgenerate_certificate()\lrevoke_certificate()\l}", shape="record"];
-"1" [label="{CAManagerInterface|\l|check_certificate()\lgenerate_certificate()\lrevoke_certificate()\l}", shape="record"];
-"0" -> "1" [arrowhead="empty", arrowtail="none"];
+"1" [label="{CAManager|\l|check_certificate()\lextract_dic_from_X509Name()\lgenerate_certificate()\lget_connection()\lissuer_dn_to_dic()\lrevoke_certificate()\l}", shape="record"];
+"2" [label="{CAManagerInterface|\l|check_certificate()\lgenerate_certificate()\lrevoke_certificate()\l}", shape="record"];
+"0" -> "2" [arrowhead="empty", arrowtail="none"];
+"1" -> "2" [arrowhead="empty", arrowtail="none"];
 }
