@@ -43,7 +43,6 @@ def test_authentication(identificacion, url=LISTEN_URL):
 
 def test_authentication_detail(identificacion, url=LISTEN_URL):
     authdata = test_authentication(identificacion, url=LISTEN_URL)
-    print(authdata)
     data = {
         'institution': INSTITUTION,
         'notification_url': url,
