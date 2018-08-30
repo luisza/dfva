@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'person',
     'receptor',
     'rest_framework',
-    #'django_extensions',
+    # 'django_extensions',
 
 ]
 
@@ -154,7 +154,9 @@ INTERNAL_IPS = ('127.0.0.1',)
 CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
-
+CA_KEY_PASSWD = None
+CA_CRL = os.path.join(CA_PATH, 'crl.pem')
+CA_CERT_DURATION = 365
 
 # DOGTAG settings (remove if not used)
 if USE_DOGTAG:
@@ -282,17 +284,17 @@ CELERYBEAT_SCHEDULE = {
     # execute 12:30 pm
     'remove_autenticacion': {
         'task': 'institution.tasks.remove_expired_authentications',
-        #'schedule': crontab(minute=30, hour=0),
+        # 'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(minute='*/%d' % (DFVA_REMOVE_AUTHENTICATION, )),
     },
     'remove_sign': {
         'task': 'institution.tasks.remove_expired_signs',
-        #'schedule': crontab(minute=30, hour=0),
+        # 'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
     'check_certificates': {
         'task': 'institution.tasks.notify_certs_expiration',
-        #'schedule': crontab(minute=30, hour=0),
+        # 'schedule': crontab(minute=30, hour=0),
         'schedule': crontab(day_of_week="*"),
     }
 }
