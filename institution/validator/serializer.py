@@ -10,11 +10,13 @@ from institution.models import ValidateCertificateRequest,\
     ValidateCertificateDataRequest, ValidateDocumentDataRequest,\
     ValidateDocumentRequest
 from rest_framework import serializers
-from corebase.validator import FirmanteSerializer, ErrorEncontradoSerializer
+from corebase.validator import SignerSerializer, ErrorFoundSerializer
 from institution.serializer import InstitutionBaseSerializer
 
-class ValidateCertificate_Request_Serializer(InstitutionBaseSerializer,
-                                             ValidateCertificate_RequestSerializer):
+
+class ValidateCertificate_Request_Serializer(
+        InstitutionBaseSerializer,
+        ValidateCertificate_RequestSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
                              'document',
@@ -33,30 +35,35 @@ class ValidateCertificate_Request_Serializer(InstitutionBaseSerializer,
                   'public_certificate', 'data', 'encrypt_method')
 
 
-class ValidateCertificateRequest_Response_Serializer(serializers.ModelSerializer):
+class ValidateCertificateRequest_Response_Serializer(
+        serializers.ModelSerializer):
     class Meta:
         model = ValidateCertificateDataRequest
         fields = ('identification', 'request_datetime',
                   'code', 'status', 'id_transaction',
-                  'status_text', 'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
-                  'fue_exitosa')
+                  'status_text', 'full_name',
+                  'start_validity', 'end_validity',
+                  'was_successfully')
+
 
 class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
-    advertencias = serializers.StringRelatedField(many=True)
-    firmantes = FirmanteSerializer(many=True)
-    errores = ErrorEncontradoSerializer(many=True)
+    warnings = serializers.StringRelatedField(many=True)
+    signers = SignerSerializer(many=True)
+    errors = ErrorFoundSerializer(many=True)
 
 
-class ValidateDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
+class ValidateDocumentRequest_Response_Serializer(
+        ValidateDocument_ResponseSerializer):
     class Meta:
         model = ValidateDocumentDataRequest
         fields = ('request_datetime',
                   'code', 'status', 'status_text',
-                  'advertencias', 'errores', 'firmantes',
-                  'fue_exitosa')
+                  'warnings', 'errors', 'signers',
+                  'was_successfully')
 
 
-class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDocument_RequestSerializer):
+class ValidateDocument_Request_Serializer(InstitutionBaseSerializer,
+                                          ValidateDocument_RequestSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
                              'document', 'format',
@@ -74,7 +81,9 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer, ValidateDoc
         fields = ('institution', 'data_hash', 'algorithm',
                   'public_certificate', 'data', 'encrypt_method')
 
-class SuscriptorInstitution_Serializer(Suscriptor_Serializer, InstitutionBaseSerializer):
+
+class SuscriptorInstitution_Serializer(Suscriptor_Serializer,
+                                       InstitutionBaseSerializer):
     check_internal_fields = ['institution',
                              'notification_url',
                              'identification',

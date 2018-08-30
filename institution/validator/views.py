@@ -6,18 +6,21 @@ Created on 13 sep. 2017
 import logging
 from corebase.views import ViewSetBase, BaseSuscriptor
 from rest_framework import viewsets
-from institution.validator.serializer import ValidateCertificate_Request_Serializer,\
-    ValidateCertificateRequest_Response_Serializer,\
-    ValidateDocument_Request_Serializer,\
-    ValidateDocumentRequest_Response_Serializer,\
-    SuscriptorInstitution_Serializer
+from institution.validator.serializer import (
+    ValidateCertificate_Request_Serializer,
+    ValidateCertificateRequest_Response_Serializer,
+    ValidateDocument_Request_Serializer,
+    ValidateDocumentRequest_Response_Serializer,
+    SuscriptorInstitution_Serializer)
 from institution.models import ValidateCertificateRequest,\
     ValidateDocumentRequest
-from pyfva.constants import ERRORES_VALIDA_CERTIFICADO, ERRORES_VALIDAR_XMLCOFIRMA
+from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
+    ERRORES_VALIDAR_XMLCOFIRMA
 from rest_framework.decorators import list_route
 from corebase.logging import get_ip, get_log_institution_information
 
 logger = logging.getLogger('dfva')
+
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidateCertificate_Request_Serializer
@@ -50,13 +53,14 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
         * **status_text:**  Descripción en texto del estado
-        * **nombre_completo:**  Nombre completo del suscriptor
-        * **inicio_vigencia:**  Inicio de la vigencia del certificado
-        * **fin_vigencia:**  Fin de la vigencia del certificado
-        * **fue_exitosa:**  Si la verificación del certificado fue exitosa
+        * **full_name:**  Nombre completo del suscriptor
+        * **start_validity:**  Inicio de la vigencia del certificado
+        * **end_validity:**  Fin de la vigencia del certificado
+        * **was_successfully:**  Si la verificación del certificado fue exitosa
 
-        **Nota:**  Si la validación del certificado no fue exitosa, entonces los campos de identificación, nombre_completo, inicio_vigencia,
-        fin_vigencia deben ignorase o son nulos.
+        **Nota:**  Si la validación del certificado no fue exitosa, entonces 
+        los campos de identificación, full_name, start_validity,
+        end_validity deben ignorase o son nulos.
 
         """
         ip = get_ip(request)
@@ -93,10 +97,11 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
         * **status_text:**  Descripción en texto del estado
-        * **advertencias:** Lista de advertencias
-        * **errores:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
-        * **firmantes:** Lista con la información de los firmantes [ {'cedula': '08-8888-8888', 'nombre_completo': 'nombre del suscriptor', 'fecha_de_firma': timezone.now()}, ... ]
-        * **fue_exitosa:**  Si la verificación del certificado fue exitosa
+        * **warnings:** Lista de advertencias
+        * **errors:** Lista de errores encontrados en el documento del tipo [ {'code': 'codigo','description': 'descripción'}, ... ]
+        * **signers:** Lista con la información de los firmantes 
+        [ {'identification_number': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
+        * **was_successfully:**  Si la verificación del certificado fue exitosa
 
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
@@ -114,7 +119,8 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         return self._create(request, *args, **kwargs)
 
 
-class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor, viewsets.GenericViewSet):
+class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
+                                            viewsets.GenericViewSet):
     serializer_class = SuscriptorInstitution_Serializer
     queryset = ValidateCertificateRequest.objects.all()
 
@@ -125,7 +131,7 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor, viewsets.GenericView
         ::
 
           POST /validate/institution_suscriptor_connected/
-         
+
         Verifica si una persona está conectada (es contactable por el BCCR).  
 
         Los valores a suministrar en el parámetro data son:

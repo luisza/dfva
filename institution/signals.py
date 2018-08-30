@@ -44,14 +44,14 @@ def create_auth_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=0,
             document_type="authentication",
-            fue_exitosa=instance.status == 1
+            was_successfully=instance.status == 1
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=0).update(
             status=instance.status,
             notified=instance.received_notification,
-            fue_exitosa=instance.status == 1
+            was_successfully=instance.status == 1
         )
 
 
@@ -65,14 +65,14 @@ def create_sign_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=1,
             document_type=instance.document_format,
-            fue_exitosa=instance.status == 1
+            was_successfully=instance.status == 1
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=1).update(
             status=instance.status,
             notified=instance.received_notification,
-            fue_exitosa=instance.status == 1
+            was_successfully=instance.status == 1
         )
 
 
@@ -86,14 +86,14 @@ def create_validatecertificate_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=2,
             document_type='certificate',
-            fue_exitosa=instance.fue_exitosa
+            was_successfully=instance.was_successfully
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=2).update(
             status=instance.status,
             notified=True,
-            fue_exitosa=instance.fue_exitosa
+            was_successfully=instance.was_successfully
         )
 
 
@@ -107,12 +107,12 @@ def create_validatedocument_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=3,
             document_type=instance.format,
-            fue_exitosa=instance.fue_exitosa
+            was_successfully=instance.was_successfully
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=3).update(
             status=instance.status,
             notified=True,
-            fue_exitosa=instance.fue_exitosa
+            was_successfully=instance.was_successfully
         )

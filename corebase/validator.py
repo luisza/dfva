@@ -10,14 +10,16 @@ from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,
     ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\
     ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE,\
     ERRORES_VALIDAR_PDF
-    
-from corebase.models import Firmante, ErrorEncontrado, Advertencia
+
+from corebase.models import Signer, ErrorFound, WarningReceived
 import logging
 from django.core.exceptions import ValidationError
 from pyfva.clientes.firmador import ClienteFirmador
 logger = logging.getLogger('dfva')
 
-class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializer):
+
+class ValidateCertificate_RequestSerializer(
+        serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
@@ -57,13 +59,13 @@ class ValidateCertificate_RequestSerializer(serializers.HyperlinkedModelSerializ
         else:
             self.adr.status_text = get_text_representation(
                 ERRORES_VALIDA_CERTIFICADO,  data['codigo_error'])
-        self.adr.fue_exitosa = data['exitosa']
+        self.adr.was_successfully = data['exitosa']
 
         if data['exitosa']:
             self.adr.identification = data['certificado']['identificacion']
-            self.adr.nombre_completo = data['certificado']['nombre']
-            self.adr.inicio_vigencia = data['certificado']['inicio_vigencia']
-            self.adr.fin_vigencia = data['certificado']['fin_vigencia']
+            self.adr.full_name = data['certificado']['nombre']
+            self.adr.start_validity = data['certificado']['inicio_vigencia']
+            self.adr.end_validity = data['certificado']['fin_vigencia']
 
     def save(self, **kwargs):
         odata = {}
@@ -99,15 +101,15 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
 
     def get_default_error(self):
         dev = ERRORES_VALIDAR_XMLCOFIRMA
-        if self.requestdata['format']=='cofirma':
+        if self.requestdata['format'] == 'cofirma':
             dev = ERRORES_VALIDAR_XMLCOFIRMA
-        elif self.requestdata['format']=='contrafirma':
+        elif self.requestdata['format'] == 'contrafirma':
             dev = ERRORES_VALIDAR_XMLCONTRAFIRMA
-        elif self.requestdata['format']=='msoffice':
+        elif self.requestdata['format'] == 'msoffice':
             dev = ERRORES_VALIDAR_MSOFFICE
-        elif self.requestdata['format']=='odf':
+        elif self.requestdata['format'] == 'odf':
             dev = ERRORES_VALIDAR_ODF
-        elif self.requestdata['format']=='pdf':
+        elif self.requestdata['format'] == 'pdf':
             dev = ERRORES_VALIDAR_PDF
         return dev
 
@@ -136,45 +138,45 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         else:
             self.adr.status_text = get_text_representation(
                 self.get_default_error(),  data['codigo_error'])
-        self.adr.fue_exitosa = data['exitosa']
+        self.adr.was_successfully = data['exitosa']
 
         self.adr.save()
 
         if data['exitosa']:
-            self.get_advertencias(data['advertencias'])
-            self.get_errores_encontrados(data['errores_encontrados'])
-            self.get_firmantes(data['firmantes'])
+            self.get_warnings(data['advertencias'])
+            self.get_found_errors(data['errores_encontrados'])
+            self.get_signers(data['firmantes'])
 
-    def get_firmantes(self, firmantes):
-        if firmantes is None:
+    def get_signers(self, signers):
+        if signers is None:
             return
-        for firmante in firmantes:
-            firmante = Firmante.objects.create(
-                cedula=firmante['identificacion'],
-                fecha_de_firma=firmante['fecha_firma'],
-                nombre_completo=firmante['nombre']
+        for signer in signers:
+            signerobj = Signer.objects.create(
+                identification_number=signer['identificacion'],
+                signature_date=signer['fecha_firma'],
+                full_name=signer['nombre']
             )
-            self.adr.firmantes.add(firmante)
+            self.adr.signers.add(signerobj)
 
-    def get_errores_encontrados(self, errores):
-        if errores is None:
+    def get_found_errors(self, errors):
+        if errors is None:
             return
-        for error in errores:
-            error, _ = ErrorEncontrado.objects.get_or_create(
-                codigo=error[0],
-                detalle=error[1]
+        for error in errors:
+            error, _ = ErrorFound.objects.get_or_create(
+                code=error[0],
+                detail=error[1]
             )
-            self.adr.errores.add(error)
+            self.adr.errors.add(error)
 
-    def get_advertencias(self, advertencias):
-        if advertencias is None:
+    def get_warnings(self, warnings):
+        if warnings is None:
             return
-        for advertencia in advertencias:
-            if advertencia:
-                adv, _ = Advertencia.objects.get_or_create(
-                    descripcion=advertencia
+        for warning in warnings:
+            if warning:
+                adv, _ = WarningReceived.objects.get_or_create(
+                    description=warning
                 )
-                self.adr.advertencias.add(adv)
+                self.adr.warnings.add(adv)
 
     def save(self, **kwargs):
         odata = {}
@@ -193,7 +195,8 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
         self.document_request.data_request = self.adr
         self.document_request.save()
         return self.document_request
-    
+
+
 class Suscriptor_Serializer(serializers.ModelSerializer):
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado encriptados usando 
@@ -227,14 +230,16 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         return self.call_BCCR()
-    
-class ErrorEncontradoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ErrorEncontrado
-        fields = ('codigo', 'detalle')
 
 
-class FirmanteSerializer(serializers.ModelSerializer):
+class ErrorFoundSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Firmante
-        fields = ('cedula', 'fecha_de_firma', 'nombre_completo')
+        model = ErrorFound
+        fields = ('code', 'detail')
+
+
+class SignerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Signer
+        fields = ('identification_number',
+                  'signature_date', 'full_name')

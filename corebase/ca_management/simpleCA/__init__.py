@@ -85,7 +85,6 @@ class CAManager(CAManagerInterface):
         except Exception as e:
             logger.error("SimpleCA: validate EXCEPTION ", e)
             dev = False
-        
         return dev
 
     def _check_certificate(self, certificate):
@@ -119,4 +118,4 @@ class CAManager(CAManagerInterface):
 
     def revoke_certificate(self, certificate):
         logger.info("SimpleCA: revoke certificate, don't make anything")
-        
+
