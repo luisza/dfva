@@ -5,13 +5,13 @@ from django.core.checks import Error, register
 from corebase.ca_management.interface import CAManagerInterface, \
     fix_certificate
 
-from asn1crypto import pem,  x509
+from asn1crypto import pem,  x509, crl
 from oscrypto import asymmetric
 from certbuilder import CertificateBuilder, pem_armor_certificate
 from django.utils import timezone
 from datetime import timedelta
 from certvalidator import CertificateValidator, ValidationContext, errors
-
+from crlbuilder import CertificateListBuilder
 import logging
 logger = logging.getLogger('dfva')
 
@@ -119,14 +119,59 @@ class CAManager(CAManagerInterface):
             )
             dev = True
         except errors.PathValidationError as e:
-            #logger.debug("SimpleCA: validate PathValidationError %r"%(e))
+            logger.debug("SimpleCA: validate PathValidationError %r" % (e))
             dev = False
         except errors.PathBuildingError as e:
-           # logger.debug("SimpleCA: validate PathBuildingError %r"%(e))
+            logger.debug("SimpleCA: validate PathBuildingError %r" % (e))
             dev = False
         logger.info("SimpleCA: validate cert %r == %r" %
                     (certificate.serial_number, dev))
         return dev
 
     def revoke_certificate(self, certificate):
-        logger.info("SimpleCA: revoke certificate, don't make anything")
+        # Fixme: Esta función abre y reconstruye el crl
+        # El problema es que la concurrencia puede afectar la reconstrucción
+        # del crl.
+        # Esto podría ayudar https://github.com/ambitioninc/django-db-mutex
+        # Fixme: Este método no es eficiente pues requiere reconstruir otra
+        # lista y pasar los valores de la anterior cuando debería ser
+        # solamente agregar el nuevo valor, pero  no logré descifrar como
+        # hacerlo
+        _, _, certificate_bytes = pem.unarmor(
+            certificate.encode(), multiple=False)
+        certificate = x509.Certificate.load(certificate_bytes)
+
+        ca_private_key = asymmetric.load_private_key(
+            self.ca_key,
+            password=settings.CA_KEY_PASSWD)
+        ca_certificate = asymmetric.load_certificate(self.ca_crt)
+
+        with open(settings.CA_CRL, 'rb') as f:
+            cert_list = crl.CertificateList.load(f.read())
+
+        builder = CertificateListBuilder(
+            cert_list.issuing_distribution_point_value.native[
+                'distribution_point'][0],
+            ca_certificate,
+            1000
+        )
+
+        for revoked_cert in cert_list[
+                'tbs_cert_list']['revoked_certificates']:
+            revoked_cert_serial = revoked_cert['user_certificate'].native
+            revoked_time = revoked_cert['revocation_date'].native
+            reason = revoked_cert['crl_entry_extensions'][0][
+                'extn_value'].native
+            builder.add_certificate(revoked_cert_serial, revoked_time,
+                                    reason)
+
+        builder.add_certificate(certificate.serial_number,
+                                timezone.now(),
+                                "cessation_of_operation")
+
+        crl_list = builder.build(ca_private_key)
+
+        with open(settings.CA_CRL, 'wb') as f:
+            f.write(crl_list.dump())
+
+    logger.info("SimpleCA: revoke certificate, don't make anything")
