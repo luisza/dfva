@@ -5,10 +5,10 @@ rankdir=BT
 "1" [label="{Authenticate_Request_Serializer|check_internal_fields : list\lcheck_show_fields : list\lvalidate_data_class : AuthenticateDataRequest\lvalidate_request_class : AuthenticateRequest\l|save_subject()\l}", shape="record"];
 "2" [label="{Authenticate_Response_Serializer|\l|}", shape="record"];
 "3" [label="{CheckBaseBaseSerializer|adr\lcheck_internal_fields\l|check_code()\l}", shape="record"];
-"4" [label="{CoreBaseBaseSerializer|requestdata : NoneType, bool\l|check_hash_algorithm()\lcheck_internal_data()\lcheck_subject()\lget_institution()\lis_valid()\lvalidate_certificate()\lvalidate_digest()\l}", shape="record"];
+"4" [label="{CoreBaseBaseSerializer|requestdata\l|check_hash_algorithm()\lcheck_internal_data()\lcheck_subject()\lget_institution()\lis_valid()\lvalidate_certificate()\lvalidate_digest()\l}", shape="record"];
 "5" [label="{ErrorEncontradoSerializer|\l|}", shape="record"];
 "6" [label="{FirmanteSerializer|\l|}", shape="record"];
-"7" [label="{InstitutionBaseSerializer|institution : NoneType\lrequestdata : NoneType, bool\l|check_subject()\lget_institution()\lvalidate_certificate()\l}", shape="record"];
+"7" [label="{InstitutionBaseSerializer|encrypt_method : NoneType\lencrypt_method : str\linstitution : NoneType\lrequestdata\l|check_subject()\lget_encryption_cipher()\lget_institution()\lvalidate_certificate()\l}", shape="record"];
 "8" [label="{InstitutionCheckBaseBaseSerializer|\l|}", shape="record"];
 "9" [label="{LogAuthenticateInstitutionRequestSerializer|\l|}", shape="record"];
 "10" [label="{LogSingInstitutionRequestSerializer|\l|}", shape="record"];
@@ -21,7 +21,7 @@ rankdir=BT
 "30" [label="{ValidateCertificate_RequestSerializer|adr\lcert_request\lcheck_internal_fields : NoneType\ldata : CharField\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lsave()\lsave_subject()\l}", shape="record"];
 "31" [label="{ValidateCertificate_Request_Serializer|check_internal_fields : list\lvalidate_data_class : ValidateCertificateDataRequest\lvalidate_request_class : ValidateCertificateRequest\l|save_subject()\l}", shape="record"];
 "32" [label="{ValidateDocumentRequest_Response_Serializer|\l|}", shape="record"];
-"33" [label="{ValidateDocument_RequestSerializer|adr\lcheck_internal_fields : NoneType\ldata : CharField\ldocument_request\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lget_advertencias()\lget_errores_encontrados()\lget_firmantes()\lsave()\lsave_subject()\l}", shape="record"];
+"33" [label="{ValidateDocument_RequestSerializer|adr\lcheck_internal_fields : NoneType\ldata : CharField\ldocument_request\lreadonly_fields : list\lvalidate_data_class : NoneType\lvalidate_request_class : NoneType\l|call_BCCR()\lget_advertencias()\lget_default_error()\lget_errores_encontrados()\lget_firmantes()\lsave()\lsave_subject()\l}", shape="record"];
 "34" [label="{ValidateDocument_Request_Serializer|check_internal_fields : list\lvalidate_data_class : ValidateDocumentDataRequest\lvalidate_request_class : ValidateDocumentRequest\l|save_subject()\l}", shape="record"];
 "35" [label="{ValidateDocument_ResponseSerializer|advertencias : StringRelatedField\lerrores\lfirmantes\l|}", shape="record"];
 "1" -> "0" [arrowhead="empty", arrowtail="none"];

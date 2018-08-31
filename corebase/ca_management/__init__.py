@@ -18,6 +18,9 @@ else:
     from corebase.ca_management.simpleCA import CAManager 
 
 CA_manag_instance = CAManager()
+# When dogtag module is done this has sense
+if hasattr(settings, 'USE_DOCTAG'):
+    pass
 
 
 def create_certiticate(domain, save_model):

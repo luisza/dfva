@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 
 identification_validator = RegexValidator(
     r'"(^[1|5]\d{11}$)|(^\d{2}-\d{4}-\d{4}$)"',
-    message="Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000")
+    message=_("Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000"))
 
 ALGORITHM = (
     ('sha256', 'sha256'),
@@ -32,34 +32,34 @@ class BaseRequestModel(models.Model):
         abstract = True
 
 
-class Advertencia(models.Model):
-    descripcion = models.CharField(max_length=512)
+class WarningReceived(models.Model):
+    description = models.CharField(max_length=512)
 
     def __str__(self):
-        return self.descripcion
+        return self.description
 
 
-class ErrorEncontrado(models.Model):
-    codigo = models.CharField(max_length=250)
-    detalle = models.TextField()
-
-    def __str__(self):
-        return self.codigo
-
-
-class Firmante(models.Model):
-    cedula = models.CharField(max_length=25)
-    fecha_de_firma = models.DateField()
-    nombre_completo = models.CharField(max_length=25)
+class ErrorFound(models.Model):
+    code = models.CharField(max_length=250)
+    detail = models.TextField()
 
     def __str__(self):
-        return self.nombre_completo
+        return self.code
+
+
+class Signer(models.Model):
+    identification_number = models.CharField(max_length=25)
+    signature_date = models.DateField()
+    full_name = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.full_name
 
 
 class BaseDocument(models.Model):
-    advertencias = models.ManyToManyField(Advertencia)
-    errores = models.ManyToManyField(ErrorEncontrado)
-    firmantes = models.ManyToManyField(Firmante)
+    warnings = models.ManyToManyField(WarningReceived)
+    errors = models.ManyToManyField(ErrorFound)
+    signers = models.ManyToManyField(Signer)
 
 
 class UserConditionsAndTerms(models.Model):

@@ -22,6 +22,33 @@ def get_datarequest_serializer(data):
 
 
 def send_notification(data, serializer=None, request=None, encrypt_method='aes_eax'):
+    """
+    Envia notificación a la institución, cuando se recibe una respuesta por parte del BCCR, este método 
+    reenvía la respuesta a la URL especificada en la petición. 
+
+    La estructura de envío es:
+
+    :params id_transaction: Id de transacción del BCCR
+    :params data: Es un diccionario con los siguientes atributos
+
+        * **code:**  Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
+        * **identification:** Identificador del suscriptor
+        * **id_transaction:** Id de trasnacción en el FVA del BCCR
+        * **request_datetime:** Hora de recepción de la solicitud
+        * **sign_document:** Almacena el documento, pero no se garantiza que venga el documento firmado, puede ser None
+        * **expiration_datetime:** Hora de recepción de la solicitud
+        * **received_notification:** True si la autenticación ha sido procesada, False si está esperando al usuario
+        * **duration:**  tiempo que duró entre que fue enviada y fue recibida
+        * **status:**   Código de error de la transacción
+        * **status_text:**  Descripción en texto del estado
+
+    :params hashsum: Suma hash realizada a data
+    :params algorithm: Algoritmo con el que se realizó la suma hash
+
+    Por defecto se utiliza el método de encripción seleccionado al realizar la petición por parte de la institución, pero en caso de no lograrse 
+    identificar el método se utiliza por defecto 'aes_eax'
+
+    """
 
     if data.notification_url == 'N/D':
         return
@@ -47,3 +74,4 @@ def send_notification(data, serializer=None, request=None, encrypt_method='aes_e
                      (data.notification_url, e))
 
     return error
+

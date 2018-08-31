@@ -1,6 +1,6 @@
 digraph model_graph {
   // Dotfile by Django-Extensions graph_models
-  // Created: 2017-09-27 14:56
+  // Created: 2018-08-02 11:59
   // Cli Options: corebase person
 
   fontname = "Helvetica"
@@ -116,6 +116,82 @@ digraph model_graph {
     <FONT FACE="Helvetica Bold">id</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT FACE="Helvetica Bold">AutoField</FONT>
+    </TD></TR>
+  
+    </TABLE>
+    >]
+
+  corebase_models_UserConditionsAndTerms [label=<
+    <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
+    <FONT FACE="Helvetica Bold" COLOR="white">
+    UserConditionsAndTerms
+    </FONT></TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica Bold">id</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica Bold">AutoField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica Bold">user</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica Bold">ForeignKey (id)</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">contact_email</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">EmailField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT COLOR="#7B7B7B" FACE="Helvetica ">date</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT COLOR="#7B7B7B" FACE="Helvetica ">DateTimeField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">document_signed</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">TextField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">organization</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">CharField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">organization_unit</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">CharField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">phone</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">CharField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT COLOR="#7B7B7B" FACE="Helvetica ">signed</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT COLOR="#7B7B7B" FACE="Helvetica ">BooleanField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">text</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">TextField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">use_reason</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">TextField</FONT>
     </TD></TR>
   
     </TABLE>
@@ -674,6 +750,12 @@ digraph model_graph {
     </TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Helvetica ">format</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Helvetica ">CharField</FONT>
+    </TD></TR>
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
     <FONT COLOR="#7B7B7B" FACE="Helvetica ">fue_exitosa</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT COLOR="#7B7B7B" FACE="Helvetica ">BooleanField</FONT>
@@ -829,16 +911,16 @@ digraph model_graph {
 
   corebase_models_BaseDocument -> corebase_models_Firmante
   [label="firmantes (basedocument)"] [arrowhead=dot arrowtail=dot, dir=both];
-
-  corebase_models_BaseRequestModel [label=<
+  django_contrib_auth_models_User [label=<
   <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
   <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
-  <FONT FACE="Helvetica Bold" COLOR="white">BaseRequestModel</FONT>
+  <FONT FACE="Helvetica Bold" COLOR="white">User</FONT>
   </TD></TR>
   </TABLE>
   >]
-  person_models_BasePersonRequestModel -> corebase_models_BaseRequestModel
-  [label="abstract\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
+  corebase_models_UserConditionsAndTerms -> django_contrib_auth_models_User
+  [label="user (userconditionsandterms)"] [arrowhead=none, arrowtail=dot, dir=both];
+
   django_contrib_auth_models_User [label=<
   <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
   <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
@@ -855,17 +937,11 @@ digraph model_graph {
   person_models_AuthenticatePersonRequest -> person_models_AuthenticatePersonDataRequest
   [label="data_request (authenticatepersonrequest)"] [arrowhead=none, arrowtail=none, dir=both];
 
-  person_models_AuthenticatePersonRequest -> person_models_BasePersonRequestModel
-  [label="abstract\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
-
   person_models_SignPersonDataRequest -> person_models_Person
   [label="person (signpersondatarequest)"] [arrowhead=none, arrowtail=dot, dir=both];
 
   person_models_SignPersonRequest -> person_models_SignPersonDataRequest
   [label="data_request (signpersonrequest)"] [arrowhead=none, arrowtail=none, dir=both];
-
-  person_models_SignPersonRequest -> person_models_BasePersonRequestModel
-  [label="abstract\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
 
   person_models_ValidatePersonCertificateDataRequest -> person_models_Person
   [label="person (validatepersoncertificatedatarequest)"] [arrowhead=none, arrowtail=dot, dir=both];
@@ -873,20 +949,11 @@ digraph model_graph {
   person_models_ValidatePersonDocumentDataRequest -> person_models_Person
   [label="person (validatepersondocumentdatarequest)"] [arrowhead=none, arrowtail=dot, dir=both];
 
-  person_models_ValidatePersonDocumentDataRequest -> corebase_models_BaseDocument
-  [label="multi-table\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
-
   person_models_ValidatePersonDocumentRequest -> person_models_ValidatePersonDocumentDataRequest
   [label="data_request (validatepersondocumentrequest)"] [arrowhead=none, arrowtail=none, dir=both];
 
-  person_models_ValidatePersonDocumentRequest -> person_models_BasePersonRequestModel
-  [label="abstract\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
-
   person_models_ValidatePersonCertificateRequest -> person_models_ValidatePersonCertificateDataRequest
   [label="data_request (validatepersoncertificaterequest)"] [arrowhead=none, arrowtail=none, dir=both];
-
-  person_models_ValidatePersonCertificateRequest -> person_models_BasePersonRequestModel
-  [label="abstract\ninheritance"] [arrowhead=empty, arrowtail=none, dir=both];
 
 
 }

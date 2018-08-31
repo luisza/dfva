@@ -1,14 +1,20 @@
 import hashlib
 import os
-from OpenSSL import crypto
-from OpenSSL.SSL import Context, TLSv1_METHOD
 from django.conf import settings
 from django.core.checks import Error, register
-from corebase.ca_management.interface import CAManagerInterface, fix_certificate
+from corebase.ca_management.interface import CAManagerInterface, \
+    fix_certificate
 
+from asn1crypto import pem,  x509, crl
+from oscrypto import asymmetric
+from certbuilder import CertificateBuilder, pem_armor_certificate
+from django.utils import timezone
+from datetime import timedelta
+from certvalidator import CertificateValidator, ValidationContext, errors
+from crlbuilder import CertificateListBuilder
 import logging
-from django.db.models.functions.base import Coalesce
 logger = logging.getLogger('dfva')
+
 
 @register()
 def check_ca_in_settings(app_configs, **kwargs):
@@ -22,101 +28,150 @@ class CAManager(CAManagerInterface):
     ca_crt = settings.CA_CERT
     ca_key = settings.CA_KEY
 
-    def generate_certificate(self, domain, save_model):  # , ca_crt=None, ca_key=None
-        """This function takes a domain name as a parameter and then creates a certificate and key with the
-        domain name(replacing dots by underscores), finally signing the certificate using specified CA and 
-        returns the path of key and cert files. If you are yet to generate a CA then check the top comments"""
+    def generate_certificate(self, domain, save_model):
+        """This function takes a domain name as a parameter and then creates
+        a certificate and key with the domain name (replacing dots
+        by underscores), finally signing the certificate using specified CA and
+        returns the path of key and cert files. If you are yet to generate a CA
+        then check the top comments"""
 
-        logger.info("SimpleCA: certificate creation request %s"%(domain,))
+        logger.info("SimpleCA: certificate creation request %s" % (domain,))
 
-        # Serial Generation - Serial number must be unique for each certificate,
-        # so serial is generated based on domain name
-        md5_hash = hashlib.md5()
-        md5_hash.update(domain.encode('utf-8'))
-        serial = int(md5_hash.hexdigest(), 36)
+        ca_private_key = asymmetric.load_private_key(
+            self.ca_key,
+            password=settings.CA_KEY_PASSWD)
+        ca_certificate = asymmetric.load_certificate(self.ca_crt)
 
-        # The CA stuff is loaded from the same folder as this script
-        ca_cert = crypto.load_certificate(
-            crypto.FILETYPE_PEM, open(self.ca_crt).read())
-        # The last parameter is the password for your CA key file
-        ca_key = crypto.load_privatekey(
-            crypto.FILETYPE_PEM, open(self.ca_key).read(), None)
+        end_entity_public_key, end_entity_private_key = \
+            asymmetric.generate_pair('rsa', bit_size=2048)
 
-        server_key = crypto.PKey()
-        server_key.generate_key(crypto.TYPE_RSA, 2048)
+        builder = CertificateBuilder(
+            {
+                'country_name': 'CR',
+                'state_or_province_name': 'San Jose',
+                'locality_name': 'Costa Rica',
+                'organization_name': save_model.name,
+                "organizational_unit_name": save_model.institution_unit,
+                'common_name': domain,
+            },
+            end_entity_public_key
+        )
+        now = timezone.now()
+        builder.issuer = ca_certificate
+        builder.begin_date = now
+        builder.end_date = now+timedelta(settings.CA_CERT_DURATION)
+        builder.key_usage = set(['digital_signature'])
+        end_entity_certificate = builder.build(ca_private_key)
+        # settings.CA_CERT_DURATION
 
-        key = crypto.PKey()
-        key.generate_key(crypto.TYPE_RSA, 2048)
+        server_public_key, server_private_key = \
+            asymmetric.generate_pair('rsa', bit_size=2048)
 
-        cert = crypto.X509()
-        cert.get_subject().C = "CR"
-        cert.get_subject().ST = "San Jose"
-        cert.get_subject().L = "Costa Rica"
-        cert.get_subject().O = save_model.name
-        cert.get_subject().OU = save_model.institution_unit
-        cert.get_subject().CN = domain  # This is where the domain fits
-        cert.gmtime_adj_notBefore(0)
-        cert.gmtime_adj_notAfter(365 * 24 * 60 * 60)
-        cert.set_serial_number(serial)
-        cert.set_issuer(ca_cert.get_subject())
-        cert.set_pubkey(key)
-        cert.sign(ca_key, "sha1")
-        cert.sign(ca_key, "sha256")
+        save_model.private_key = asymmetric.dump_private_key(
+            end_entity_private_key, None)
+        save_model.public_key = asymmetric.dump_public_key(
+            end_entity_public_key)
+        save_model.public_certificate = pem_armor_certificate(
+            end_entity_certificate)
 
-        save_model.private_key = crypto.dump_privatekey(
-            crypto.FILETYPE_PEM, key)
-        save_model.public_key = crypto.dump_publickey(
-            crypto.FILETYPE_PEM, key)
-        save_model.public_certificate = crypto.dump_certificate(
-            crypto.FILETYPE_PEM, cert)
+        save_model.server_sign_key = asymmetric.dump_private_key(
+            server_private_key, None)
+        save_model.server_public_key = asymmetric.dump_public_key(
+            server_public_key)
 
-        save_model.server_sign_key = crypto.dump_privatekey(
-            crypto.FILETYPE_PEM, server_key)
-        save_model.server_public_key = crypto.dump_publickey(
-            crypto.FILETYPE_PEM, server_key)
-        
-        logger.debug("SimpleCA: New certificate for %s is %r"%(domain, save_model.public_certificate))
+        logger.debug("SimpleCA: New certificate for %s is %r" %
+                     (domain, save_model.public_certificate))
         return save_model
 
     def check_certificate(self, certificate):
         dev = False
         try:
+            certificate = fix_certificate(certificate)
             dev = self._check_certificate(certificate)
         except Exception as e:
-            logger.error("SimpleCA: validate EXCEPTION ", e)
+            logger.error("SimpleCA: validate EXCEPTION %r" % (e))
             dev = False
-        
         return dev
 
     def _check_certificate(self, certificate):
-        new_cert = fix_certificate(certificate)
 
-        certificate = crypto.load_certificate(
-            crypto.FILETYPE_PEM, new_cert)
-        serialnumber=certificate.get_serial_number()
-        context = Context(TLSv1_METHOD)
-        context.load_verify_locations(settings.CA_CERT)
-        dev=False
+        _, _, certificate_bytes = pem.unarmor(
+            certificate.encode(), multiple=False)
+        certificate = x509.Certificate.load(certificate_bytes)
+
+        trust_roots = []
+        with open(self.ca_crt, 'rb') as f:
+            for _, _, der_bytes in pem.unarmor(f.read(), multiple=True):
+                trust_roots.append(der_bytes)
+
+        crls = []
+        with open(settings.CA_CRL, 'rb') as f:
+            crls.append(f.read())
+
+        context = ValidationContext(crls=crls,
+                                    trust_roots=trust_roots)
+
         try:
-            store = context.get_cert_store()
-
-            # Create a certificate context using the store and the downloaded
-            # certificate
-            store_ctx = crypto.X509StoreContext(store, certificate)
-
-            # Verify the certificate, returns None if it can validate the
-            # certificate
-            store_ctx.verify_certificate()
-
-            dev=True
-
-        except Exception as e:
-            logger.error("SimpleCA: validate EXCEPTION %r"%(e,))
-            dev=False
-        
-        logger.info("SimpleCA: validate cert %r == %r"%(serialnumber, dev ))
+            validator = CertificateValidator(
+                certificate, validation_context=context)
+            result = validator.validate_usage(
+                set(['digital_signature'])
+            )
+            dev = True
+        except errors.PathValidationError as e:
+            logger.debug("SimpleCA: validate PathValidationError %r" % (e))
+            dev = False
+        except errors.PathBuildingError as e:
+            logger.debug("SimpleCA: validate PathBuildingError %r" % (e))
+            dev = False
+        logger.info("SimpleCA: validate cert %r == %r" %
+                    (certificate.serial_number, dev))
         return dev
 
     def revoke_certificate(self, certificate):
-        logger.info("SimpleCA: revoke certificate, don't make anything")
-        
+        # Fixme: Esta función abre y reconstruye el crl
+        # El problema es que la concurrencia puede afectar la reconstrucción
+        # del crl.
+        # Esto podría ayudar https://github.com/ambitioninc/django-db-mutex
+        # Fixme: Este método no es eficiente pues requiere reconstruir otra
+        # lista y pasar los valores de la anterior cuando debería ser
+        # solamente agregar el nuevo valor, pero  no logré descifrar como
+        # hacerlo
+        _, _, certificate_bytes = pem.unarmor(
+            certificate.encode(), multiple=False)
+        certificate = x509.Certificate.load(certificate_bytes)
+
+        ca_private_key = asymmetric.load_private_key(
+            self.ca_key,
+            password=settings.CA_KEY_PASSWD)
+        ca_certificate = asymmetric.load_certificate(self.ca_crt)
+
+        with open(settings.CA_CRL, 'rb') as f:
+            cert_list = crl.CertificateList.load(f.read())
+
+        builder = CertificateListBuilder(
+            cert_list.issuing_distribution_point_value.native[
+                'distribution_point'][0],
+            ca_certificate,
+            1000
+        )
+
+        for revoked_cert in cert_list[
+                'tbs_cert_list']['revoked_certificates']:
+            revoked_cert_serial = revoked_cert['user_certificate'].native
+            revoked_time = revoked_cert['revocation_date'].native
+            reason = revoked_cert['crl_entry_extensions'][0][
+                'extn_value'].native
+            builder.add_certificate(revoked_cert_serial, revoked_time,
+                                    reason)
+
+        builder.add_certificate(certificate.serial_number,
+                                timezone.now(),
+                                "cessation_of_operation")
+
+        crl_list = builder.build(ca_private_key)
+
+        with open(settings.CA_CRL, 'wb') as f:
+            f.write(crl_list.dump())
+
+    logger.info("SimpleCA: revoke certificate, don't make anything")

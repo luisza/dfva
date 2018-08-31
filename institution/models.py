@@ -8,7 +8,7 @@ import uuid
 from django.conf import settings
 from corebase.rsa import salt_decrypt, salt_encrypt
 from OpenSSL import crypto
-from dateutil.parser._parser import parse
+from dateutil.parser import parse
 
 
 class EncrytedText(models.TextField):
@@ -98,7 +98,7 @@ class InstitutionStats(models.Model):
         max_length=15, default="n/d"
     )
 
-    fue_exitosa = models.BooleanField(default=False)
+    was_successfully = models.BooleanField(default=False)
 
 
 class BaseInstitutionRequestModel(BaseRequestModel):
@@ -261,10 +261,10 @@ class ValidateCertificateDataRequest(models.Model):
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
-    fue_exitosa = models.BooleanField(default=True)
-    nombre_completo = models.CharField(max_length=250, null=True)
-    inicio_vigencia = models.DateTimeField(null=True)
-    fin_vigencia = models.DateTimeField(null=True)
+    was_successfully = models.BooleanField(default=True)
+    full_name = models.CharField(max_length=250, null=True)
+    start_validity = models.DateTimeField(null=True)
+    end_validity = models.DateTimeField(null=True)
 
     @property
     def id_transaction(self):
@@ -324,7 +324,7 @@ class ValidateDocumentDataRequest(BaseDocument):
     code = models.CharField(max_length=20, default='N/D')
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
-    fue_exitosa = models.BooleanField(default=True)
+    was_successfully = models.BooleanField(default=True)
 
     @property
     def id_transaction(self):
