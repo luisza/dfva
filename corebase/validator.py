@@ -119,7 +119,6 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
             entidad=self.institution.bccr_entity,
         )
         if client.validar_servicio('documento'):
-
             data = client.validar_documento(
                 self.requestdata['document'], self.requestdata['format'])
 

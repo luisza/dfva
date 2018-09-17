@@ -12,6 +12,7 @@ from corebase.validator import ValidateDocument_RequestSerializer,\
     ValidateCertificate_RequestSerializer, Suscriptor_Serializer
 from person.serializer import PersonBaseSerializer
 
+
 class ValidatePersonCertificate_Request_Serializer(PersonBaseSerializer, ValidateCertificate_RequestSerializer):
     check_internal_fields = ['person',
                              'document',
@@ -48,23 +49,26 @@ class ValidatePersonDocument_Request_Serializer(PersonBaseSerializer,
                   'public_certificate', 'data')
 
 
-class ValidatePersonCertificateRequest_Response_Serializer(serializers.ModelSerializer):
+class ValidatePersonCertificateRequest_Response_Serializer(
+        serializers.ModelSerializer):
     class Meta:
         model = ValidatePersonCertificateDataRequest
         fields = ('identification', 'request_datetime',
                   'code', 'status', 'status_text',
-                  'nombre_completo', 'inicio_vigencia', 'fin_vigencia',
-                  'fue_exitosa')
+                  'full_name', 'start_validity', 'end_validity',
+                  'was_successfully')
 
 
-class ValidatePersonDocumentRequest_Response_Serializer(ValidateDocument_ResponseSerializer):
+class ValidatePersonDocumentRequest_Response_Serializer(
+        ValidateDocument_ResponseSerializer):
     class Meta:
         model = ValidatePersonDocumentDataRequest
-        fields = ('request_datetime',
+        fields = ('request_datetime', 'format',
                   'code', 'status', 'status_text',
-                  'advertencias', 'errores', 'firmantes',
-                  'fue_exitosa')
-        
+                  'warnings', 'errors', 'signers',
+                  'was_successfully')
+
+
 class SuscriptorPerson_Serializer(Suscriptor_Serializer, PersonBaseSerializer):
     check_internal_fields = ['person',
                              'identification',
@@ -74,4 +78,3 @@ class SuscriptorPerson_Serializer(Suscriptor_Serializer, PersonBaseSerializer):
         model = ValidatePersonDocumentRequest
         fields = ('person', 'data_hash', 'algorithm',
                   'public_certificate', 'data')
-

@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-09-11 20:34-0600\n"
+"PO-Revision-Date: 2018-09-11 20:41-0600\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.11\n"
+
+#: forms.py:24 forms.py:39
+msgid "Continue"
+msgstr "Continuar"
+
+#: models.py:9
+msgid ""
+"Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o "
+"100000000000"
+msgstr ""
+"Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o "
+"100000000000"
+
+#: models.py:26
+msgid ""
+"Suma hash de datos de tamaño máximo 130 caracteres, usando el\n"
+"                                 algoritmo especificado "
+msgstr ""
+"Suma hash de datos de tamaño máximo 130 caracteres, usando el\n"
+"                                 algoritmo especificado "
+
+#: models.py:29
+msgid " Debe ser alguno de los siguientes: sha256, sha384, sha512"
+msgstr "Debe ser alguno de los siguientes: sha256, sha384, sha512"
+
+#: models.py:75
+msgid "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
+msgstr "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
+
+#: serializer.py:24
+#, python-format
+msgid "Hash sums are not equal %s != %s"
+msgstr "Suma Hash no son iguales %s != %s"
+
+#: serializer.py:48
+#, python-format
+msgid "%s is not valid algorithm. supported are %s "
+msgstr "%s no es un algoritmo válido, los soportados son %s"
+
+#: serializer.py:59
+msgid "Invalid certificate"
+msgstr "Certificado inválido"
+
+#: serializer.py:69
+#, python-format
+msgid "Data was not decrypted well %r"
+msgstr "Datos no fueron desencriptados bien %r"
+
+#: templates/adminlte/base.html:47
+msgid "My Applications"
+msgstr "Mis Aplicaciones"
+
+#: templates/adminlte/base.html:47
+msgid "My applications"
+msgstr "Mis Aplicaciones"
+
+#: templates/adminlte/base.html:53
+msgid "Add new application"
+msgstr "Agregar nueva aplicación"
+
+#: templates/adminlte/base.html:60
+msgid "Documentation"
+msgstr "Documentación"
+
+#: templates/adminlte/base.html:70 templates/adminlte/base.html:72
+msgid "Logout"
+msgstr "Salir"
+
+#: templates/adminlte/base.html:75 templates/adminlte/base.html:77
+#: templates/registration/login.html:38 templates/registration/login.html:44
+#: templates/registration/login.html:52
+msgid "Login"
+msgstr "Iniciar sesión"
+
+#: templates/adminlte/lib/_main_header.html:49
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+#: templates/adminlte/lib/_main_sidebar.html:8
+msgid "MAIN NAVIGATION"
+msgstr "NAVEGACIÓN PRINCIPAL"
+
+#: templates/adminlte/lib/_main_sidebar.html:18
+msgid "Institution"
+msgstr "Institución"
+
+#: templates/registration/login.html:5
+msgid "DFVA Login"
+msgstr "DFVA inicio de sesión"
+
+#: templates/registration/login.html:14
+msgid "Digital Signature"
+msgstr "Firma Digital"
+
+#: templates/registration/login.html:17
+msgid "User/Password"
+msgstr "Usuario/contraseña"
+
+#: templates/registration/login.html:23
+msgid "Digital signature logo"
+msgstr "Logo de firma digital"
+
+#: templates/registration/login.html:25
+msgid "Login with digital signature"
+msgstr "Autenticarse con firma digital"
+
+#: templates/registration/login.html:27
+msgid "To administrate this site you need to use Digital signature"
+msgstr "Para administrar este sitio usted necesita tener firma digital"
+
+#: terms_conditions/__init__.py:37
+msgid "User didn't sign the terms and conditions "
+msgstr "El usuario no ha firmado los términos y condiciones"
+
+#: terms_conditions/__init__.py:167
+msgid "Request is invalid or incomplete, please try again"
+msgstr "La petición es inválida o incompleta, por favor vuelva a intentarlo"
+
+#: terms_conditions/simple_authorization.py:12
+msgid "Congrats!, Your can now add applications"
+msgstr "Felicidades, usted ya puede agregar aplicaciones"

@@ -174,4 +174,4 @@ class CAManager(CAManagerInterface):
         with open(settings.CA_CRL, 'wb') as f:
             f.write(crl_list.dump())
 
-    logger.info("SimpleCA: revoke certificate, don't make anything")
+        logger.info("SimpleCA: revoke certificate, don't make anything")

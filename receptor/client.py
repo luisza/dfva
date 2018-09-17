@@ -42,7 +42,7 @@ def reciba_notificacion(data):
 
         * **id_solicitud:**  Id de la solicitud del BCCR
         * **documento:** Documento firmado
-        * **fue_exitosa:** si fue exitosa la firma
+        * **was_sucessfully:** si fue exitosa la firma
         * **codigo_error:** código de error
 
     No requiere retornar nada

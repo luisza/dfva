@@ -77,7 +77,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         ::
 
           POST /validate/institution_document/  
-        
+
         Solicita una verificación de firma  de un documento xml  
 
         Los valores a suministrar en el parámetro data son:
@@ -123,7 +123,6 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
                                             viewsets.GenericViewSet):
     serializer_class = SuscriptorInstitution_Serializer
     queryset = ValidateCertificateRequest.objects.all()
-
 
     @list_route(methods=['post'])
     def institution_suscriptor_connected(self, request, *args, **kwargs):

@@ -1,9 +1,10 @@
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
-from corebase.models import  identification_validator,\
+from corebase.models import identification_validator,\
     BaseDocument, BaseRequestModel, ALGORITHM
 from django.contrib.auth.models import User
+
 
 class Person(models.Model):
     ERROR_CODE = (
@@ -49,7 +50,6 @@ class PersonLogin(models.Model):
 
     def __str__(self):
         return self.person
-
 
 
 class AuthenticatePersonDataRequest(models.Model):
@@ -105,7 +105,7 @@ class AuthenticatePersonRequest(BasePersonRequestModel):
             ("view_authenticatepersonrequest",
              "Can see available Authenticate Person Request"),
         )
-        
+
 
 class SignPersonDataRequest(models.Model):
     person = models.ForeignKey(Person)
@@ -160,7 +160,8 @@ class SignPersonRequest(BasePersonRequestModel):
         permissions = (
             ("view_signpersonrequest", "Can see available Person Sign Request"),
         )
-        
+
+
 class ValidatePersonCertificateDataRequest(models.Model):
     person = models.ForeignKey(Person)
     identification = models.CharField(
@@ -183,10 +184,10 @@ class ValidatePersonCertificateDataRequest(models.Model):
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
-    fue_exitosa = models.BooleanField(default=True)
-    nombre_completo = models.CharField(max_length=250, null=True)
-    inicio_vigencia = models.DateTimeField(null=True)
-    fin_vigencia = models.DateTimeField(null=True)
+    was_successfully = models.BooleanField(default=True)
+    full_name = models.CharField(max_length=250, null=True)
+    start_validity = models.DateTimeField(null=True)
+    end_validity = models.DateTimeField(null=True)
 
     class Meta:
         ordering = ('request_datetime',)
@@ -197,12 +198,12 @@ class ValidatePersonCertificateDataRequest(models.Model):
 
 
 class ValidatePersonDocumentDataRequest(BaseDocument):
-    FORMATS=(
+    FORMATS = (
         ('cofirma', 'CoFirma'),
         ('contrafirma', 'ContraFirma'),
         ('msoffice', 'MS Office'),
         ('odf', 'Open Document Format')
-        )
+    )
     STATUS = ((1, 'Solicitud recibida correctamente'),
               (2, 'Ha ocurrido algún problema al solicitar la firma'),
               (3, 'Solicitud con campos incompletos'),
@@ -220,8 +221,8 @@ class ValidatePersonDocumentDataRequest(BaseDocument):
     format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
-    fue_exitosa = models.BooleanField(default=True)
-    
+    was_successfully = models.BooleanField(default=True)
+
     @property
     def id_transaction(self):
         return self.pk
@@ -246,13 +247,13 @@ class ValidatePersonDocumentRequest(BasePersonRequestModel):
              "Can see validate document Sign Request"),
         )
 
+
 class ValidatePersonCertificateRequest(BasePersonRequestModel):
 
     data_request = models.OneToOneField(
         ValidatePersonCertificateDataRequest,
         on_delete=models.CASCADE, null=True, blank=True)
 
-    
     class Meta:
         ordering = ('arrived_time',)
         permissions = (

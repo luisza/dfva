@@ -20,6 +20,7 @@ import logging
 
 logger = logging.getLogger('dfva')
 
+
 class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidatePersonCertificate_Request_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
@@ -49,10 +50,10 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
         * **codigo_de_error:**  Códigos de error del certificado, si existen
-        * **nombre_completo:**  Nombre completo del suscriptor
-        * **inicio_vigencia:**  Inicio de la vigencia del certificado
-        * **fin_vigencia:**  Fin de la vigencia del certificado
-        * **fue_exitosa:**  Si la verificación del certificado fue exitosa
+        * **full_name:**  Nombre completo del suscriptor
+        * **start_validity:**  Inicio de la vigencia del certificado
+        * **end_validity:**  Fin de la vigencia del certificado
+        * **was_successfully:**  Si la verificación del certificado fue exitosa
 
         **Nota:**  Si la validación del certificado no fue exitosa, entonces los campos de identificación, nombre_completo, inicio_vigencia,
         fin_vigencia deben ignorase o son nulos.
@@ -91,10 +92,10 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
         * **status_text:**  Descripción en texto del estado
-        * **advertencias:** Lista de advertencias
-        * **errores:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
-        * **firmantes:** Lista con la información de los firmantes [ {'cedula': '08-8888-8888', 'nombre_completo': 'nombre del suscriptor', 'fecha_de_firma': timezone.now()}, ... ]
-        * **fue_exitosa:**  Si la verificación del certificado fue exitosa
+        * **warnings:** Lista de advertencias
+        * **errors:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
+        * **signers:** Lista con la información de los firmantes [ {'identification': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
+        * **was_successfully:**  Si la verificación del certificado fue exitosa
 
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
@@ -112,11 +113,9 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         return self._create(request, *args, **kwargs)
 
 
-
 class ValidateSubscriptorPersonViewSet(BaseSuscriptor, viewsets.GenericViewSet):
     serializer_class = SuscriptorPerson_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
-
 
     @list_route(methods=['post'])
     def person_suscriptor_connected(self, request, *args, **kwargs):
