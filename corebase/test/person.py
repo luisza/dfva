@@ -31,9 +31,16 @@ class HTTPClient():
 
 class BasePersonTest(TestCase):
     person = '04-0212-0119'
-    IDENTIFICATION = '08-0888-0888'
+    IDENTIFICATION = '04-0212-0119'
     ALGORITHM = 'sha512'
     URL_NOTIFICATION = 'https://dfva.cr/notification'
+
+    def get_person_user(self, username):
+        user = User.objects.filter(username=username).first()
+        if user is None:
+            user = User.objects.create_user(
+                username=username, email='test@dfva.cr', password='top_secret')
+        return user
 
     def setUp(self):
         try:
@@ -41,6 +48,7 @@ class BasePersonTest(TestCase):
                 username='test', email='test@dfva.cr', password='top_secret')
         except:
             self.user = User.objects.first()
+
         self.institution = create_institution(self.user)
         create_url(self.institution, url=self.URL_NOTIFICATION)
         create_url(self.institution)
@@ -52,11 +60,14 @@ class BasePersonTest(TestCase):
                                    request_client=self.request_client)
 
         self.person = self.client.get_identification()
+        self.IDENTIFICATION = self.person
+        person_user = self.get_person_user(self.person)
         auth_cert = self.client.get_certificates()['authentication']
         self.person_obj, _ = Person.objects.get_or_create(
-            user=self.user,
+            user=person_user,
             identification=self.person)
         self.person_obj.authenticate_certificate = auth_cert
+        self.person_obj.save()
         self.client.register()
 
     def _decrypt(self, str_data):
@@ -66,6 +77,7 @@ class BasePersonTest(TestCase):
 
     def tearDown(self):
         self.client.unregister()
+        self.client = None
         #super(BasePersonTest, self).tearDown()
 
     def get_request_params(self, data, **kwargs):
