@@ -234,6 +234,11 @@ if DO_LOGGIN:
                 'level': 'DEBUG',
                 'propagate': True,
             },
+            'soapfish':  {
+                'handlers': ['file_info'],
+                'level': 'INFO',
+                'propagate': True,
+            },
             'pyfva':  {
                 'handlers': ['file_info'],
                 'level': 'INFO',
