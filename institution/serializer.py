@@ -33,7 +33,8 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                 code=self.data['institution']).first()
         except:
             logger.error("Get institution: Institution not found %r" %
-                         (self.data['institution'] if 'institution' in self.data else "No institution in data", ))
+                         (self.data['institution'] if 'institution' in
+                          self.data else "No institution in data", ))
             self._errors['institution'] = [
                 _('Institution not found, certificate does not match')]
             self.institution = None
@@ -47,7 +48,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
 
         if data['notification_url'].upper() == 'N/D':
             if not NotificationURL.objects.filter(
-                 institution=self.institution,
+                institution=self.institution,
                     not_webapp=True).exists():
                 self._errors['notification_url'] = [
                     'notification_url not found']
@@ -55,18 +56,17 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                 institution=self.institution,
                 url=data['notification_url']).exists():
             self._errors['notification_url'] = [
-                 _('notification_url not found')]
+                _('notification_url not found')]
 
-    
     def get_encryption_cipher(self):
-        available_ciphers=list(Available_ciphers.keys())
-        self.encrypt_method='aes_eax'
+        available_ciphers = list(Available_ciphers.keys())
+        self.encrypt_method = 'aes_eax'
         if 'encrypt_method' in self.data:
             if self.data['encrypt_method'] in available_ciphers:
-                self.encrypt_method=self.data['encrypt_method']
+                self.encrypt_method = self.data['encrypt_method']
             else:
                 self._errors['encrypt_method'] = [
-                 _('encrypt_method not found')]
+                    _('encrypt_method not found')]
 
     def validate_certificate(self):
         self.get_encryption_cipher()

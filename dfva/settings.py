@@ -167,7 +167,14 @@ if USE_DOGTAG:
     DOGTAG_AGENT_PEM_CERTIFICATE_PATH = os.path.join(
         BASE_DIR, 'admin_cert.pem')
     DOGTAG_CERTIFICATE_SCHEME = {
-        'O': 'MIFIRMACR.ORG'
+        # 'O': 'MIFIRMACR.ORG'
+
+        'country_name': 'CR',
+        'state_or_province_name': 'Costa Rica',
+        'locality_name': 'San Jose',
+        # 'organization_name': 'Codex Non Sufficit LC',
+        # 'common_name': 'Will Bond',
+
     }
     DOGTAG_CERT_REQUESTER = 'dfva'
     DOGTAG_CERT_REQUESTER_EMAIL = 'dfva@mifirmacr.org'
