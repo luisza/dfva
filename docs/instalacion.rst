@@ -24,34 +24,30 @@ Modifique el archivo dfva/settings.py según la documentación.
 
     Solo requiere **un manejador de CA**, puede usar una CA con OpenSSL o integrarse con DOGTAG (son excluyentes entre si)
 
-Instalación de una CA con OpenSSL
+Instalación de una CA dummy
 ---------------------------------------
 
-Cree la carpeta internal_ca con el siguiente contenido.
+Cree la carpeta internal_ca y ejecute el siguiente comando para generar la CA.
+
+.. code:: bash
+
+  python manage.py  crea_ca
+
+Se generará los siguientes archivos:
 
 ::
 
   internal_ca/
   ├── ca_cert.pem
   └── ca_key.pem
+  └── crl.pem
 
+Cambie los permisos de los archivos
 
-Se utiliza el siguiente comando para generar la CA.
+::
 
-.. code:: bash
-
-  #!/bin/bash 
-  mkdir -p db
-  mkdir -p ca
-  /bin/echo -n '01' > db/serial.txt
-  touch db/index.txt
-  touch db/index.txt.attr
-
-  openssl req -days 2922 -config openssl.cnf -newkey rsa:4096 -nodes -out ca/cert.pem -x509 -keyout ca/key.pem
-  openssl x509 -outform der -in ca/cert.pem -out ca/cert.crt
-
-
-Este es un archivo openssl.cnf de ejemplo :download:`descargar <_static/openssl.cnf>`.
+  cd internal_ca/
+  chmod 600 ca_cert.pem  ca_key.pem crl.pem
 
 En settings.py agregue:
 
@@ -139,15 +135,25 @@ Agregue en settings.py
 
     .. warning:: Es recomendable correrla en una máquina con más de 2Gb de RAM  
 
+    Permite activar IPV6 
+
     .. code:: bash 
 
-       docker run --name freeipa-server-container -t  \
+       cat /etc/docker/daemon.json 
+       {
+         "ipv6": true,
+         "fixed-cidr-v6": "2001:db8:1::/64"
+       }
+
+    .. code:: bash 
+
+       docker run --name freeipa-server-container --privileged -ti   \
        -h  ipa.mifirmacr.org  \
        -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
        -p 53:53/udp -p 53:53 \
        -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 \
        -p 88:88/udp -p 464:464/udp -p 123:123/udp -p 7389:7389 \
-       -p 8443:8443-p 8080:8080 -p 9445:9445 \
+       -p 8443:8443 -p 8080:8080 -p 9445:9445 \
        --security-opt seccomp=unconfined \
        --tmpfs /run --tmpfs /tmp \
        -v /var/lib/ipa-data:/data:Z freeipa/freeipa-server \
@@ -162,7 +168,6 @@ Agregue en settings.py
 
         docker exec -ti <nombre maquina> bash
         cat /data/root/ca-agent.p12 | base64 
-        cat /data/root/.dogtag/pki-tomcat/ca/pkcs12_password.conf
 
     para descomprimir y convertir a pem se recomienda algo como :
 
@@ -170,3 +175,4 @@ Agregue en settings.py
 
         echo "codigo base64" | base64 -d > ca-agent.p12 
         openssl pkcs12 -in ca-agent.p12 -out admin_cert.pem -nodes
+    La contraseña es la misma que ds-password osea en este caso LDAPPASSWORD

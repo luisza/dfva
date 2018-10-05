@@ -18,6 +18,10 @@ from pyfva.clientes.firmador import ClienteFirmador
 logger = logging.getLogger('dfva')
 
 
+def get_code_from_uuid(code):
+    return str(code).split("-")[-1][:9]
+
+
 class ValidateCertificate_RequestSerializer(
         serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
@@ -42,7 +46,7 @@ class ValidateCertificate_RequestSerializer(
 
             data = client.validar_certificado_autenticacion(
                 self.requestdata['document'])
-            data['code'] = self.cert_request.code
+            data['code'] = get_code_from_uuid(self.cert_request.code)
         else:
             logger.warning("Validate certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR

@@ -121,33 +121,32 @@ Actualmente, se soporta la integración con Dogtag_ y también se soporta CA's c
 
 .. _Dogtag: http://pki.fedoraproject.org/wiki/PKI_Main_Page
 
-CA Simple con OpenSSL
+CA Simple 
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-La emisión de certificados, se genera 
+.. warning:: No utilizar en producción, este sistema está desarrollado para trabajar en desarrollo sin la necesidad de una infraestructura compleja.  
+
+DFVA trae un manejador y constructor de Autoridades de Certificados (CA), y debe construirse después de la instalación usando el comando:
+
+::
+
+  python manage.py  crea_ca
+
+Los de certificados, se generan en el directorio 
 
 ::
 
   internal_ca/
   ├── ca_cert.pem
   └── ca_key.pem
+  └── crl.pem
 
-Se utiliza el siguiente comando para generar la CA.
+Asegurar dichos archivos escapa al alcance de este documento, pero siempre es útil asegurar que solo el usuario tiene permiso para acceder a ellos.
 
-.. code:: bash
+::
 
-  #!/bin/bash 
-  mkdir -p db
-  mkdir -p ca
-  /bin/echo -n '01' > db/serial.txt
-  touch db/index.txt
-  touch db/index.txt.attr
+  chmod 600 ca_cert.pem  ca_key.pem crl.pem
 
-  openssl req -days 2922 -config openssl.cnf -newkey rsa:4096 -nodes -out ca/cert.pem -x509 -keyout ca/key.pem
-  openssl x509 -outform der -in ca/cert.pem -out ca/cert.crt
-
-
-Este es un archivo openssl.cnf de ejemplo :download:`descargar <_static/openssl.cnf>`.
 
 DogTag
 ~~~~~~~~~~~~~~~~~~~~~~~~
