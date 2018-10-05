@@ -117,7 +117,7 @@ Manejo de los certificados
 
 DFVA es versatil y permite configurar el manejador de certificados, con ello permite comunicarse con la infraestructura de PKI que se desee.
 
-Actualmente, se soporta la integración con Dogtag_ y también se soporta CA's creadas con OpenSSL para desarrollo utilizando el manejador **CA simple con OpenSSL**
+Actualmente, se soporta la integración con Dogtag_ y también se soporta CA's creadas con Python Certbuilder para desarrollo utilizando el manejador **CA simple**
 
 .. _Dogtag: http://pki.fedoraproject.org/wiki/PKI_Main_Page
 

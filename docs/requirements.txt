@@ -9,7 +9,7 @@ cffi==1.11.5
 coreapi==2.3.3
 coreschema==0.0.4
 cryptography==2.3
-Django==1.11
+Django==1.11.15
 django-appconf==1.0.2
 djangorestframework==3.8.2
 idna==2.7
@@ -22,7 +22,6 @@ packaging==17.1
 Pillow==5.2.0
 pycparser==2.18
 Pygments==2.2.0
-pyOpenSSL==18.0.0
 pyparsing==2.2.0
 pytz==2018.5
 requests==2.19.1

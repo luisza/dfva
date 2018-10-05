@@ -1,13 +1,14 @@
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
-from corebase.models import identification_validator, BaseDocument, BaseRequestModel
+from corebase.models import identification_validator, BaseDocument,\
+    BaseRequestModel
 from institution.presentation import PEMpresentation
 from django.contrib.auth.models import User
 import uuid
 from django.conf import settings
 from corebase.rsa import salt_decrypt, salt_encrypt
-from OpenSSL import crypto
+from asn1crypto import pem,  x509
 from dateutil.parser import parse
 
 
@@ -47,10 +48,10 @@ class Institution(models.Model, PEMpresentation):
 
     def get_expiration_date(self):
         if not self.administrative_institution:
-            cert = crypto.load_certificate(
-                crypto.FILETYPE_PEM, self.public_certificate)
-            tzinfo = timezone.get_current_timezone()
-            certdate = parse(cert.get_notAfter(), tzinfos=[tzinfo])
+            _, _, certificate_bytes = pem.unarmor(
+                self.public_certificate, multiple=False)
+            cert = x509.Certificate.load(certificate_bytes)
+            certdate = cert.native['tbs_certificate']['validity']['not_after']
         else:
             certdate = timezone.now() + relativedelta(years=1)
         return certdate

@@ -22,7 +22,7 @@ Modifique el archivo dfva/settings.py según la documentación.
 
 .. warning:: 
 
-    Solo requiere **un manejador de CA**, puede usar una CA con OpenSSL o integrarse con DOGTAG (son excluyentes entre si)
+    Solo requiere **un manejador de CA**, puede usar una CA con Python CertBuilder o integrarse con DOGTAG (son excluyentes entre si)
 
 Instalación de una CA dummy
 ---------------------------------------
