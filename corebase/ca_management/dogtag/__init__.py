@@ -1,5 +1,3 @@
-import OpenSSL
-from OpenSSL import crypto
 from corebase.ca_management.interface import CAManagerInterface, \
     fix_certificate
 from django.conf import settings
@@ -127,7 +125,6 @@ class CAManager(CAManagerInterface):
             t = cert_client.revoke_cert(certificate.serial_number)
             logger.debug("Dogtag: Respuesta revocar certificado: "+repr(t))
         except Exception as e:
-            print(e)
             logger.error("Dogtag: revoke EXCEPTION ", e)
 
     def issuer_dn_to_dic(self, dn):
