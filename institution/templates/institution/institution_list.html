@@ -38,7 +38,7 @@
 	  href="{% url 'institution_delete' obj.pk %}">
 	  <i class="fas fa-window-close"></i> </a>
 	  </div>
-	  <div class="card-body {% if obj.active %} bg-transparent {% else %} bg-light {% endif %} ">
+	  <div  class="card-body {% if obj.active %} bg-transparent {% else %} bg-light {% endif %} ">
 	    <h5 class="card-title text-success">
 	    {% if obj.notificationurl_set.count %}
 	    <span class="badge badge-secondary">{{obj.notificationurl_set.count}} </span>
@@ -61,7 +61,7 @@
 
 	    
 	    </h5>
-	    <p class="card-text text-justify my-4">
+	    <p class="card-text text-justify my-4" style="max-height: 400px;">
 	    
 	    <canvas id="chart_{{forloop.counter}}" data-href="{% url 'institution_stats' obj.pk %}?chartid=chart_{{forloop.counter}}"
 	     class="chartsobj" style="height: 300px; width: 100%;"></canvas>

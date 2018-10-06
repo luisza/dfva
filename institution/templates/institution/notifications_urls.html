@@ -7,6 +7,8 @@
 {% block content %}
 <div class="card">
   <div class="card-header">
+      <a class="btn" href="{% url 'institution_list' %}" title="{% trans 'Go back'%}">
+          <i class="fas fa-reply"></i> </a>
     {{object.name}}
   </div>
 	<div class="card-body text-center">
@@ -25,12 +27,17 @@
    <li class="list-group-item bg-success"> {% trans 'Available notification urls' %} </li>
    {% for obj in object_list %}
     <li class="list-group-item"> 
-    {{obj.description}} {% if obj.url %} -- {{obj.url}} {% endif %}
+        <a class="text-info" title="{% trans 'Edit notification urls' %}"
+        href="{% url 'notification_urls' pk=object.pk  nu=obj.pk %}">
+        <i class="fas fa-edit"></i> 
+        {{obj.description}} {% if obj.url %} -- {{obj.url}} {% endif %}
+      </a>
     
-     <a class="float-right text-danger" title="{% trans 'Edit notification urls' %}"
-	  href="{% url 'notification_urls' pk=object.pk  nu=obj.pk %}">
-	  <i class="fas fa-edit"></i> </a>
     
+
+    <a class="float-right text-danger" title="{% trans 'Edit notification urls' %}"
+	  href="{% url 'del_notification_urls' pk=obj.pk  %}">
+    <i class="fas fa-trash"></i> </a>
     </li>
    {% endfor %}
   </ul>

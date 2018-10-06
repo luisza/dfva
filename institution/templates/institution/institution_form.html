@@ -5,6 +5,9 @@
 {% block title %}{% trans "Create new Institution" %} {% endblock %}
 
 {% block content %}
+<a class="btn" href="{% url 'institution_list' %}" title="{% trans 'Go back'%}">
+        <i class="fas fa-reply"></i> {% trans 'Go list institution'%} </a><hr>
+
 
 {% crispy form %}
 

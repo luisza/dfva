@@ -81,7 +81,7 @@ class InstitutionEditForm(forms.ModelForm):
                                Field('domain'),
                                Field('institution_unit'),
                                Field('public_certificate'),
-                               Field('public_key'),
+                               # Field('public_key'),
 
                                active=True,
 

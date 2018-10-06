@@ -1,22 +1,29 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from institution.models import Institution, NotificationURL
-from corebase.ca_management import create_certiticate, revoke_certificate
-from django.contrib import messages
 import logging
-from django.shortcuts import render, get_object_or_404
-from django.http.response import HttpResponseRedirect
-from django.views.generic.list import ListView
-from institution.forms import InstitutionEditForm, InstitutionCreateForm,\
-    NotificationUrlsForm
-from django.urls.base import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.generic.detail import DetailView
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+
+from django.http.response import HttpResponseRedirect
+from django.urls.base import reverse_lazy
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
+
+import institution
+from corebase.ca_management import create_certiticate, revoke_certificate
+from institution.forms import InstitutionCreateForm, InstitutionEditForm, \
+    NotificationUrlsForm
+from institution.models import Institution, NotificationURL
+
+
 logger = logging.getLogger('dfva')
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(permission_required('institution.add_institution'), name='dispatch')
+@method_decorator(permission_required('institution.add_institution'),
+                  name='dispatch')
 class CreateInstitution(CreateView):
     model = Institution
     form_class = InstitutionCreateForm
@@ -27,17 +34,24 @@ class CreateInstitution(CreateView):
             self.object = create_certiticate(
                 self.object.domain, self.object)
         except Exception as e:
-            logger.debug(
-                'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo %r' % (e,))
+            logger.error(
+                'CreateInstitution: Error building certificates %r' % (e,))
             messages.warning(
-                self.request, 'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo')
+                self.request,
+                _("Something was wrong building the certificates,\
+                 please try again")
+            )
             return self.form_invalid(form)
         self.object.user = self.request.user
         private_key = self.object.private_key
-        self.object.private_key = "La llave privada no es almacenada, si la olvidó haga click en generar nuevas llaves"
+        self.object.private_key = _("\
+        Private key was not stored, if you lost it, click in build new keys")
         self.object.save()
         self.object.private_key = private_key
         context = self.get_context_data()
+        logger.info("CreateInstitution: %s by %s" % (
+            self.object.name,
+            self.request.user.username))
         return render(self.request, 'institution/show_create_institution.html',
                       context=context)
 
@@ -52,10 +66,11 @@ def get_new_certificates(request, pk):
             institution.public_certificate.decode('utf-8'))
     except Exception as e:
         ok = False
-        logger.debug(
-            'Ha ocurrido un problema revocando los certificados, por favor vuelva a intentarlo %r' % (e,))
+        logger.error(
+            'Error revoking certificates, %r' % (e,))
         messages.warning(
-            request, 'Ha ocurrido un problema revocando los certificados, por favor vuelva a intentarlo')
+            request,
+            _("Something was wrong revoking certificates, please try again"))
 
     if ok:
         try:
@@ -63,22 +78,28 @@ def get_new_certificates(request, pk):
                 institution.domain, institution)
 
             private_key = institution.private_key
-            institution.private_key = "La llave privada no es almacenada, si la olvidó haga click en generar nuevas llaves"
+            institution.private_key = _("\
+        Private key was not stored, if you lost it, click in build new keys")
             institution.save()
             institution.private_key = private_key
+            logger.info("Regenerate keys: %s by %s" % (institution.name,
+                                                       request.user.username))
         except Exception as e:
-            logger.debug(
-                'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo %r' % (e,))
+            logger.error(
+                'get_new_certificates: Error building certificates %r' % (e,))
             messages.warning(
-                request, 'Ha ocurrido un problema generando los certificados, por favor vuelva a intentarlo')
-
+                request,
+                _("Something was wrong building the certificates,\
+                 please try again")
+            )
     context = {'object': institution}
     return render(request, 'institution/show_create_institution.html',
                   context=context)
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(permission_required('institution.change_institution'), name='dispatch')
+@method_decorator(permission_required('institution.change_institution'),
+                  name='dispatch')
 class EditInstitution(UpdateView):
     model = Institution
     form_class = InstitutionEditForm
@@ -91,7 +112,8 @@ class EditInstitution(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(permission_required('institution.delete_institution'), name='dispatch')
+@method_decorator(permission_required('institution.delete_institution'),
+                  name='dispatch')
 class DeleteInstitution(DeleteView):
     model = Institution
     success_url = reverse_lazy('institution_list')
@@ -101,6 +123,9 @@ class DeleteInstitution(DeleteView):
         success_url = self.get_success_url()
         revoke_certificate(
             self.object.public_certificate.decode('utf-8'))
+        logger.info("DeleteInstitution: %s delete by %r" % (
+            self.object.name,
+            request.user.username))
         self.object.delete()
         return HttpResponseRedirect(success_url)
 
@@ -111,7 +136,8 @@ class DeleteInstitution(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(permission_required('institution.change_institution'), name='dispatch')
+@method_decorator(permission_required('institution.change_institution'),
+                  name='dispatch')
 class ListInstitution(ListView):
     model = Institution
     fields = ['active', 'name',  'domain']
@@ -127,7 +153,8 @@ class ListInstitution(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(permission_required('institution.change_institution'), name='dispatch')
+@method_decorator(permission_required('institution.change_institution'),
+                  name='dispatch')
 class InstitutionDetail(DetailView):
     model = Institution
 
@@ -152,11 +179,11 @@ def manage_notificationurls(request, pk, nu=None):
             noturl.institution = institution
             noturl.save()
             messages.success(
-                request, 'Url guardada satisfactoriamente')
+                request, _('Notification Url saved succesfully'))
             form = NotificationUrlsForm(instance=None)
         else:
             messages.warning(
-                request, 'Ha sucedido un error guardando la información')
+                request, _('Something was wrong saving the information'))
     else:
         form = NotificationUrlsForm(instance=instance)
 
@@ -165,3 +192,22 @@ def manage_notificationurls(request, pk, nu=None):
                'object_list': institution.notificationurl_set.all()}
     return render(request, 'institution/notifications_urls.html',
                   context=context)
+
+
+@login_required
+@permission_required('institution.change_institution')
+def delete_notificationurls(request, pk):
+    notification_url = get_object_or_404(NotificationURL, pk=pk)
+    institution = get_object_or_404(Institution,
+                                    pk=notification_url.institution.pk,
+                                    user=request.user)
+
+    logger.info("Delete notification urls: in %s url %s -- %s" % (
+        institution.name,
+        notification_url.description,
+        notification_url.url))
+    notification_url.delete()
+    messages.success(
+        request, _('Notification Url was delete succesfully'))
+    return redirect(reverse_lazy("notification_urls",
+                                 kwargs={'pk': institution.pk}))

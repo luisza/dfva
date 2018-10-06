@@ -35,7 +35,8 @@ urlpatterns = [
         views.get_new_certificates, name="new_institution_keys"),
     url(r"notificationurls/(?P<pk>[0-9A-Fa-f-]+)/(?P<nu>\d+)?$",
         views.manage_notificationurls, name="notification_urls"),
-
+    url(r"notificationurls/(?P<pk>\d+)/delete$",
+        views.delete_notificationurls, name="del_notification_urls"),
     url(r'institution/(?P<pk>[0-9A-Fa-f-]+)/stats$',
         get_institution_stats, name="institution_stats")
 ]
