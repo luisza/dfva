@@ -8,7 +8,9 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from pyfva.clientes.firmador import ClienteFirmador
-logger = logging.getLogger('dfva')
+from django.conf import settings
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):

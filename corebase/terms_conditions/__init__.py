@@ -19,7 +19,9 @@ from django.utils import timezone
 import json
 from django.contrib.auth.models import Group
 from importlib import import_module
-logger = logging.getLogger('dfva')
+
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 @login_required

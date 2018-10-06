@@ -13,13 +13,13 @@ from rest_framework.decorators import detail_route, list_route
 from corebase.views import ViewSetBase
 from corebase.logging import get_ip, get_log_person_information
 from person.models import AuthenticatePersonRequest
-from person.authenticator.serializer import Authenticate_Person_Request_Serializer,\
+from person.authenticator.serializer import \
+    Authenticate_Person_Request_Serializer,\
     Authenticate_Person_Response_Serializer
+from django.conf import settings
 
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
-logger = logging.getLogger('dfva')
-
-# Create your views here.
 
 class AuthenticatePersonRequestViewSet(ViewSetBase,
                                        viewsets.GenericViewSet):
@@ -33,7 +33,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
         ::
 
           POST /authenticate/person/
-        
+
         Solicita una petición de autenticación para un usuario 
 
         Los valores a suministrar en el parámetro data son:
@@ -67,7 +67,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
         ::
 
           POST /authenticate/{code}/person_show/
-        
+
         Solicita un estado de la solicitud de autenticación para un usuario 
 
         Los valores a suministrar en el parámetro data son:

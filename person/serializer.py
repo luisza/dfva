@@ -18,7 +18,7 @@ from base64 import b64encode
 
 import logging
 from institution.models import Institution
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
@@ -34,7 +34,8 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
         if not validate_sign_data(self.data['public_certificate'],
                                   plain_text, self.data['data']):
             self._errors['data_hash'] = [
-                _('Sign key check fail,  are you signing with your private key pair?')]
+                _('Sign key check fail,  are you signing with your \
+                private key pair?')]
 
     def validate_certificate(self):
         self.get_institution()
@@ -161,9 +162,11 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
     def validate_digest(self):
         # Fixme: Solo funciona para register
         plain_text = self.data['person']
-        if not validate_sign(self.data['public_certificate'], plain_text, self.data['code']):
+        if not validate_sign(self.data['public_certificate'],
+                             plain_text, self.data['code']):
             self._errors['data_hash'] = [
-                _('Data hash invalid, are you signing with your private key pair?')]
+                _('Data hash invalid, are you signing with your private key \
+                pair?')]
 
     def is_valid(self, raise_exception=False):
         serializers.HyperlinkedModelSerializer.is_valid(

@@ -9,8 +9,11 @@ import pki.cert
 from asn1crypto import pem,  x509
 from oscrypto import asymmetric
 from csrbuilder import CSRBuilder, pem_armor_csr
+from django.conf import settings
 import logging
-logger = logging.getLogger('dfva')
+
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 @register()

@@ -16,9 +16,9 @@ from corebase.ca_management import create_certiticate, revoke_certificate
 from institution.forms import InstitutionCreateForm, InstitutionEditForm, \
     NotificationUrlsForm
 from institution.models import Institution, NotificationURL
+from django.conf import settings
 
-
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 @method_decorator(login_required, name='dispatch')

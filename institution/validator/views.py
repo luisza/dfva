@@ -18,8 +18,9 @@ from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA
 from rest_framework.decorators import list_route
 from corebase.logging import get_ip, get_log_institution_information
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):

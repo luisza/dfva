@@ -21,10 +21,10 @@ from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
-
 import logging
 from corebase.ciphers import Available_ciphers
-logger = logging.getLogger('dfva')
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def pem_to_base64(certificate):

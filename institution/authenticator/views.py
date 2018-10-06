@@ -15,12 +15,13 @@ from corebase.views import ViewSetBase
 import pyfva
 from pyfva.constants import get_text_representation
 from corebase.logging import get_ip, get_log_institution_information
-from institution.authenticator.serializer import Authenticate_Request_Serializer,\
+from institution.authenticator.serializer import \
+    Authenticate_Request_Serializer,\
     Authenticate_Response_Serializer
 from institution.models import AuthenticateRequest
+from django.conf import settings
 
-
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 # Create your views here.
 
@@ -111,7 +112,8 @@ class AuthenticateRequestViewSet(ViewSetBase,
         dev = {
             'code': 'N/D',
             'status': 2,
-            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
+            'status_text': get_text_representation(
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
@@ -145,9 +147,9 @@ class AuthenticateRequestViewSet(ViewSetBase,
         **id_transaction** Corresponde al id de la trasnacción del BCCR
 
         Los valores devueltos son: 
-        
+
         * **result** True/False si se eliminó la petición o no
-        
+
         """
         ip = get_ip(request)
         logger.debug('Authentication: Delete Institution request %s %r' %

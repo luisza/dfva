@@ -6,11 +6,13 @@ from person.models import SignPersonRequest, SignPersonDataRequest
 from person.serializer import PersonCheckBaseBaseSerializer
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
-class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Sign_RequestSerializer):
+class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
+                                     Sign_RequestSerializer):
 
     check_internal_fields = ['person',
                              'document',

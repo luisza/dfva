@@ -8,6 +8,7 @@ import logging
 from receptor.notify import send_notification
 from pyfva.constants import get_text_representation,\
     ERRORES_AL_NOTIFICAR_FIRMA
+from django.conf import settings
 
 DATAREQUEST = []
 
@@ -18,11 +19,12 @@ except:
     pass
 
 try:
-    from person.models import AuthenticatePersonDataRequest, SignPersonDataRequest
+    from person.models import AuthenticatePersonDataRequest,\
+        SignPersonDataRequest
     DATAREQUEST += [AuthenticatePersonDataRequest, SignPersonDataRequest]
 except:
     pass
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def get_encrypt_method(datarequest):

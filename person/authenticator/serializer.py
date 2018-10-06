@@ -10,12 +10,14 @@ from rest_framework import serializers
 import logging
 from corebase.authenticate import Authenticate_RequestSerializer
 from person.serializer import PersonCheckBaseBaseSerializer
-
-logger = logging.getLogger('dfva')
-
+from django.conf import settings
 
 
-class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer, Authenticate_RequestSerializer):
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+
+
+class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
+                                             Authenticate_RequestSerializer):
 
     check_internal_fields = ['identification',
                              'request_datetime', 'person']

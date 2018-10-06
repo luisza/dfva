@@ -6,16 +6,19 @@ Created on 13 sep. 2017
 from rest_framework import serializers
 from pyfva.clientes.validador import ClienteValidador
 from django.utils.dateparse import parse_datetime
-from pyfva.constants import get_text_representation, ERRORES_VALIDA_CERTIFICADO,\
+from pyfva.constants import get_text_representation, \
+    ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\
     ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE,\
     ERRORES_VALIDAR_PDF
-
 from corebase.models import Signer, ErrorFound, WarningReceived
-import logging
 from django.core.exceptions import ValidationError
 from pyfva.clientes.firmador import ClienteFirmador
-logger = logging.getLogger('dfva')
+from django.conf import settings
+import logging
+
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def get_code_from_uuid(code):
@@ -25,9 +28,9 @@ def get_code_from_uuid(code):
 class ValidateCertificate_RequestSerializer(
         serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
-        help_text="""Datos de solicitud de validación de certificado encriptados usando 
-        AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
-         """)
+        help_text="""Datos de solicitud de validación de certificado \
+        encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
+        con PKCS1_OAEP """)
     readonly_fields = ['data']
     check_internal_fields = None
 
@@ -89,11 +92,12 @@ class ValidateCertificate_RequestSerializer(
         return self.cert_request
 
 
-class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer):
+class ValidateDocument_RequestSerializer(
+        serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
-        help_text="""Datos de solicitud de validación de certificado encriptados usando 
-        AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
-         """)
+        help_text="""Datos de solicitud de validación de certificado \
+        encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
+        con PKCS1_OAEP """)
     readonly_fields = ['data']
     check_internal_fields = None
 
@@ -202,9 +206,9 @@ class ValidateDocument_RequestSerializer(serializers.HyperlinkedModelSerializer)
 
 class Suscriptor_Serializer(serializers.ModelSerializer):
     data = serializers.CharField(
-        help_text="""Datos de solicitud de validación de certificado encriptados usando 
-        AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
-         """)
+        help_text="""Datos de solicitud de validación de certificado \
+        encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
+        con PKCS1_OAEP""")
     readonly_fields = ['data']
 
     def is_valid(self, raise_exception=False):

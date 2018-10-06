@@ -10,18 +10,20 @@ from institution.models import AuthenticateRequest, AuthenticateDataRequest
 from corebase.authenticate import Authenticate_RequestSerializer
 from rest_framework import serializers
 from institution.serializer import InstitutionCheckBaseBaseSerializer
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
-class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer, Authenticate_RequestSerializer):
+class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer,
+                                      Authenticate_RequestSerializer):
 
     check_internal_fields = ['notification_url', 'identification',
                              'request_datetime', 'institution']
 
     check_show_fields = ['institution',
                          'notification_url',
-                         #'identification',
+                         # 'identification',
                          'request_datetime']
 
     validate_request_class = AuthenticateRequest

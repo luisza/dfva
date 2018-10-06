@@ -11,9 +11,9 @@ from corebase.logging import get_ip, get_log_person_information
 from person.signer.serializer import Sign_Person_Request_Serializer,\
     Sign_Person_Response_Serializer
 from person.models import SignPersonRequest
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
-
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class SignPersonRequestViewSet(ViewSetBase,
@@ -104,7 +104,8 @@ class SignPersonRequestViewSet(ViewSetBase,
         dev = {
             'code': 'N/D',
             'status': 2,
-            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
+            'status_text': get_text_representation(
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),

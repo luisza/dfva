@@ -4,9 +4,11 @@ import logging
 from person.models import PersonLogin
 from person.serializer import PersonLoginSerializer,\
     PersonLoginResponseSerializer
+from django.conf import settings
 
-# Create your views here.
-logger = logging.getLogger('dfva')
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+
 
 class PersonLoginView(mixins.CreateModelMixin,
                       viewsets.GenericViewSet):
@@ -61,4 +63,4 @@ class PersonLoginView(mixins.CreateModelMixin,
         }
         logger.info('Response login ERROR %r' % (serializer._errors, ))
         logger.debug('Data login Response error: %r' % (dev,))
-        return Response(dev, status=status.HTTP_201_CREATED )
+        return Response(dev, status=status.HTTP_201_CREATED)

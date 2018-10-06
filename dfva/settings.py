@@ -199,6 +199,7 @@ RECEPTOR_CLIENT = 'receptor.client'
 DEMO_DFVA_SERVER_URL = 'http://localhost:8000'
 DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
 LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR)
+DEFAULT_LOGGER_NAME = 'dfva'
 
 if DO_LOGGIN:
     LOGGING = {

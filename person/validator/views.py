@@ -5,7 +5,8 @@ Created on 13 sep. 2017
 '''
 from corebase.views import ViewSetBase, BaseSuscriptor
 from rest_framework import viewsets
-from person.validator.serializer import ValidatePersonCertificate_Request_Serializer,\
+from person.validator.serializer import \
+    ValidatePersonCertificate_Request_Serializer,\
     ValidatePersonCertificateRequest_Response_Serializer,\
     ValidatePersonDocument_Request_Serializer,\
     ValidatePersonDocumentRequest_Response_Serializer,\
@@ -17,8 +18,8 @@ from corebase.logging import get_ip, get_log_person_information
 from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA
 import logging
-
-logger = logging.getLogger('dfva')
+from django.conf import settings
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):

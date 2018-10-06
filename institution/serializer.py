@@ -12,9 +12,9 @@ import logging
 from corebase.rsa import decrypt
 from corebase.ca_management import check_certificate
 from corebase.ciphers import Available_ciphers
+from django.conf import settings
 
-
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class InstitutionBaseSerializer(CoreBaseBaseSerializer):

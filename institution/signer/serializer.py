@@ -8,11 +8,13 @@ from corebase.signer import Sign_RequestSerializer
 from institution.models import SignRequest, SignDataRequest
 from rest_framework import serializers
 from institution.serializer import InstitutionCheckBaseBaseSerializer
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
-class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSerializer):
+class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer,
+                              Sign_RequestSerializer):
 
     check_internal_fields = ['institution',
                              'notification_url',
@@ -25,7 +27,7 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer, Sign_RequestSe
                              'request_datetime']
     check_show_fields = ['institution',
                          'notification_url',
-                         #'identification',
+                         # 'identification',
                          'request_datetime']
 
     validate_request_class = SignRequest

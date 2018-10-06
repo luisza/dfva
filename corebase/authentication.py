@@ -13,7 +13,8 @@ import json
 from institution.models import AuthenticateDataRequest, Institution
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
-logger = logging.getLogger('dfva')
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 @csrf_exempt

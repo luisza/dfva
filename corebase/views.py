@@ -12,18 +12,22 @@ Created on 18/7/2017
 
 from __future__ import unicode_literals
 
-from rest_framework.settings import api_settings
-from rest_framework.response import Response
-from corebase.rsa import get_reponse_person_data_encrypted
-from pyfva.constants import get_text_representation
 import logging
-from corebase.rsa import get_reponse_institution_data_encrypted
-from rest_framework import status
+
 from django.shortcuts import render
+from django.template.loader import render_to_string
+
 from corebase.forms import RegistationForm, UserConditionsAndTermsForm
 from corebase.models import UserConditionsAndTerms
-from django.template.loader import render_to_string
-logger = logging.getLogger('dfva')
+from corebase.rsa import (get_reponse_institution_data_encrypted,
+                          get_reponse_person_data_encrypted)
+from pyfva.constants import get_text_representation
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
+from django.conf import settings
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def home(request):
@@ -107,9 +111,11 @@ class ViewSetBase:
             logger.info('Response create ok %s' %
                         (serializer.data['data_hash']))
 
-            return Response(self.get_encrypted_response(adr.data, serializer), status=status.HTTP_201_CREATED, headers=headers)
+            return Response(self.get_encrypted_response(adr.data, serializer),
+                            status=status.HTTP_201_CREATED, headers=headers)
         logger.info('Response create ERROR %s' %
-                    (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
+                    (serializer.data['data_hash'] if 'data_hash' in
+                     serializer.data else '',))
         return self.get_error_response(serializer)
 
     def show(self, request, *args, **kwargs):
@@ -125,7 +131,8 @@ class ViewSetBase:
                             status=status.HTTP_201_CREATED, headers=headers)
 
         logger.info('Response show ERROR %s' %
-                    (serializer.data['data_hash'] if 'data_hash' in serializer.data else '',))
+                    (serializer.data['data_hash'] if 'data_hash' in
+                     serializer.data else '',))
         return self.get_error_response(serializer)
 
     def delete(self, request, *args, **kwargs):

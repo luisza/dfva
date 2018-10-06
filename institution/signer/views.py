@@ -15,9 +15,9 @@ from corebase.logging import get_ip, get_log_institution_information
 from pyfva.constants import get_text_representation
 import pyfva
 import logging
+from django.conf import settings
 
-
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class SignRequestViewSet(ViewSetBase,
@@ -131,9 +131,9 @@ class SignRequestViewSet(ViewSetBase,
         **id_transaction** Corresponde al id de la trasacción del BCCR
 
         Los valores devueltos son: 
-       
+
         * **result** True/False si se eliminó la petición o no
-        
+
         """
         ip = get_ip(request)
         logger.debug('Sign: Delete Institution %s %r' %
@@ -142,13 +142,12 @@ class SignRequestViewSet(ViewSetBase,
                     get_log_institution_information(request))
         return self.delete(request, *args, **kwargs)
 
-
-
     def get_error_response(self, serializer):
         dev = {
             'code': 'N/D',
             'status': 2,
-            'status_text': get_text_representation(pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
+            'status_text': get_text_representation(
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),

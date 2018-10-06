@@ -8,10 +8,12 @@ from rest_framework.renderers import JSONRenderer
 from corebase.rsa import encrypt, get_hash_sum
 import logging
 from institution.models import AuthenticateDataRequest, SignDataRequest
-from institution.authenticator.serializer import Authenticate_Response_Serializer
+from institution.authenticator.serializer import \
+    Authenticate_Response_Serializer
 from institution.signer.serializer import Sign_Response_Serializer
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def get_datarequest_serializer(data):
@@ -21,7 +23,8 @@ def get_datarequest_serializer(data):
         return Sign_Response_Serializer, data.signrequest
 
 
-def send_notification(data, serializer=None, request=None, encrypt_method='aes_eax'):
+def send_notification(data, serializer=None, request=None,
+                      encrypt_method='aes_eax'):
     """
     Envia notificación a la institución, cuando se recibe una respuesta por parte del BCCR, este método 
     reenvía la respuesta a la URL especificada en la petición. 
@@ -63,10 +66,11 @@ def send_notification(data, serializer=None, request=None, encrypt_method='aes_e
     hashsum = get_hash_sum(edata, req.algorithm)
     error = None
     try:
-        response = requests.post(data.notification_url, data={'id_transaction': data.id_transaction,
-                                                              'data': edata.decode(),
-                                                              'hashsum': hashsum,
-                                                              'algorithm': req.algorithm})
+        response = requests.post(data.notification_url,
+                                 data={'id_transaction': data.id_transaction,
+                                       'data': edata.decode(),
+                                       'hashsum': hashsum,
+                                       'algorithm': req.algorithm})
         response.raise_for_status()
     except Exception as e:
         error = e
@@ -74,4 +78,3 @@ def send_notification(data, serializer=None, request=None, encrypt_method='aes_e
                      (data.notification_url, e))
 
     return error
-

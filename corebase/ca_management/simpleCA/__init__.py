@@ -13,7 +13,9 @@ from datetime import timedelta
 from certvalidator import CertificateValidator, ValidationContext, errors
 from crlbuilder import CertificateListBuilder
 import logging
-logger = logging.getLogger('dfva')
+
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 @register()

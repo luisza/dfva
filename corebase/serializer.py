@@ -11,12 +11,14 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import logging
 from corebase.ca_management import check_certificate
+from django.conf import settings
 
-logger = logging.getLogger('dfva')
+
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class CoreBaseBaseSerializer(object):
-    
+
     def validate_digest(self):
         hashsum = get_hash_sum(self.data['data'], self.data['algorithm'])
         if hashsum != self.data['data_hash']:
@@ -58,7 +60,7 @@ class CoreBaseBaseSerializer(object):
                 self._errors['public_certificate'] = [
                     _('Invalid certificate')]
             try:
-                
+
                 self.requestdata = decrypt(self._get_decrypt_key(),
                                            self.data['data'],
                                            method=self.encrypt_method)
@@ -89,20 +91,20 @@ class CheckBaseBaseSerializer():
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {
-               
+
                 'id_transaction': code,
-                #'identification': self.requestdata['identification'],
+                # 'identification': self.requestdata['identification'],
                 'expiration_datetime__gte': timezone.now()
             }
-           
+
             # fixme: Revisar si se debe hacer esta comprobacion
             # cuando se trata de una persona firmante
-            #if 'identification' in self.requestdata:
+            # if 'identification' in self.requestdata:
             #    fields['identification'] = self.requestdata['identification']
 
             if hasattr(self.validate_data_class, 'institution'):
-                fields['institution']= self.institution
-            
+                fields['institution'] = self.institution
+
             if 'notification_url' in self.check_internal_fields:
                 fields['notification_url'] = self.requestdata['notification_url']
             data = self.validate_data_class.objects.filter(
@@ -110,5 +112,5 @@ class CheckBaseBaseSerializer():
             if data:
                 self.adr = data
                 dev = True
-                
+
         return dev

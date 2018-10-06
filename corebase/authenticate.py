@@ -8,9 +8,11 @@ from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from pyfva.clientes.autenticador import ClienteAutenticador
 from pyfva.constants import get_text_representation, ERRORES_AL_SOLICITAR_FIRMA
+from django.conf import settings
 import logging
 
-logger = logging.getLogger('dfva')
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+
 
 class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
     data = serializers.CharField(
