@@ -1,19 +1,34 @@
-'''
-Created on 2 nov. 2017
+# encoding: utf-8
 
-@author: luisza
-'''
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+'''
+@date: 2/11/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
 
 from django.conf import settings
-from django.core.exceptions import DisallowedHost 
+from django.core.exceptions import DisallowedHost
 from soapfish.django_ import django_dispatcher
 from django.views.decorators.csrf import csrf_exempt
+
 
 def check_ip(request):
     """Returns the IP of the request, accounting for the possibility of being
     behind a proxy.
-    """    
+    """
     allowed_ip = settings.ALLOWED_BCCR_IP
     if allowed_ip:
         ip = request.META.get("HTTP_X_FORWARDED_FOR", None)
@@ -28,9 +43,9 @@ def check_ip(request):
 
 def soap_dispatcher(service, **dispatcher_kwargs):
     djdispatcher = django_dispatcher(service, **dispatcher_kwargs)
-    
+
     def run(request, **kwargs):
         check_ip(request)
         return djdispatcher(request, **kwargs)
-    
+
     return csrf_exempt(run)

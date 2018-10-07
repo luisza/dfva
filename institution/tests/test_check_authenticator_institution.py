@@ -1,8 +1,24 @@
-'''
-Created on 16 ago. 2017
+# encoding: utf-8
 
-@author: luis
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 16/8/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 from corebase.rsa import decrypt
 import json
 from institution.models import AuthenticateDataRequest
@@ -62,9 +78,8 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
             code=response['code']).first())
         response = self.authenticate(
             request_url=self.BASE_URL % (response['id_transaction'],))
-        
-        self.ok_test(response)
 
+        self.ok_test(response)
 
     def test_algorithms(self):
 

@@ -1,8 +1,24 @@
-'''
-Created on 11 sep. 2017
+# encoding: utf-8
 
-@author: luis
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 11/9/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 from __future__ import absolute_import
 
 import os
@@ -10,7 +26,8 @@ import os
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.getenv('DJANGO_SETTINGS_MODULE', 'dfva.settings'))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+                      os.getenv('DJANGO_SETTINGS_MODULE', 'dfva.settings'))
 
 from django.conf import settings  # noqa
 
@@ -19,7 +36,9 @@ if settings.DOCKER:
     RABBIT_PASS = os.getenv('RABBIT_PASS', 'password')
     RABBIT_HOST = os.getenv('RABBIT_HOST', 'rabbitmq')
     RABBIT_PORT = os.getenv('RABBIT_PORT', '5672')
-    app = Celery('dfva', broker='amqp://%s:%s@%s:%s'%(RABBIT_USER,RABBIT_PASS,RABBIT_HOST,RABBIT_PORT) ,backend='rpc://' )
+    app = Celery('dfva', broker='amqp://%s:%s@%s:%s' % (
+        RABBIT_USER,
+        RABBIT_PASS, RABBIT_HOST, RABBIT_PORT), backend='rpc://')
 else:
     app = Celery('dfva')
 

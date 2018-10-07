@@ -1,15 +1,32 @@
-'''
-Created on 12 sep. 2017
+# encoding: utf-8
 
-@author: luisza
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 12/9/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 import importlib
 from django.conf import settings
 from django.utils import timezone
 from rest_framework.renderers import JSONRenderer
 from institution.models import AuthenticateDataRequest, SignDataRequest,\
     Institution
-from institution.authenticator.serializer import LogAuthenticateInstitutionRequestSerializer
+from institution.authenticator.serializer import \
+    LogAuthenticateInstitutionRequestSerializer
 from institution.signer.serializer import LogSingInstitutionRequestSerializer
 from dateutil.relativedelta import relativedelta
 from django.core.mail import send_mail

@@ -1,8 +1,24 @@
-'''
-Created on 19 ago. 2017
+# encoding: utf-8
 
-@author: luis
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 19/8/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 from corebase.test.person import BasePersonTest
 from corebase.test.documents import XMLFILE, ODFFILE, DOCXFILE
 from person.models import SignPersonDataRequest
@@ -31,8 +47,6 @@ class SignPersonCase(BasePersonTest):
     def test_sign_xml_cofirma(self):
         self._test_sign_xml(_format='xml_cofirma')
 
-
-        
     def _test_sign_xml(self, algorithm='sha512', _format='xml_cofirma'):
         response = self.sign(document=XMLFILE,
                              algorithm=algorithm,

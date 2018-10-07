@@ -1,9 +1,23 @@
-'''
-Created on 16 ago. 2017
+# encoding: utf-8
 
-@author: luis
-'''
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+'''
+@date: 16/8/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
 
 from django.utils import timezone
 import json
@@ -12,7 +26,6 @@ import requests
 from corebase.test.environment import *
 from corebase.test.documents import XMLFILE, HASHXML, ODFFILE, HASHODF, DOCXFILE,\
     HASHDOCX
-
 
 
 def test_xml_signer(identificacion, url=LISTEN_URL):

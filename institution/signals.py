@@ -1,13 +1,30 @@
-'''
-Created on 17 jun. 2018
+# encoding: utf-8
 
-@author: luis
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 17/7/2018
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 
 from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 from institution.models import AuthenticateDataRequest, InstitutionStats,\
-    SignDataRequest, ValidateCertificateDataRequest, ValidateDocumentDataRequest
+    SignDataRequest, ValidateCertificateDataRequest, \
+    ValidateDocumentDataRequest
 
 from django.contrib.auth.management import create_permissions
 

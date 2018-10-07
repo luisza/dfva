@@ -1,8 +1,24 @@
-'''
-Created on 16 ago. 2017
+# encoding: utf-8
 
-@author: luis
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 '''
+@date: 16/8/2017
+@author: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
 from corebase.rsa import decrypt
 import json
 from institution.models import AuthenticateDataRequest
@@ -57,7 +73,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
 
     def check_result(self, response, status=True):
         self.assertEqual(response['result'], status)
-        
+
     def test_authenticate_check(self):
         response = self.authenticate(identification=self.IDENTIFICATION)
         self.ok_test(response)
@@ -68,7 +84,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
             request_url=self.BASE_URL % (response['id_transaction'],))
         self.check_result(response)
         self.assertIsNone(AuthenticateDataRequest.objects.filter(
-            id_transaction=id_transaction).first()) 
+            id_transaction=id_transaction).first())
 
     def test_algorithms(self):
 
@@ -87,7 +103,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         self.check_result(response, False)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             id_transaction=self.data['id_transaction']).first())
-        
+
     def test_check_wrong_institution(self):
         response = self.authenticate(
             institution='no institution',
@@ -96,7 +112,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         self.check_result(response, False)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             id_transaction=self.data['id_transaction']).first())
-        
+
     def test_check_wrong_sign(self):
         """if all credential are well but data is encrypted with other private
         key"""
@@ -115,7 +131,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         self.check_result(response, False)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             id_transaction=self.data['id_transaction']).first())
-        
+
     def test_wrong_hashsum(self):
         response = self.authenticate(request_url=self.BASE_URL % (
             self.data['id_transaction'],),
@@ -123,7 +139,7 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         self.check_result(response, False)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             id_transaction=self.data['id_transaction']).first())
-        
+
     def test_wrong_certificate(self):
 
         response = self.authenticate(request_url=self.BASE_URL % (
@@ -133,9 +149,8 @@ class CheckAuthenticatorInstitutionCase(BaseInstitutionTest):
         self.check_result(response, False)
         self.assertIsNotNone(AuthenticateDataRequest.objects.filter(
             id_transaction=self.data['id_transaction']).first())
-                
+
     def test_wrong_id_trasaction(self):
         response = self.authenticate(
             request_url=self.BASE_URL % ("02345232",))
         self.check_result(response, False)
-
