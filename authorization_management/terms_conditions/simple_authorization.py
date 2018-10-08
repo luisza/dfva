@@ -13,24 +13,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
-@date: 18/7/2017
+@date: 18/7/2018
 @author: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
 
-from django.conf.urls import url
+from django.contrib import messages
+from django.utils.translation import gettext as _
 
 
-from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
-from corebase.bccr_checks import soap_dispatcher
-
-
-dispatcher = soap_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
-
-
-urlpatterns = [
-
-    url(r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$',
-        dispatcher, name='ws_receptor'),
-]
+def authorize_user(request, user):
+    messages.success(request,
+                     _("Congrats!, Your can now add applications"))
+    return True

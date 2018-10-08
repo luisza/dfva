@@ -23,7 +23,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.contrib.auth.models import User
-from corebase.models import UserConditionsAndTerms
+from authorization_management.models import UserConditionsAndTerms
 from django.urls.base import reverse
 from django.utils.translation import gettext as _
 

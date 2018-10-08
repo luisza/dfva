@@ -1,0 +1,9 @@
+{% extends 'mail/base_email.html' %}
+{% block content %}
+Hello {{object.user.get_full_name}},
+
+An authorized user will review your request and contact you soon.
+
+Thanks.
+
+{% endblock %}

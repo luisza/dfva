@@ -55,6 +55,14 @@
         </a>
       </li>
       {% endif %}
+
+      {% if perms.authorization_management.change_authorizationrequest %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'authorize_terms' %}" title="{% trans 'Manage who can create institutions' %}">
+        <i class="fas fa-address-card"></i> {% trans 'Authorizations' %}
+        </a>
+      </li>
+      {% endif %}
       <li class="nav-item">
         <a class="nav-link" href="http://dfva.readthedocs.io/">
         {% trans 'Documentation' %} 

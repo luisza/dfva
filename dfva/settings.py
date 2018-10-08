@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'person',
     'receptor',
     'rest_framework',
+    'authorization_management'
     # 'django_extensions',
 
 ]
@@ -336,11 +337,11 @@ CELERYBEAT_SCHEDULE = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'corebase.authBackend.DFVABackend'
+    'authorization_management.authBackend.DFVABackend'
 )
 
 INSTITUTION_GROUP_NAME = 'Application Autors'
-INSTITUION_AUTHORIZATION = 'corebase.terms_conditions.simple_authorization'
+INSTITUION_AUTHORIZATION = 'authorization_management.terms_conditions.autorized_user_authorization'
 
 
 EMAIL_PORT = 1025

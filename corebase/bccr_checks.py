@@ -37,7 +37,7 @@ def check_ip(request):
             ip = ip.split(", ")[0]
         else:
             ip = request.META.get("REMOTE_ADDR", "")
-        if not ip in allowed_ip:
+        if ip not in allowed_ip:
             raise DisallowedHost()
 
 

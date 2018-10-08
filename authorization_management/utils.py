@@ -13,24 +13,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
-@date: 18/7/2017
+@date: 8/10/2018
 @author: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
 
-from django.conf.urls import url
+from django.contrib.auth.models import Group
+from django.conf import settings
 
 
-from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
-from corebase.bccr_checks import soap_dispatcher
-
-
-dispatcher = soap_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
-
-
-urlpatterns = [
-
-    url(r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$',
-        dispatcher, name='ws_receptor'),
-]
+def authorize_user_to_create_institution(user):
+    group = Group.objects.get(name=settings.INSTITUTION_GROUP_NAME)
+    user.groups.add(group)

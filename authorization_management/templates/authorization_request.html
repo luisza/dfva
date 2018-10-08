@@ -1,0 +1,83 @@
+{% extends 'adminlte/base.html'%}
+{% load static i18n %}
+
+{% block content %}
+  <div class="row">
+      <div class="col-md-10 offset-md-1">
+          <h1>  {% trans 'Authorizations request' %} </h1>
+            <div class="accordion" id="accordionterms">
+            {% for obj in object_list %}
+    {% with terms=obj.terms_and_conditions %}
+            <div class="card">
+                <div class="card-header" id="terms_{{obj.pk}}">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" 
+                    data-target="#collapse{{obj.pk}}" aria-expanded="true" aria-controls="collapseOne">
+                    {{obj.user.username}} {{obj.user.get_full_name }}<br>
+                    <small>{% trans " from "%} {{terms.organization_unit}} {% trans ' of ' %} {{terms.organization}}
+                    </small></button>
+                </h5>
+                </div>
+            
+                <div id="collapse{{obj.pk}}" class="collapse" aria-labelledby="terms_{{obj.pk}}"
+                 data-parent="#accordionterms">
+                <div class="card-body">
+
+                <div class="row">
+                    <div class="col">
+                    <h3 class="display-5" > {% trans 'Contact information' %} </h3>
+                    <hr class="my-4">
+                    <br> <strong> {% trans 'Organization' %} :</strong> {{terms.organization}}
+                    <br> <strong> {% trans 'Organization unit' %} : </strong> {{terms.organization_unit}}
+                    <br> <strong> {% trans 'Phone' %} : </strong> {{terms.phone}}
+                    <br> <strong> {% trans 'Contact email' %} : </strong>  {{terms.contact_email}}
+                    <br><br>
+                    <h4 class="text text-success"> 
+                        {% trans 'Why we have to allow you to use this digital signer service?' %} 
+                    </h4>
+                    <p class="lead">{{terms.use_reason}}</p>
+
+                    </div>
+                    <div class="col">
+                        <div class="jumbotron">
+                        <form method="POST" >
+                            <input type="hidden" name="authrequest" value="{{obj.pk}}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                            <label for="status">
+                                {% trans 'Status: ' %}
+                            </label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="approve"> {% trans 'Approve' %} </option>
+                                    <option value="disapprove"> {% trans 'Disapprove' %}</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                    <label for="observations">
+                                        {% trans 'Observations:' %}
+                                    </label>
+                                 <textarea class="form-control" 
+                                 id="observations" name="observations" rows="6"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success"> {% trans "Save" %} </button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+        {% endwith %}
+            {% endfor %}
+        </div>
+      </div>
+  </div>
+
+{% endblock %}
+
+{% block js%}
+<script> 
+        $('.collapse').collapse();
+</script>
+{% endblock %}

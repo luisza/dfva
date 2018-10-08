@@ -13,17 +13,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
-@date: 18/7/2017
+@date: 8/10/2018
 @author: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
 
-from django.contrib import messages
-from django.utils.translation import gettext as _
+
+from django.apps import AppConfig
 
 
-def authorize_user(request, user):
-    messages.success(request,
-                     _("Congrats!, Your can now add applications"))
-    return True
+class AuthorizationManagementConfig(AppConfig):
+    name = 'authorization_management'

@@ -26,8 +26,9 @@ import logging
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
-from corebase.forms import RegistationForm, UserConditionsAndTermsForm
-from corebase.models import UserConditionsAndTerms
+from authorization_management.forms import RegistationForm, \
+    UserConditionsAndTermsForm
+from authorization_management.models import UserConditionsAndTerms
 from corebase.rsa import (get_reponse_institution_data_encrypted,
                           get_reponse_person_data_encrypted)
 from pyfva.constants import get_text_representation

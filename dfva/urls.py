@@ -34,6 +34,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
@@ -61,6 +62,7 @@ urlpatterns = [
     #                                namespace='rest_framework')),
     url(r'^', include('corebase.urls')),
     url(r'^', include(router.urls)),
+    url(r'^', include('authorization_management.urls'))
 ] + institution_urls
 
 if settings.DOCKER:

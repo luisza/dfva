@@ -21,7 +21,7 @@
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from corebase.forms import UserConditionsAndTermsForm
+from authorization_management.forms import UserConditionsAndTermsForm
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls.base import reverse
@@ -29,7 +29,7 @@ from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse, HttpResponse
-from corebase.models import UserConditionsAndTerms
+from authorization_management.models import UserConditionsAndTerms
 from pyfva.clientes.firmador import ClienteFirmador
 from django.conf import settings
 from base64 import b64encode
@@ -38,7 +38,6 @@ import logging
 from institution.models import SignDataRequest, Institution
 from django.utils import timezone
 import json
-from django.contrib.auth.models import Group
 from importlib import import_module
 
 
@@ -52,8 +51,7 @@ def check_autorization(request):
         authorizationCM = import_module(settings.INSTITUION_AUTHORIZATION)
         auth = authorizationCM.authorize_user(request, request.user)
         if auth:
-            group = Group.objects.get(name=settings.INSTITUTION_GROUP_NAME)
-            request.user.groups.add(group)
+            authorize_user_to_create_institution(request.user)
 
     else:
         messages.warning(request, _(
@@ -183,6 +181,7 @@ def sign_terms(request):
                      'terms': instance}
         )
         instance.user = request.user
+        instance.contact_email = request.user.email
         instance.save()
         context['object'] = instance
     else:

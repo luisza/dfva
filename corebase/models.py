@@ -81,18 +81,3 @@ class BaseDocument(models.Model):
     warnings = models.ManyToManyField(WarningReceived)
     errors = models.ManyToManyField(ErrorFound)
     signers = models.ManyToManyField(Signer)
-
-
-class UserConditionsAndTerms(models.Model):
-    user = models.ForeignKey(User)
-    text = models.TextField()
-    date = models.DateTimeField(auto_now_add=True)
-    document_signed = models.TextField()
-    signed = models.BooleanField(default=False)
-
-    organization = models.CharField(max_length=100)
-    organization_unit = models.CharField(max_length=100)
-    use_reason = models.TextField(
-        help_text=_("¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"))
-    phone = models.CharField(max_length=25)
-    contact_email = models.EmailField()
