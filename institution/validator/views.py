@@ -115,11 +115,12 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
         * **status:** Estado de la solicitud
         * **status_text:**  Descripción en texto del estado
+        * **was_successfully:**  Si la verificación del certificado fue exitosa
         * **warnings:** Lista de advertencias
         * **errors:** Lista de errores encontrados en el documento del tipo [ {'code': 'codigo','description': 'descripción'}, ... ]
         * **signers:** Lista con la información de los firmantes 
         [ {'identification_number': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
-        * **was_successfully:**  Si la verificación del certificado fue exitosa
+
 
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
