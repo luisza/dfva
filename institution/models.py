@@ -172,6 +172,17 @@ class AuthenticateDataRequest(models.Model):
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
 
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "AuthenticateDataRequest(%d)  %s %r %d" % (
+            self.id_transaction,
+            self.identification,
+            self.code,
+            self.status
+        )
+
     @property
     def left_time(self):
         now = timezone.now()
@@ -231,6 +242,18 @@ class SignDataRequest(models.Model):
     received_notification = models.BooleanField(default=False)
     document_format = models.CharField(max_length=25, default='n/d')
 
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "SignDataRequest(%d)  %s %r %d %s" % (
+            self.id_transaction,
+            self.identification,
+            self.code,
+            self.status,
+            self.document_format
+        )
+
     @property
     def left_time(self):
         now = timezone.now()
@@ -287,6 +310,17 @@ class ValidateCertificateDataRequest(models.Model):
     full_name = models.CharField(max_length=250, null=True)
     start_validity = models.DateTimeField(null=True)
     end_validity = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "ValidateCertificateDataRequest(%d)  %s %r %d" % (
+            self.id_transaction,
+            self.identification,
+            self.was_successfully,
+            self.status,
+        )
 
     @property
     def id_transaction(self):
@@ -347,6 +381,17 @@ class ValidateDocumentDataRequest(BaseDocument):
     status = models.IntegerField(choices=STATUS, default=1)
     status_text = models.CharField(max_length=256, default='n/d')
     was_successfully = models.BooleanField(default=True)
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "ValidateDocumentDataRequest(%d)  %s %r %d" % (
+            self.id_transaction,
+            self.format,
+            self.was_successfully,
+            self.status,
+        )
 
     @property
     def id_transaction(self):

@@ -81,8 +81,9 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
 
         """
         ip = get_ip(request)
-        logger.debug('Validator: Certificate Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Validator: Certificate Institution %s %r' %
+                         (ip, request.data))
         logger.info('Validator: Certificate Institution %s %s %s %s' %
                     get_log_institution_information(request))
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
@@ -125,8 +126,9 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         """
 
         ip = get_ip(request)
-        logger.debug('Validator: Document Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Validator: Document Institution %s %r' %
+                         (ip, request.data))
         logger.info('Validator: Document Institution %s %s %s %s' %
                     get_log_institution_information(request))
         self.serializer_class = ValidateDocument_Request_Serializer
@@ -164,8 +166,9 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
             **is_connected:** True si la persona está conectada, false si no lo está
         """
         ip = get_ip(request)
-        logger.debug('Connected:  institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Connected:  institution %s %r' %
+                         (ip, request.data))
         logger.info('Connected:  institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self._create(request,  *args, **kwargs)

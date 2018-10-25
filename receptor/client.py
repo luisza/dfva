@@ -24,7 +24,7 @@ from receptor.notify import send_notification
 from pyfva.constants import get_text_representation,\
     ERRORES_AL_NOTIFICAR_FIRMA
 from django.conf import settings
-
+logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 DATAREQUEST = []
 
 try:
@@ -39,7 +39,6 @@ try:
     DATAREQUEST += [AuthenticatePersonDataRequest, SignPersonDataRequest]
 except:
     pass
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 def get_encrypt_method(datarequest):
@@ -65,8 +64,11 @@ def reciba_notificacion(data):
     No requiere retornar nada
 
     """
+    logdata = data
+    if not settings.LOGGING_ENCRYPTED_DATA:
+        logdata = {k: v for k, v in data.items() if k != 'documento'}
     logger.debug("Receptor: reciba notificación %r" %
-                 (data,))
+                 (logdata,))
 
     for model in DATAREQUEST:
         request = model.objects.filter(
@@ -78,6 +80,9 @@ def reciba_notificacion(data):
         logger.warning("Receptor: solicitud no encontrada %r" % (data, ))
         return
 
+    logger.debug(str(type(request))+" " + str(data['id_solicitud'])
+                 + " == " + str(request.status) + " --> "
+                 + str(data['codigo_error']))
     request.status = data['codigo_error']
     request.status_text = get_text_representation(
         ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])

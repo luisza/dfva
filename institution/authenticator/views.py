@@ -79,8 +79,9 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
         """
         ip = get_ip(request)
-        logger.debug('Authentication: Create Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Authentication: Create Institution %s %r' %
+                         (ip, request.data))
         logger.info('Authentication: Create Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
@@ -117,8 +118,9 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
         """
         ip = get_ip(request)
-        logger.debug('Authentication: Show Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Authentication: Show Institution %s %r' %
+                         (ip, request.data))
         logger.info('Authentication: Show Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
@@ -167,8 +169,9 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
         """
         ip = get_ip(request)
-        logger.debug('Authentication: Delete Institution request %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Authentication: Delete Institution request %s %r' %
+                         (ip, request.data))
         logger.info('Authentication: Delete Institution request %s %s %s %s' %
                     get_log_institution_information(request))
         return self.delete(request, *args, **kwargs)

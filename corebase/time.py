@@ -13,31 +13,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
-@date: 14/4/2017
+@date: 24/10/2018
 @author: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
 
-from django.conf import settings
-from django.contrib import admin
-from institution.models import NotificationURL, Institution
-from institution.models import AuthenticateDataRequest, SignDataRequest, \
-    ValidateCertificateDataRequest, ValidateDocumentDataRequest
-# Register your models here.
+from django.utils.dateparse import parse_datetime as original_parse
+from django.utils.timezone import is_naive, make_aware
 
 
-class NotificationURLAdmin(admin.TabularInline):
-    model = NotificationURL
-
-
-class InstitutionAdmin(admin.ModelAdmin):
-    inlines = [NotificationURLAdmin]
-
-
-admin.site.register(Institution, InstitutionAdmin)
-
-if settings.DEBUG:
-    admin.site.register([
-        AuthenticateDataRequest, SignDataRequest,
-        ValidateCertificateDataRequest, ValidateDocumentDataRequest])
+def parse_datetime(value):
+    date = original_parse(value)
+    if is_naive(date):
+        date = make_aware(date)
+    return date

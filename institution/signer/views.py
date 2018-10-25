@@ -81,8 +81,9 @@ class SignRequestViewSet(ViewSetBase,
         """
 
         ip = get_ip(request)
-        logger.debug('Sign: Create Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Sign: Create Institution %s %r' %
+                         (ip, request.data))
         logger.info('Sign: Create Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
@@ -121,8 +122,9 @@ class SignRequestViewSet(ViewSetBase,
 
         """
         ip = get_ip(request)
-        logger.debug('Sign: Show Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Sign: Show Institution %s %r' %
+                         (ip, request.data))
         logger.info('Sign: Show Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
@@ -152,8 +154,9 @@ class SignRequestViewSet(ViewSetBase,
 
         """
         ip = get_ip(request)
-        logger.debug('Sign: Delete Institution %s %r' %
-                     (ip, request.data))
+        if settings.LOGGING_ENCRYPTED_DATA:
+            logger.debug('Sign: Delete Institution %s %r' %
+                         (ip, request.data))
         logger.info('Sign: Delete Institution %s %s %s %s' %
                     get_log_institution_information(request))
         return self.delete(request, *args, **kwargs)

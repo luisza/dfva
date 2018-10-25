@@ -21,7 +21,7 @@
 
 import logging
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
+from corebase.time import parse_datetime
 from rest_framework import serializers
 from pyfva.clientes.firmador import ClienteFirmador
 from django.conf import settings

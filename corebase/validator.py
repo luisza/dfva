@@ -21,7 +21,7 @@
 
 from rest_framework import serializers
 from pyfva.clientes.validador import ClienteValidador
-from django.utils.dateparse import parse_datetime
+from corebase.time import parse_datetime
 from pyfva.constants import get_text_representation, \
     ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\

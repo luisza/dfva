@@ -35,7 +35,7 @@ ALGORITHM = (
     ('sha512', 'sha512')
 )
 
-SUPPORTED_DOC_FORMAT = ['xml_cofirma', 'xml_contrafirma', 'odf', 'msoffice']
+SUPPORTED_DOC_FORMAT = ['xml_cofirma', 'xml_contrafirma', 'odf', 'msoffice', 'pdf']
 
 
 class BaseRequestModel(models.Model):
