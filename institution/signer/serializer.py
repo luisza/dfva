@@ -49,6 +49,15 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer,
     validate_request_class = SignRequest
     validate_data_class = SignDataRequest
 
+    def check_received_extra_data(self, data):
+        if 'format' not in data:
+            return
+
+        if data['format'] == 'pdf':
+            for field in ['reason', 'place']:
+                if field not in data or data[field] is None:
+                    self._errors[field] = ['%s not found' % (field)]
+
     def save_subject(self):
         self.adr.notification_url = self.requestdata['notification_url']
         self.adr.institution = self.institution

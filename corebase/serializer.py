@@ -51,12 +51,16 @@ class CoreBaseBaseSerializer(object):
     def check_subject(self):
         return True
 
+    def check_received_extra_data(self, data):
+        pass
+
     def check_internal_data(self, data, fields=[]):
         for field in fields:
             if field not in data:
                 self._errors[field] = ['%s not found' % (field)]
         self._check_internal_data(data, fields=self.check_internal_fields)
         self.check_hash_algorithm(data)
+        self.check_received_extra_data(data)
 
     def check_hash_algorithm(self, data):
         if 'algorithm_hash' in data:

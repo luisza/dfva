@@ -57,12 +57,14 @@ class SignRequestViewSet(ViewSetBase,
         * **institution:** uid de la institucion ver code en detalles de institución,
         * **notification_url:** URL para la notificación (debe estar inscrita) o N/D si marca falso en not_webapp,
         * **document:** Archivo en base64, 
-        * **format:** tipo de archivo (xml_cofirma, xml_contrafirma, odf, msoffice), 
+        * **format:** tipo de archivo (xml_cofirma, xml_contrafirma, odf, msoffice, pdf), 
         * **algorithm_hash:** algoritmo usado para calcular hash, 
         * **document_hash:** hash del documento,
         * **resumen:** Información de ayuda acerca del documento,      
         * **identification:** Identificación de la persona a autenticar,
         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+        * **reason:**  Razón de firma PDF (obligatorio solo en PDF)
+        * **place:**  Lugar de firma en PDF (obligatorio solo en PDF)
 
         Data es un diccionario, osea un objeto de tipo clave -> valor
 

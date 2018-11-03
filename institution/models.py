@@ -31,6 +31,7 @@ from django.conf import settings
 from corebase.rsa import salt_decrypt, salt_encrypt
 from asn1crypto import pem,  x509
 from dateutil.parser import parse
+from pyfva import constants
 
 
 class EncrytedText(models.TextField):
@@ -152,18 +153,8 @@ class AuthenticateDataRequest(models.Model):
     request_datetime = models.DateTimeField(
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
+    status = models.IntegerField(
+        default=0, choices=constants.ERRORES_AL_SOLICITAR_FIRMA)
     status_text = models.CharField(max_length=256, default='n/d')
     sign_document = models.TextField(null=True, blank=True)
     response_datetime = models.DateTimeField(auto_now=True)
@@ -221,18 +212,8 @@ class SignDataRequest(models.Model):
     request_datetime = models.DateTimeField(
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
+    status = models.IntegerField(
+        default=0, choices=constants.ERRORES_AL_SOLICITAR_FIRMA)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField()
@@ -241,6 +222,8 @@ class SignDataRequest(models.Model):
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
     document_format = models.CharField(max_length=25, default='n/d')
+    place = models.CharField(max_length=150, null=True, blank=True)
+    reason = models.CharField(max_length=150, null=True, blank=True)
 
     def __str__(self):
         return repr(self)
@@ -292,18 +275,8 @@ class ValidateCertificateDataRequest(models.Model):
     request_datetime = models.DateTimeField(
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
     code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
+    status = models.IntegerField(
+        choices=constants.ERRORES_VALIDA_CERTIFICADO, default=0)
     status_text = models.CharField(max_length=256, default='n/d')
     response_datetime = models.DateTimeField(auto_now=True)
     was_successfully = models.BooleanField(default=True)
@@ -360,30 +333,34 @@ class ValidateDocumentDataRequest(BaseDocument):
         ('odf', 'Open Document Format'),
         ('pdf', 'PDF')
     )
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-
     institution = models.ForeignKey(Institution)
     notification_url = models.URLField()
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
     request_datetime = models.DateTimeField()
     format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
     code = models.CharField(max_length=20, default='N/D')
-    status = models.IntegerField(choices=STATUS, default=1)
+    status = models.IntegerField(default=0)
     status_text = models.CharField(max_length=256, default='n/d')
     was_successfully = models.BooleanField(default=True)
 
     def __str__(self):
         return repr(self)
+
+    def get_status_display(self):
+        keys = {}
+        if format == 'cofirma':
+            keys = dict(constants.ERRORES_VALIDAR_XMLCOFIRMA)
+        elif format == 'contrafirma':
+            keys = dict(constants.ERRORES_VALIDAR_XMLCONTRAFIRMA)
+        elif format == 'msoffice':
+            keys = dict(constants.ERRORES_VALIDAR_MSOFFICE)
+        elif format == 'odf':
+            keys = dict(constants.ERRORES_VALIDAR_ODF)
+        elif format == 'pdf':
+            keys = dict(constants.ERRORES_VALIDAR_PDF)
+        if self.status in keys:
+            return keys[self.status]
+        return "No code reference %d" % (self.status,)
 
     def __repr__(self):
         return "ValidateDocumentDataRequest(%d)  %s %r %d" % (
