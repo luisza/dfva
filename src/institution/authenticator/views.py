@@ -130,7 +130,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
             'code': 'N/D',
             'status': 2,
             'status_text': get_text_representation(
-                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 2),
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 1),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),

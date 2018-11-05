@@ -37,33 +37,36 @@ Including another URLconf
 
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework import routers
 from django.conf import settings
-from institution.urls import get_routes_view as instition_get_routes_view
-from person.urls import get_routes_view as person_get_routes_view
-from institution.urls import urlpatterns as institution_urls
-from django.contrib.auth.views import LoginView, LogoutView
-from django.urls.base import reverse_lazy
-from corebase.views import home
-
-router = routers.DefaultRouter()
-instition_get_routes_view(router)
-person_get_routes_view(router)
-
 
 urlpatterns = [
-    url(r'^$', home, name="home"),
-    url(r'^accounts/login/$', LoginView.as_view(),
-        {'redirect_to': reverse_lazy("institution_list")}, name='login'),
-    url(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('home')),
-        name='logout'),
-    url(r'^admin/', admin.site.urls),
-    #     url(r'^api-auth/', include('rest_framework.urls',
-    #                                namespace='rest_framework')),
     url(r'^', include('corebase.urls')),
-    url(r'^', include(router.urls)),
-    url(r'^', include('authorization_management.urls'))
-] + institution_urls
+    url(r'^admin/', admin.site.urls),
+]
+if !settings.ONLY_BCCR:
+    from rest_framework import routers
+    from corebase.views import home
+    from institution.urls import get_routes_view as instition_get_routes_view
+    from person.urls import get_routes_view as person_get_routes_view
+    from institution.urls import urlpatterns as institution_urls
+    from django.contrib.auth.views import LoginView, LogoutView
+    from django.urls.base import reverse_lazy
+
+    router = routers.DefaultRouter()
+    instition_get_routes_view(router)
+    person_get_routes_view(router)
+
+
+
+    urlpatterns += [
+        url(r'^$', home, name="home"),
+        url(r'^accounts/login/$', LoginView.as_view(),
+            {'redirect_to': reverse_lazy("institution_list")}, name='login'),
+        url(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('home')),
+            name='logout'),
+        url(r'^', include(router.urls)),
+        url(r'^', include('authorization_management.urls'))
+    ] + institution_urls
 
 if settings.DOCKER:
     from django.conf.urls.static import static

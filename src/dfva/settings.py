@@ -46,6 +46,7 @@ SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEMO = True  # Set False in production
+ONLY_BCCR = os.getenv('ONLY_BCCR', 'true') == 'true'
 DOCKER = False  # Is running in docker container
 if os.getenv('ALLOWED_HOSTS', ''):
     ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
@@ -274,11 +275,6 @@ if DO_LOGGIN:
                 'level': 'INFO',
                 'propagate': True,
             },
-            #  'dfva': {
-            #      'handlers': ['file_info'],  # 'console',
-            #      'level': 'INFO',
-            #      'propagate': True,
-            #  },
             'dfva_authentication': {
                 'handlers': ['remove_authentication'],  # 'log/authentication',
                 'level': 'INFO',

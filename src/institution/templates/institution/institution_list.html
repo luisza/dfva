@@ -38,7 +38,7 @@
 	  href="{% url 'institution_delete' obj.pk %}">
 	  <i class="fas fa-window-close"></i> </a>
 	  </div>
-	  <div  class="card-body {% if obj.active %} bg-transparent {% else %} bg-light {% endif %} ">
+	  <div class="card-body {% if obj.active %} bg-transparent {% else %} bg-light {% endif %} ">
 	    <h5 class="card-title text-success">
 	    {% if obj.notificationurl_set.count %}
 	    <span class="badge badge-secondary">{{obj.notificationurl_set.count}} </span>

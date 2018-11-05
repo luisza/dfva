@@ -74,7 +74,7 @@ def get_url():
         http = "https"
         if url == '*':
             url = "localhost:8000"
-            http = "https"
+            http = "http"
 
     return http + "://" + url
 

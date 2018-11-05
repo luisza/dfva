@@ -24,13 +24,15 @@ from django.conf.urls import url
 
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
 from corebase.bccr_checks import soap_dispatcher
-
+from django.conf import settings 
 
 dispatcher = soap_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 
+developurl = r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$'
+if settings.ONLY_BCCR:
+    developurl =r'^$'
 
 urlpatterns = [
 
-    url(r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$',
-        dispatcher, name='ws_receptor'),
+    url(developurl, dispatcher, name='ws_receptor'),
 ]

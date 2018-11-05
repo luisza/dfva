@@ -22,7 +22,6 @@
 from __future__ import unicode_literals
 
 import logging
-
 from django.shortcuts import render
 from django.template.loader import render_to_string
 

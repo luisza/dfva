@@ -24,7 +24,6 @@ from django.core.exceptions import DisallowedHost
 from soapfish.django_ import django_dispatcher
 from django.views.decorators.csrf import csrf_exempt
 
-
 def check_ip(request):
     """Returns the IP of the request, accounting for the possibility of being
     behind a proxy.

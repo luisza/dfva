@@ -22,7 +22,7 @@
 from __future__ import absolute_import
 
 import os
-
+from urllib.parse import quote
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
@@ -33,12 +33,11 @@ from django.conf import settings  # noqa
 
 if settings.DOCKER:
     RABBIT_USER = os.getenv('RABBIT_USER', 'guest')
-    RABBIT_PASS = os.getenv('RABBIT_PASS', 'password')
+    RABBIT_PASS = quote(os.getenv('RABBIT_PASS', 'password'), safe='')
     RABBIT_HOST = os.getenv('RABBIT_HOST', 'rabbitmq')
     RABBIT_PORT = os.getenv('RABBIT_PORT', '5672')
-    app = Celery('dfva', broker='amqp://%s:%s@%s:%s' % (
-        RABBIT_USER,
-        RABBIT_PASS, RABBIT_HOST, RABBIT_PORT), backend='rpc://')
+    RABBIT_VHOST = os.getenv('RABBIT_VHOST', 'myhost')
+    app = Celery('dfva', broker='amqp://%s:%s@%s:%s/%s'%(RABBIT_USER, RABBIT_PASS, RABBIT_HOST, RABBIT_PORT, RABBIT_VHOST), backend='rpc://' )
 else:
     app = Celery('dfva')
 
