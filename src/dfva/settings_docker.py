@@ -26,7 +26,6 @@ import os
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY)
 DOCKER = True
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-DOCKER = True
 ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
 
 
@@ -34,9 +33,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DATABASE_NAME', 'postgres'),
-        'USER': os.getenv('DATABASE_USER', 'postgres'),
-        'HOST': os.getenv('DATABASE_HOST', 'db'),
-        'PORT': os.getenv('DATABASE_PORT', 5432)
+        'USER': os.getenv('DATABASE_USER','postgres'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD','postgres'),
+        'HOST': os.getenv('DATABASE_HOST','db'),
+        'PORT': os.getenv('DATABASE_PORT',5432)
     }
 }
 
@@ -54,6 +54,11 @@ if not DEBUG:
 CA_PATH = '/dfva/internal_ca/'
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
+CA_KEY_PASSWD = os.getenv('CA_KEY_PASSWD', None)
+CA_CRL = os.path.join(CA_PATH, 'crl.pem')
+CA_CERT_DURATION = 365
+
+
 
 if os.getenv('DOGTAG', 'False') == 'True':
     CAMANAGER_CLASS = "corebase.ca_management.dogtag"
@@ -85,8 +90,7 @@ DEFAULT_BUSSINESS = os.getenv('DEFAULT_BUSSINESS', 1)
 DEFAULT_ENTITY = os.getenv('DEFAULT_ENTITY', 1)
 
 
-DFVA_REMOVE_AUTHENTICATION = int(
-    os.getenv('DFVA_REMOVE_AUTHENTICATION', 5))  # minutes
+DFVA_REMOVE_AUTHENTICATION = int(os.getenv('DFVA_REMOVE_AUTHENTICATION',5))  # minutes
 DFVA_REMOVE_SIGN = int(os.getenv('DFVA_REMOVE_SIGN', 20))  # minutes
 DFVA_PERSON_SESSION = int(os.getenv('DFVA_PERSON_SESSION', 25))
 CELERY_MODULE = "dfva.celery"
