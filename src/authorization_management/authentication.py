@@ -54,7 +54,7 @@ def login_with_bccr(request):
             notification_url='N/D',
             identification=identification,
             request_datetime=timezone.now(),
-            code=data['codigo_verificacion'],
+            code=data['codigo_verificacion'] or 'N/D',
             status=data['codigo_error'],
             status_text=data['texto_codigo_error'],
             expiration_datetime=timezone.now(
