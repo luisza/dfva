@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^', include('corebase.urls')),
     url(r'^admin/', admin.site.urls),
 ]
-if !settings.ONLY_BCCR:
+if not settings.ONLY_BCCR:
     from rest_framework import routers
     from corebase.views import home
     from institution.urls import get_routes_view as instition_get_routes_view
