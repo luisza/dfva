@@ -46,7 +46,7 @@ SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEMO = True  # Set False in production
-ONLY_BCCR = os.getenv('ONLY_BCCR', 'true') == 'true'
+ONLY_BCCR = os.getenv('ONLY_BCCR', '') == 'True'
 DOCKER = False  # Is running in docker container
 if os.getenv('ALLOWED_HOSTS', ''):
     ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
