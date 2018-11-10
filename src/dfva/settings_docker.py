@@ -112,3 +112,9 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
 }
+
+ELK_LOGGING = os.getenv('ELK_LOGGING', 'True') == 'True'
+
+if ELK_LOGGING:
+    from .elk_logs import *
+    INSTALLED_APPS +=ELK_INSTALLED_APPS

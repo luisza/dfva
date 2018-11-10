@@ -23,6 +23,7 @@ RUN pip install --trusted-host pypi.python.org --no-cache-dir  --upgrade pip
 RUN pip install https://github.com/Solvosoft/soapfish/archive/v0.6.0.tar.gz
 RUN pip install --trusted-host pypi.python.org --no-cache-dir -r requirements.txt
 RUN pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt
+RUN pip install python-logstash django-elasticsearch-dsl 'elasticsearch-dsl>=5.0,<6.0'
 RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev
 RUN apt-get -y autoremove
 RUN apt-get -y clean
