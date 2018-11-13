@@ -61,14 +61,14 @@ def create_auth_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=0,
             document_type="authentication",
-            was_successfully=instance.status == 1
+            was_successfully=instance.status == settings.DEFAULT_SUCCESS_BCCR
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=0).update(
             status=instance.status,
             notified=instance.received_notification,
-            was_successfully=instance.status == 1
+            was_successfully=instance.status == settings.DEFAULT_SUCCESS_BCCR
         )
 
 
@@ -82,14 +82,14 @@ def create_sign_stats(sender, instance, created, **kwargs):
             transaction_id=instance.pk,
             data_type=1,
             document_type=instance.document_format,
-            was_successfully=instance.status == 1
+            was_successfully=instance.status == settings.DEFAULT_SUCCESS_BCCR
         )
     else:
         InstitutionStats.objects.filter(transaction_id=instance.pk,
                                         data_type=1).update(
             status=instance.status,
             notified=instance.received_notification,
-            was_successfully=instance.status == 1
+            was_successfully=instance.status == settings.DEFAULT_SUCCESS_BCCR
         )
 
 

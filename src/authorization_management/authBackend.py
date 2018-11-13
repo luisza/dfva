@@ -21,6 +21,7 @@
 
 from django.contrib.auth.models import User
 from institution.models import AuthenticateDataRequest
+from django.conf import settings
 
 
 class DFVABackend(object):
@@ -28,7 +29,8 @@ class DFVABackend(object):
     def authenticate(self, token=None):
         Rauth = AuthenticateDataRequest.objects.filter(
             id_transaction=token).first()
-        if Rauth and Rauth.received_notification and Rauth.status == 1:
+        if Rauth and Rauth.received_notification and \
+                Rauth.status == settings.DEFAULT_SUCCESS_BCCR:
             try:
                 user = User.objects.get(username=Rauth.identification)
             except User.DoesNotExist:

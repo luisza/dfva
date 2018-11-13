@@ -65,7 +65,7 @@ def login_with_bccr(request):
 
         request.session['authenticatedata'] = obj.pk
 
-        success = data['codigo_error'] == 0
+        success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
 
         return JsonResponse({
             'FueExitosaLaSolicitud': success,
@@ -105,7 +105,7 @@ def consute_firma(request):
             )
         )
 
-    status = authdata.status == 0
+    status = authdata.status == settings.DEFAULT_SUCCESS_BCCR
     realizada = authdata.received_notification
     if status and realizada:
         request.session.pop('authenticatedata')

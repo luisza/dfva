@@ -99,7 +99,7 @@ def sign_document_terms(request, pk):
         logger.warning("Sign BCCR not available")
         data = signclient.DEFAULT_ERROR
 
-    success = data['codigo_error'] == 1
+    success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
     return JsonResponse({
         'FueExitosaLaSolicitud': success,
         'TiempoMaximoDeFirmaEnSegundos': 240,
@@ -136,7 +136,7 @@ def request_termsigned(request):
             )
         )
 
-    status = signdata.status == 1
+    status = signdata.status == settings.DEFAULT_SUCCESS_BCCR
     realizada = signdata.received_notification
     if status and realizada:
         UserConditionsAndTerms.objects.filter(user=request.user).update(
