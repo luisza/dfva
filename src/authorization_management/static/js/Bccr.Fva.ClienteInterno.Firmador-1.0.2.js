@@ -1,357 +1,369 @@
 "use strict";
-var FvaClienteInterno = function(m) {
-    this.AsigneElTextoALaVentana = s;
-    this.MuestreLaVentanaModal = f;
-    this.OculteLaVentanaModal = n;
-    this.MuestreElBotonDeAceptar = l;
-    this.OculteElBotonDeAceptar = A;
-    this.MuestreLaAnimacionDeEspera = g;
-    this.OculteLaAnimacionDeEspera = D;
-    this.MuestreElBordeDeError = p;
-    this.RemuevaElBordeDeError = q;
-    this.EnvieLaSolicitud = v;
-    var F = $("<div>", {
+var FvaClienteInterno = function(n) {
+    this.AsigneElTextoALaVentana = A;
+    this.MuestreLaVentanaModal = h;
+    this.OculteLaVentanaModal = o;
+    this.MuestreElBotonDeAceptar = z;
+    this.OculteElBotonDeAceptar = C;
+    this.MuestreLaAnimacionDeEspera = i;
+    this.OculteLaAnimacionDeEspera = F;
+    this.MuestreElBordeDeError = q;
+    this.RemuevaElBordeDeError = r;
+    this.EnvieLaSolicitud = w;
+    var H = $("<div>", {
         "class": "fvaBoton"
     }).html("Aceptar");
-    var E = $("<div>", {
+    var G = $("<div>", {
         "class": "fvaFondoOscuro"
     });
-    var e = $("<div>", {
+    var f = $("<div>", {
         "class": "fvaVentanaModal"
     }).css({
         display: "none"
     });
-    var i = $("<div>", {
+    var b = $("<div>", {
         "class": "fvaContenidoVentanaModal"
     });
-    var j = $("<div>", {
+    var l = $("<div>", {
         "class": "fvaMargenDeContenido"
     });
-    var c = $("<div>", {
+    var d = $("<div>", {
         "class": "fvaContenidoDeCopieCodigo"
     });
-    var z = $("<div>", {
+    var B = $("<div>", {
         "class": "fvaAcordeon"
     });
-    var t = $("<div>", {
+    var u = $("<div>", {
         "class": "fvaPanelAcordeon"
     });
-    var o = $("<span>", {
+    var p = $("<span>", {
         "class": "fvaToolTipText"
     });
-    var C = $("<div>", {
+    var E = $("<div>", {
         "class": "fvaCodigoConBotonCopiar"
     });
-    var h = $("<div>", {
+    var j = $("<div>", {
         "class": "fvaLoader"
     }).append($("<div>"), $("<div>"), $("<div>"));
-    var x = $("<div>", {
+    var y = $("<div>", {
         "class": "fvaElementoOculto"
     });
-    var y = $("<input/>", {
+    var t = $("<input/>", {
         "class": "fvaElementoOculto"
     });
-    var u = $("<div>", {
+    var v = $("<div>", {
         "class": "fvaMensajeDeCopiado"
     }).css({
         display: "none"
     });
-    var w = "Copie el c&oacute;digo de verificaci&oacute;n en el Firmador BCCR";
-    var k = "&iquest;Qu&eacute; es el Firmador BCCR?";
-    var d = '<div class="fvaDescripcionDelFormato"><span class="fvaCodLetra">Letra</span><span class="fvaDescripcionDelFormatoSeparador"> | </span><span>N&uacute;mero</span></div>';
-    var b = $("<img>", {
-        src: m.images.ayuda,
+    var x = "Para confirmar la transacci&oacute;n, copie el siguiente c&oacute;digo de verificaci&oacute;n en el Firmador BCCR";
+    var m = "&iquest;Qu&eacute; es el Firmador BCCR?";
+    var e = '<div class="fvaDescripcionDelFormato"><span class="fvaCodLetra">Letra</span><span class="fvaDescripcionDelFormatoSeparador"> | </span><span>N&uacute;mero</span></div>';
+    var g = '<div class="fvaTituloDelResumen">Resumen de la transacci&oacute;n:</div>';
+    var I = '<div class="fvaAdvertencia">El c&oacute;digo de verificaci&oacute;n es para su uso exclusivo y personal. No lo facilite por tel&eacute;fono o correo electr&oacute;nico a ninguna persona.</div>';
+    var k = $("<div>", {
+        "class": "fvaResumen"
+    });
+    var c = $("<img>", {
+        src: n.images.ayuda,
         alt: "Ayuda",
         height: "21",
         width: "21"
     });
-    var r = $("<div>", {
+    var s = $("<div>", {
         "class": "fvaContenidoDeTextoCopieElCodigo"
     });
-    var G = m.urlconsultafirma;
+    var J = n.urlconsultafirma;
     var a = $("<input/>", {
         "class": "fvaElBotonDeCopiar",
         value: "Copiar",
         type: "button"
     });
-    B();
+    D();
 
-    function B() {
-        F.bind("click", H);
-        $("body").append(e);
-        $("body").append(E);
-        $("body").append(x);
+    function D() {
+        H.bind("click", K);
+        $("body").append(f);
+        $("body").append(G);
         $("body").append(y);
-        $("body").append(u);
-        I();
+        $("body").append(t);
+        $("body").append(v);
+        L();
 
-        function I() {
-            J();
-            i.append(j, h, F);
-            e.append(i);
+        function L() {
+            M();
+            b.append(l, j, H);
+            f.append(b);
 
-            function J() {
-                $("head").append('<link rel="stylesheet" href="' + m.urlcss+ '" type="text/css" />');
+            function M() {
+                $("head").append('<link rel="stylesheet" href="' + n.urlcss + '" type="text/css" />');
             }
         }
 
-        function H() {
-            n();
-            m.SolicitudNoRealizada();
+        function K() {
+            o();
+            n.SolicitudNoRealizada();
         }
     }
 
-    function v() {
-        q();
-        s(m.TextoSolicitando);
-        A();
-        g();
-        f();
-        I();
+    function w() {
+        r();
+        A(n.TextoSolicitando);
+        C();
+        i();
+        h();
+        L();
 
-        function I() {
-            var O = m.DatosParaSolicitar();
+        function L() {
+            var R = n.DatosParaSolicitar();
             $.ajax({
-                url: m.UrlParaSolicitar,
+                url: n.UrlParaSolicitar,
                 type: "POST",
                 dataType: "text json",
                 processData: false,
-                data: O,
+                data: R,
                 contentType: false,
                 cache: false,
                 global: false,
-                success: N,
-                error: K
+                success: Q,
+                error: N
             });
         }
 
-        function N(W) {
-            var Y = W.FueExitosaLaSolicitud;
-            var X = Z(W.TiempoMaximoDeFirmaEnSegundos);
-            var T = Z(W.TiempoDeEsperaParaConsultarLaFirmaEnSegundos);
-            var aa = W.CodigoDeVerificacion;
-            var V = W.IdDeLaSolicitud;
-            var ac = false;
-            if (Y) {
-                var O = Q(aa);
-                C.html("").append(O, a);
-                ab();
-                var ad = R();
-                s(ad);
-                P();
+        function Q(aa) {
+            var ac = aa.FueExitosaLaSolicitud;
+            var ab = ad(aa.TiempoMaximoDeFirmaEnSegundos);
+            var W = ad(aa.TiempoDeEsperaParaConsultarLaFirmaEnSegundos);
+            var ae = aa.CodigoDeVerificacion;
+            var Z = aa.IdDeLaSolicitud;
+            var X = aa.ResumenDelDocumento;
+            var ag = false;
+            if (ac) {
+                var R = T(ae);
+                E.html("").append(R, a);
+                if (X === undefined || X === null) {
+                    k.html("");
+                    g = "";
+                } else {
+                    k.html(X);
+                }
+                af();
+                var ah = U();
+                A(ah);
+                S();
             } else {
-                M(W);
+                P(aa);
             }
 
-            function R() {
-                r.html(w);
-                z.append(b, o);
-                t.append(m.ImagenDelFirmador);
-                c.append(r, z);
-                t.css({
+            function U() {
+                s.html(x);
+                B.append(c, p);
+                u.append(n.ImagenDelFirmador);
+                d.append(s, B);
+                u.css({
                     "max-height": "0px"
                 });
-                z.removeClass("active");
-                o.html(k);
-                z.click(function() {
+                B.removeClass("active");
+                p.html(m);
+                B.click(function() {
                     this.classList.toggle("active");
-                    if (t[0].style.maxHeight != "0px") {
-                        t[0].style.maxHeight = "0px";
-                        o.html(k);
+                    if (u[0].style.maxHeight != "0px") {
+                        u[0].style.maxHeight = "0px";
+                        p.html(m);
                     } else {
-                        t[0].style.maxHeight = t[0].scrollHeight + "px";
-                        o.html("Ocultar");
+                        u[0].style.maxHeight = u[0].scrollHeight + "px";
+                        p.html("Ocultar");
                     }
                 });
-                a.click(af);
-                var ah = $("<div>").append(c, C, d, t);
-                return ah;
+                a.click(aj);
+                var al = $("<div>").append(d, E, e, g, k, I, u);
+                return al;
             }
 
-            function af() {
-                y.val(aa);
-                y.select();
-                var aj = "";
+            function aj() {
+                t.val(ae);
+                t.select();
+                var an = "";
                 try {
-                    var ah = document.execCommand("copy");
-                    if (ah) {
-                        aj = "C&oacute;digo de verificaci&oacute;n copiado";
+                    var al = document.execCommand("copy");
+                    if (al) {
+                        an = "C&oacute;digo de verificaci&oacute;n copiado";
                     } else {
-                        aj = "No se ha podido copiar el c&oacute;digo de verificaci&oacute;n";
+                        an = "No se ha podido copiar el c&oacute;digo de verificaci&oacute;n";
                     }
-                } catch (ai) {
-                    aj = "No se ha podido copiar el c&oacute;digo de verificaci&oacute;n";
+                } catch (am) {
+                    an = "No se ha podido copiar el c&oacute;digo de verificaci&oacute;n";
                 }
-                u.html(aj);
-                if (u[0].style.display !== "block") {
-                    u.fadeIn("slow", function() {
+                v.html(an);
+                if (v[0].style.display !== "block") {
+                    v.fadeIn("slow", function() {
                         $(this).delay(1500).fadeOut("slow");
                     });
                 }
             }
 
-            function ab() {
-                setTimeout(S, X);
+            function af() {
+                setTimeout(V, ab);
             }
 
-            function S() {
-                ac = true;
+            function V() {
+                ag = true;
             }
 
-            function Z(ah) {
-                return 1000 * parseInt(ah);
+            function ad(al) {
+                return 1000 * parseInt(al);
             }
 
-            function Q(ak) {
-                var ai = "<div>";
-                var am;
-                var aj;
-                var ah = ak.length;
-                for (var al = 0; al < ah; al++) {
-                    aj = ak[al];
-                    if (ag(aj)) {
-                        am = "<span>" + aj + "</span>";
+            function T(ao) {
+                var am = "<div>";
+                var aq;
+                var an;
+                var al = ao.length;
+                for (var ap = 0; ap < al; ap++) {
+                    an = ao[ap];
+                    if (ak(an)) {
+                        aq = "<span>" + an + "</span>";
                     } else {
-                        am = '<span class="fvaCodLetra">' + aj + "</span>";
+                        aq = '<span class="fvaCodLetra">' + an + "</span>";
                     }
-                    ai = ai + am;
+                    am = am + aq;
                 }
-                return ai + "</div>";
+                return am + "</div>";
             }
 
-            function ag(ah) {
-                return !isNaN(ah);
+            function ak(al) {
+                return !isNaN(al);
             }
 
-            function ae() {
-                var ah = {
-                    IdDeLaSolicitud: V
+            function ai() {
+                var al = {
+                    IdDeLaSolicitud: Z
                 };
                 $.ajax({
-                    url: G,
+                    url: J,
                     jsonp: "callback",
                     dataType: "jsonp",
-                    data: ah,
+                    data: al,
                     global: false,
-                    success: U,
-                    error: K
+                    success: Y,
+                    error: N
                 });
             }
 
-            function P() {
-                setTimeout(ae, T);
+            function S() {
+                setTimeout(ai, W);
             }
 
-            function U(ah) {
-                if (ah.SeRealizo == true) {
-                    J(ah);
+            function Y(al) {
+                if (al.SeRealizo == true) {
+                    M(al);
                 } else {
-                    if (ac == true) {
-                        K();
+                    if (ag == true) {
+                        N();
                     } else {
-                        P();
+                        S();
                     }
                 }
             }
         }
 
-        function J(O) {
-            if (O.FueExitosa == true) {
-                L();
+        function M(R) {
+            if (R.FueExitosa == true) {
+                O();
             } else {
-                M(O);
+                P(R);
             }
         }
 
-        function M(O) {
-            if (O.DebeMostrarElError == true) {
-                var P = m.MensajeDeError + '<div class="fvaMargenDeContenido fvaColorMensajeSecundario">' + O.DescripcionDelError + "</div>";
-                H(P);
+        function P(R) {
+            if (R.DebeMostrarElError == true) {
+                var S = n.MensajeDeError + '<div class="fvaMargenDeContenido fvaColorMensajeSecundario">' + R.DescripcionDelError + "</div>";
+                K(S);
             } else {
-                H(m.MensajeDeError);
+                K(n.MensajeDeError);
             }
         }
 
-        function L() {
-            n();
-            m.SolicitudRealizada();
+        function O() {
+            o();
+            n.SolicitudRealizada();
         }
 
-        function K() {
-            H(m.MensajeDeError);
+        function N() {
+            K(n.MensajeDeError);
         }
 
-        function H(O) {
-            p();
-            s(O);
-            D();
-            l();
+        function K(R) {
+            q();
+            A(R);
+            F();
+            z();
         }
     }
 
-    function s(H) {
-        j.html(H);
-        I(H);
+    function A(K) {
+        l.html(K);
+        L(K);
 
-        function I(J) {
-            var K = $("<input/>", {
+        function L(M) {
+            var N = $("<input/>", {
                 type: "text"
             });
-            K.val(J);
-            x.empty();
-            x.append(K);
-            K.focus();
+            N.val(M);
+            y.empty();
+            y.append(N);
+            N.focus();
         }
     }
 
-    function f() {
-        E.css({
+    function h() {
+        G.css({
             display: "block"
         });
-        e.css({
-            display: "block"
-        });
-    }
-
-    function A() {
-        F.css({
-            display: "none"
-        });
-    }
-
-    function g() {
-        h.css({
+        f.css({
             display: "block"
         });
     }
 
-    function n() {
-        E.css({
-            display: "none"
-        });
-        e.css({
+    function C() {
+        H.css({
             display: "none"
         });
     }
 
-    function D() {
-        h.css({
+    function i() {
+        j.css({
+            display: "block"
+        });
+    }
+
+    function o() {
+        G.css({
+            display: "none"
+        });
+        f.css({
             display: "none"
         });
     }
 
-    function l() {
-        F.css({
+    function F() {
+        j.css({
+            display: "none"
+        });
+    }
+
+    function z() {
+        H.css({
             display: "inline-block"
         });
     }
 
-    function q() {
-        i.removeClass("fvaBordeDeError");
+    function r() {
+        b.removeClass("fvaBordeDeError");
     }
 
-    function p() {
-        i.addClass("fvaBordeDeError");
+    function q() {
+        b.addClass("fvaBordeDeError");
     }
 };
 var FvaAutenticador = function(t) {
@@ -424,9 +436,15 @@ var FvaAutenticador = function(t) {
         f.OculteElBotonDeAceptar();
         f.OculteLaAnimacionDeEspera();
         f.MuestreLaVentanaModal();
+        j.focus();
     });
 
     function e() {
+        $(a).unbind();
+        $(j).unbind("keyup");
+        $(m).unbind();
+        $(c).unbind();
+        $(i).unbind();
         var w = $("<div>");
         a.html("Autenticar");
         m.html("Cancelar");
@@ -528,7 +546,8 @@ var FvaFirmador = function(e) {
         ImagenDelFirmador: b,
         DatosParaSolicitar: f,
         SolicitudRealizada: e.FirmaRealizada,
-        SolicitudNoRealizada: e.FirmaNoRealizada
+        SolicitudNoRealizada: e.FirmaNoRealizada,
+        UrlParaSolicitar: e.UrlParaSolicitarLaFirma
     });
     var c = new FvaClienteInterno(a);
     d.click(function() {

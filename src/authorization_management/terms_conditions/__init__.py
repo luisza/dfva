@@ -69,6 +69,7 @@ def sign_document_terms(request, pk):
         settings.DEFAULT_ENTITY)
 
     if signclient.validar_servicio():
+        document_resume = "Acepta terminos de DFVA"
         document = b64encode(obj.document_signed.encode())
         hash_sum = get_hash_sum(document, 'sha512')
         data = signclient.firme(
@@ -100,6 +101,7 @@ def sign_document_terms(request, pk):
         data = signclient.DEFAULT_ERROR
 
     success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
+
     return JsonResponse({
         'FueExitosaLaSolicitud': success,
         'TiempoMaximoDeFirmaEnSegundos': 240,
@@ -108,6 +110,7 @@ def sign_document_terms(request, pk):
         'IdDeLaSolicitud': data['id_solicitud'],
         'DebeMostrarElError': not success,
         'DescripcionDelError': data['texto_codigo_error'],
+        'ResumenDelDocumento': document_resume
 
     })
 

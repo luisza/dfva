@@ -66,7 +66,7 @@ def login_with_bccr(request):
         request.session['authenticatedata'] = obj.pk
 
         success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
-
+       
         return JsonResponse({
             'FueExitosaLaSolicitud': success,
             'TiempoMaximoDeFirmaEnSegundos': 240,
@@ -75,6 +75,7 @@ def login_with_bccr(request):
             'IdDeLaSolicitud': data['id_solicitud'],
             'DebeMostrarElError': not success,
             'DescripcionDelError': data['texto_codigo_error'],
+            'ResumenDelDocumento': data['resumen'] if "resumen" in data else ""
 
         })
 
