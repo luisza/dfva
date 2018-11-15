@@ -58,8 +58,9 @@ def reciba_notificacion(data):
 
         * **id_solicitud:**  Id de la solicitud del BCCR
         * **documento:** Documento firmado
-        * **was_sucessfully:** si fue exitosa la firma
+        * **fue_exitosa:** si fue exitosa la firma
         * **codigo_error:** código de error
+        * **hash_docfirmado:** Hash del documento ya firmado
 
     No requiere retornar nada
 
@@ -88,6 +89,7 @@ def reciba_notificacion(data):
         ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])
     request.received_notification = True
     request.sign_document = data['documento']
+    request.hash_docsigned = data['hash_docfirmado']
     request.save()
 
     if hasattr(request, 'institution'):

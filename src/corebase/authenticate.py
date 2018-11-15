@@ -72,6 +72,7 @@ class Authenticate_RequestSerializer(serializers.HyperlinkedModelSerializer):
         self.adr.status = data['codigo_error']
         self.adr.id_transaction = data['id_solicitud']
         self.adr.code = data['codigo_verificacion'] or 'N/D'
+        self.adr.resume = data['resumen'] if 'resumen' in data else None
 
     def save(self, **kwargs):
         odata = {}

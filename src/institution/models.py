@@ -162,6 +162,8 @@ class AuthenticateDataRequest(models.Model):
     id_transaction = models.IntegerField(default=0, db_index=True)
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
+    resume = models.CharField(max_length=256, null=True, blank=True)
+    hash_docsigned = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return repr(self)
@@ -224,6 +226,8 @@ class SignDataRequest(models.Model):
     document_format = models.CharField(max_length=25, default='n/d')
     place = models.CharField(max_length=150, null=True, blank=True)
     reason = models.CharField(max_length=150, null=True, blank=True)
+    hash_docsigned = models.SmallIntegerField(default=0)
+    resume = models.CharField(max_length=256, null=True, blank=True)
 
     def __str__(self):
         return repr(self)

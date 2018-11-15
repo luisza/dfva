@@ -72,7 +72,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
         self.adr.id_transaction = data['id_solicitud']
         self.adr.code = data['codigo_verificacion'] or 'N/D'
         self.adr.document_format = self.requestdata['format']
-
+        self.adr.resume = self.requestdata['resumen']
         self.adr.lugar = self.requestdata['place'] if 'place' in self.requestdata else None
         self.adr.razon = self.requestdata['reason'] if 'reason' in self.requestdata else None
 

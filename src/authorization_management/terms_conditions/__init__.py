@@ -101,7 +101,6 @@ def sign_document_terms(request, pk):
         data = signclient.DEFAULT_ERROR
 
     success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
-
     return JsonResponse({
         'FueExitosaLaSolicitud': success,
         'TiempoMaximoDeFirmaEnSegundos': 240,
