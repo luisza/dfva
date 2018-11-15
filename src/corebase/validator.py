@@ -155,7 +155,7 @@ class ValidateDocument_RequestSerializer(
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
-        self.adr.code = self.document_request.code
+        self.adr.code = get_code_from_uuid(self.document_request.code)
         self.adr.status = data['codigo_error']
         if 'texto_codigo_error' in data:
             self.adr.status_text = data['texto_codigo_error']
