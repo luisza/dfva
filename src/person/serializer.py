@@ -70,7 +70,7 @@ class PersonBaseSerializer(CoreBaseBaseSerializer):
             self._errors['public_certificate'] = [
                 _("Wrong certificate or communication error")]
 
-        if data['codigo_error'] != 1 or not data['exitosa']:
+        if data['codigo_error'] != 0 or not data['exitosa']:
             self._errors['public_certificate'] = [_('Invalid certificate')]
 
         if self.check_subject():
@@ -165,7 +165,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
             data = client.DEFAULT_CERTIFICATE_ERROR
         dev = True
 
-        if data['codigo_error'] != 1 or not data['exitosa']:
+        if data['codigo_error'] != 0 or not data['exitosa']:
             self._errors['public_certificate'] = [_('Invalid certificate')]
             dev = False
 
