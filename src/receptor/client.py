@@ -19,11 +19,17 @@
 @license: GPLv3
 '''
 
+import binascii
 import logging
-from receptor.notify import send_notification
-from pyfva.constants import get_text_representation,\
-    ERRORES_AL_NOTIFICAR_FIRMA
+from base64 import b64decode
 from django.conf import settings
+
+from pyfva.constants import ERRORES_AL_NOTIFICAR_FIRMA, \
+    get_text_representation
+
+from receptor.notify import send_notification
+
+
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 DATAREQUEST = []
 
@@ -48,6 +54,11 @@ def get_encrypt_method(datarequest):
     elif isinstance(datarequest, SignDataRequest):
         encrypt_method = datarequest.signrequest.encrypt_method
     return encrypt_method
+
+
+def get_hashsum_b64(data):
+    if data is not None:
+        return binascii.hexlify(base64.b64decode(data)).decode()
 
 
 def reciba_notificacion(data):
@@ -89,7 +100,8 @@ def reciba_notificacion(data):
         ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])
     request.received_notification = True
     request.sign_document = data['documento']
-    request.hash_docsigned = data['hash_docfirmado']
+    request.hash_docsigned = get_hashsum_b64(data['hash_docfirmado'])
+    request.hash_id_docsigned = data['hash_id']
     request.save()
 
     if hasattr(request, 'institution'):

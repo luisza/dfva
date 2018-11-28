@@ -9,27 +9,28 @@ RUN mkdir -p /logs/
 # Set the working directory to /app
 WORKDIR /dfva_app
 
-
+RUN apt-get update && \
+    apt-get install -y  build-essential libssl1.1 libnss3 libssl-dev libffi-dev libnss3-dev
+RUN pip install --trusted-host pypi.python.org --no-cache-dir  --upgrade pip && \
+    pip install https://github.com/Solvosoft/soapfish/archive/v0.6.0.tar.gz
 # Copy the current directory contents into the container at /app
-ADD src /dfva_app 
+
 COPY requirements.txt /dfva_app
 COPY dogtag_requirements.txt  /dfva_app
-COPY deploy/docker_gunicorn.sh /entrypoint.sh
+
 
 # Install any needed packages specified in requirements.txt
-RUN apt-get update
-RUN apt-get install -y  build-essential libssl1.1 libnss3 libssl-dev libffi-dev libnss3-dev
-RUN pip install --trusted-host pypi.python.org --no-cache-dir  --upgrade pip
-RUN pip install https://github.com/Solvosoft/soapfish/archive/v0.6.0.tar.gz
-RUN pip install --trusted-host pypi.python.org --no-cache-dir -r requirements.txt
-RUN pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt
-RUN pip install python-logstash django-elasticsearch-dsl 'elasticsearch-dsl>=5.0,<6.0'
-RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev
-RUN apt-get -y autoremove
-RUN apt-get -y clean
 
+RUN pip install --trusted-host pypi.python.org --no-cache-dir -r requirements.txt && \
+    pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt && \
+    pip install python-logstash django-elasticsearch-dsl 'elasticsearch-dsl>=5.0,<6.0'
+RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev && \
+    apt-get -y autoremove && \
+    apt-get -y clean
+
+ADD src /dfva_app 
 RUN python manage.py collectstatic --settings=dfva.settings_docker
-
+COPY deploy/docker_gunicorn.sh /entrypoint.sh
 # EXPOSE port 8000 to allow communication to/from server
 EXPOSE 8000
 

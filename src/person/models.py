@@ -100,7 +100,8 @@ class AuthenticatePersonDataRequest(models.Model):
     id_transaction = models.IntegerField(default=0)
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
-    hash_docsigned = models.SmallIntegerField(default=0)
+    hash_docsigned = models.TextField(null=True, blank=True)
+    hash_id_docsigned = models.SmallIntegerField(default=0)
 
     @property
     def left_time(self):
@@ -156,7 +157,8 @@ class SignPersonDataRequest(models.Model):
     sign_document = models.TextField(null=True, blank=True)
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
-    hash_docsigned = models.SmallIntegerField(default=0)
+    hash_docsigned = models.TextField(null=True, blank=True)
+    hash_id_docsigned = models.SmallIntegerField(default=0)
 
     @property
     def left_time(self):
