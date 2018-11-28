@@ -61,6 +61,12 @@ def get_hashsum_b64(data):
         return binascii.hexlify(b64decode(data)).decode()
 
 
+def get_document(document):
+    if type(document) == str:
+        return document
+    return None
+
+
 def reciba_notificacion(data):
     """
     Recibe la notificación del BCCR
@@ -99,7 +105,7 @@ def reciba_notificacion(data):
     request.status_text = get_text_representation(
         ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])
     request.received_notification = True
-    request.sign_document = data['documento']
+    request.sign_document = get_document(data['documento'])
     request.hash_docsigned = get_hashsum_b64(data['hash_docfirmado'])
     request.hash_id_docsigned = data['hash_id']
     request.save()
