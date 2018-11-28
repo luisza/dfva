@@ -58,7 +58,7 @@ def get_encrypt_method(datarequest):
 
 def get_hashsum_b64(data):
     if data is not None:
-        return binascii.hexlify(base64.b64decode(data)).decode()
+        return binascii.hexlify(b64decode(data)).decode()
 
 
 def reciba_notificacion(data):

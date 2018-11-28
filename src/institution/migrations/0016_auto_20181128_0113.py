@@ -22,12 +22,20 @@ class Migration(migrations.Migration):
             name='hash_id_docsigned',
             field=models.SmallIntegerField(default=0),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='authenticatedatarequest',
+            name='hash_docsigned',
+        ),
+        migrations.RemoveField(
+            model_name='signdatarequest',
+            name='hash_docsigned',
+        ),
+        migrations.AddField(
             model_name='authenticatedatarequest',
             name='hash_docsigned',
             field=models.TextField(blank=True, null=True),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='signdatarequest',
             name='hash_docsigned',
             field=models.TextField(blank=True, null=True),
