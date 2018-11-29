@@ -14,7 +14,8 @@
 
 '''
 @date: 14/4/2017
-@author: Luis Zarate Montero
+@author: Universidad de Costa Rica
+@maintainer: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
@@ -162,7 +163,7 @@ class AuthenticateDataRequest(models.Model):
     id_transaction = models.IntegerField(default=0, db_index=True)
     duration = models.SmallIntegerField(default=3)
     received_notification = models.BooleanField(default=False)
-    resume = models.CharField(max_length=256, null=True, blank=True)
+    resume = models.CharField(max_length=250, null=True, blank=True)
     hash_docsigned = models.TextField(null=True, blank=True)
     hash_id_docsigned = models.SmallIntegerField(default=0)
 
@@ -226,8 +227,8 @@ class SignDataRequest(models.Model):
     received_notification = models.BooleanField(default=False)
     document_format = models.CharField(max_length=25, default='n/d')
     place = models.CharField(max_length=150, null=True, blank=True)
-    reason = models.CharField(max_length=150, null=True, blank=True)
-    resume = models.CharField(max_length=256, null=True, blank=True)
+    reason = models.CharField(max_length=125, null=True, blank=True)
+    resume = models.CharField(max_length=250, null=True, blank=True)
     hash_docsigned = models.TextField(null=True, blank=True)
     hash_id_docsigned = models.SmallIntegerField(default=0)
 

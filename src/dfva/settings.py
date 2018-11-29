@@ -260,9 +260,9 @@ if DO_LOGGIN:
 
         },
         'loggers': {
-            'dfva': {
-                'handlers': ['file'],
-                'level': 'DEBUG',
+            DEFAULT_LOGGER_NAME: {
+                'handlers': ['file_info'],  # 'console',
+                'level': 'INFO',
                 'propagate': True,
             },
             'soapfish':  {

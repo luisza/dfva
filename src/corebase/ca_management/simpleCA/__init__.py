@@ -14,7 +14,8 @@
 
 '''
 @date: 12/8/2017
-@author: Luis Zarate Montero
+@author: Universidad de Costa Rica
+@maintainer: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''

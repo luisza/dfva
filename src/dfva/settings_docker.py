@@ -14,7 +14,8 @@
 
 '''
 @date: 14/4/2017
-@author: Luis Zarate Montero
+@author: Universidad de Costa Rica
+@maintainer: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
@@ -31,7 +32,7 @@ ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': os.getenv('DATABASE_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.getenv('DATABASE_NAME', 'postgres'),
         'USER': os.getenv('DATABASE_USER','postgres'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD','postgres'),
@@ -43,15 +44,15 @@ DATABASES = {
 
 WSGI_APPLICATION = 'dfva.wsgi_docker.application'
 
-STATIC_ROOT = '/dfva/static/'
-STATIC_MEDIA = '/dfva/media/'
+STATIC_ROOT = os.getenv('STATIC_ROOT', '/dfva/static/')
+STATIC_MEDIA = os.getenv('STATIC_MEDIA','/dfva/media/')
 
 if not DEBUG:
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-CA_PATH = '/dfva/internal_ca/'
+CA_PATH = os.getenv('CA_PATH', '/dfva/internal_ca/')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
 CA_KEY_PASSWD = os.getenv('CA_KEY_PASSWD', None)
@@ -112,9 +113,3 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
 }
-
-ELK_LOGGING = os.getenv('ELK_LOGGING', 'True') == 'True'
-
-if ELK_LOGGING:
-    from .elk_logs import *
-    INSTALLED_APPS +=ELK_INSTALLED_APPS

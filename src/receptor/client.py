@@ -14,7 +14,8 @@
 
 '''
 @date: 26/7/2017
-@author: Luis Zarate Montero
+@author: Universidad de Costa Rica
+@maintainer: Luis Zarate Montero
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
@@ -26,7 +27,6 @@ from django.conf import settings
 
 from pyfva.constants import ERRORES_AL_NOTIFICAR_FIRMA, \
     get_text_representation
-
 from receptor.notify import send_notification
 
 
@@ -78,6 +78,7 @@ def reciba_notificacion(data):
         * **fue_exitosa:** si fue exitosa la firma
         * **codigo_error:** código de error
         * **hash_docfirmado:** Hash del documento ya firmado
+	* **hash_id:**  id del hash con que se genero el hash_docfirmado puede ser 1. Sha256, 2. Sha384  3. Sha512      
 
     No requiere retornar nada
 
