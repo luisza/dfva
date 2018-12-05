@@ -69,7 +69,7 @@ def sign_document_terms(request, pk):
         settings.DEFAULT_ENTITY)
 
     if signclient.validar_servicio():
-        document_resume = "Acepta terminos para el uso responsable de la aplicación"
+        document_resume = "Acepta términos para el uso responsable de la aplicación"
         document = b64encode(obj.document_signed.encode())
         hash_sum = get_hash_sum(document, 'sha512')
         data = signclient.firme(
@@ -78,7 +78,7 @@ def sign_document_terms(request, pk):
             'xml_cofirma',
             algoritmo_hash='Sha512',
             hash_doc=hash_sum,
-            resumen="Acepta terminos de DFVA")
+            resumen=document_resume)
 
         signed_doc = SignDataRequest.objects.create(
             institution=Institution.objects.filter(
