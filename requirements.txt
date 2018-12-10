@@ -27,7 +27,7 @@ requests>=2.20.0
 six==1.11.0
 uritemplate==3.0.0
 dateutils
-pyfva>=0.0.28
+pyfva>=0.0.29
 pycryptodome>=3.6.4
 celery==4.2.0
 gunicorn

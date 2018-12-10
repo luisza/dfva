@@ -61,7 +61,9 @@ class Authenticate_Response_Serializer(serializers.ModelSerializer):
         fields = (
             'code', 'status', 'identification', 'id_transaction',
             'request_datetime', 'sign_document', 'expiration_datetime',
-            'received_notification', 'duration', 'status_text', 'resume')
+            'received_notification', 'duration', 'status_text', 'resume',
+            'hash_docsigned',  'hash_id_docsigned'
+        )
 
 
 class LogAuthenticateInstitutionRequestSerializer(serializers.ModelSerializer):

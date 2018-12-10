@@ -76,8 +76,10 @@ class AuthenticateRequestViewSet(ViewSetBase,
         * **status_text** Descripción para humanos del código de error
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
-        * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
-
+        * **received_notification:** True si la autenticación ha sido procesada, False si está esperando al usuario
+        * **resume:** Resumen de la transacción.
+        * **hash_docsigned:**  Normalmente Null,  Base64 hash del documento firmado si el documento existe
+        * **hash_id_docsigned:** 0- no se ha firmado 1- Sha256, 2- Sha384, 3- Sha512
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
@@ -116,7 +118,9 @@ class AuthenticateRequestViewSet(ViewSetBase,
         * **identification:** Identificador del suscriptor
         * **code:** Código para mostrar al usuario
         * **received_notification** True si la autenticación ha sido procesada, False si está esperando al usuario
-
+        * **resume:** Resumen de la transacción.
+        * **hash_docsigned:** Base64 hash del documento firmado si el documento existe
+        * **hash_id_docsigned:** 0- no se ha firmado 1- Sha256, 2- Sha384, 3- Sha512
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
@@ -138,7 +142,10 @@ class AuthenticateRequestViewSet(ViewSetBase,
             'sign_document': None,
             'expiration_datetime': None,
             'received_notification': False,
-            'error_info': serializer._errors
+            'error_info': serializer._errors,
+            'resume': '',
+            'hash_docsigned': None,
+            'hash_id_docsigned': 0
         }
         logger.debug('Authentication: Error Institution %r' %
                      (dev, ))
