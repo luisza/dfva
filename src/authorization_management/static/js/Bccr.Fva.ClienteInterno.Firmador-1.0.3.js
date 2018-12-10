@@ -39,6 +39,11 @@ var FvaClienteInterno = function (laConfiguracion) {
     var laUrlParaConsultarLaSolicitud = laConfiguracion.UrlConsultaFirma;
     var elBotonDeCopiar = $("<input/>", { "class": "fvaElBotonDeCopiar", value: "Copiar", type: "button" });
 
+    if(laConfiguracion.UsoAutenticacion){ 
+        elTextoDeCopieElCodigo = "Para confirmar su solicitud de ingreso, copie el siguiente c&oacute;digo de verificaci&oacute;n en el Firmador BCCR";    
+        elTituloDelResumen = '<div class="fvaTituloDelResumen">Resumen de la solicitud de ingreso:</div>';
+    }
+
     ConfigureElSitioParaRealizarSolicitudes();
 
     function ConfigureElSitioParaRealizarSolicitudes() {
@@ -345,7 +350,8 @@ var FvaAutenticador = function (laConfiguracion) {
         UrlParaSolicitar: laConfiguracion.UrlParaSolicitarLaAutenticacion,
         Imagenes: laConfiguracion.Imagenes,
         UrlConsultaFirma: laConfiguracion.UrlConsultaFirma,
-        UrlCSS: laConfiguracion.UrlCSS
+        UrlCSS: laConfiguracion.UrlCSS,
+        UsoAutenticacion: true
     }
 
     var elTextoTooltipParaIdentificacion = "<div class='fvaToolTipIdentificacionTitulo'>Formato de la identificaci&oacute;n</div><ul><li><span>Nacional:</span><span>00-0000-0000</span></li><li><span>DIDI:</span><span>500000000000</span></li><li><span>DIMEX:</span><span>100000000000</span></li></li>";
@@ -497,7 +503,8 @@ var FvaFirmador = function (laConfiguracion) {
         UrlParaSolicitar: laConfiguracion.UrlParaSolicitarLaFirma,
         Imagenes: laConfiguracion.Imagenes,
         UrlConsultaFirma: laConfiguracion.UrlConsultaFirma,
-        UrlCSS: laConfiguracion.UrlCSS
+        UrlCSS: laConfiguracion.UrlCSS,
+        UsoAutenticacion: false
     }
 
     var elClienteInterno = new FvaClienteInterno(laConfiguracionParaElClienteInterno);
