@@ -3,7 +3,7 @@
 		 var btns=$(document).find('[data-fva="true"]');
 		 $.each(btns, function(index, btn){
 			 btn=$(btn);
-			
+			 var seDebeAutenticar = 'False';
 			 var dominio=btn.data('dominio');
 			 if(dominio==undefined){
 				 dominio=location.protocol+"//"+location.host;
@@ -25,33 +25,39 @@
 			 if(img_firma==undefined){
 				 img_firma = dominio+"/static/Imagenes/Firmador-v2.png";
 			 }
-			 
 			 var url_css=btn.data('urlcss');
 			 if(url_css==undefined){
 				 url_css=dominio + "/static/css/Bccr.Fva.ClienteInterno.Firmador-1.0.2.css";
 			 }
 			 
 			 var laConfiguracion = {
-					 UrlParaSolicitar: btn.data('url'),
+		             UrlParaSolicitarLaAutenticacion: btn.data('url'),
+		             UrlParaSolicitar: btn.data('url'),
 		             DominioDelSitio: dominio,
-
+		             ParaAutenticarse: btn.data('parautenticarse'),
 		             MensajeDeError:btn.data('mensajedeerror'),
-		             IdDelBotonDeFirmar: btn.attr('id'),
-		             images:{
-		            	 ayuda: ayuda,
-		            	 autenticador: img_autenticador,
-		            	 firma: img_firma
+		             IdDelBotonDeAutenticar: btn.attr('id'),
+		             Imagenes:{
+		            	 Ayuda: ayuda,
+		            	 Autenticador: img_autenticador,
+		            	 Firma: img_firma
 		             },
-		             urlconsultafirma: url_consulta_firma,
-		             urlcss: url_css,
-		             FirmaRealizada: function(){
+		             UrlConsultaFirma: url_consulta_firma,
+					 UrlCSS: url_css,
+		             AutenticacionRealizada: function(){
 		            	 btn.fadeOut();
 		            	 window.location=btn.data('successurl');
 		             },
-		             FirmaNoRealizada: function(){},
-		             ObtengaLosDatosParaSolicitarLaFirma: function(){}
+		             ObtengaLosDatosParaSolicitarLaAutenticacion: function(){},
+		             AutenticacionNoRealizada: function(){}
 		         };     
-			 FvaFirmador(laConfiguracion);     
+			 
+			 
+		     FvaAutenticador(laConfiguracion);
+		
+		     if (seDebeAutenticar=="True") {
+		    	 btn.trigger("click");
+		     }     
 		 });
 	 });
 })($);
