@@ -19,6 +19,8 @@
 @license: GPLv3
 '''
 
+from institution.authenticator.forms import AuthenticateCheckForm
+from person.authenticator.forms import AuthenticatePersonForm
 from person.models import AuthenticatePersonRequest,\
     AuthenticatePersonDataRequest
 from rest_framework import serializers
@@ -39,6 +41,9 @@ class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
     check_show_fields = ['person',
                          'identification',
                          'request_datetime']
+
+    form = AuthenticatePersonForm
+    form_check = AuthenticateCheckForm
     validate_request_class = AuthenticatePersonRequest
     validate_data_class = AuthenticatePersonDataRequest
 

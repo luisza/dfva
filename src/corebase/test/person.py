@@ -31,7 +31,7 @@ from client_fva.user_settings import UserSettings as Settings
 from base64 import b64encode
 from django.utils import timezone
 from person.models import Person
-
+from django.conf import settings
 
 class HTTPClient():
 
@@ -197,7 +197,7 @@ class BasePersonTest(TestCase):
 
     def ok_test(self, response):
         self.assertNotEqual(response['code'], 'N/D')
-        self.assertEqual(response['status'], 1)
+        self.assertEqual(response['status'], settings.DEFAULT_SUCCESS_BCCR)
 
     def wrong_format(self, response):
         self.assertEqual(response['code'], 'N/D')

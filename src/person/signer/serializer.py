@@ -29,6 +29,8 @@ from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
+from person.signer.forms import SignDataPersonCheckForm, SignDataPersonForm
+
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
@@ -50,16 +52,19 @@ class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
 
     validate_request_class = SignPersonRequest
     validate_data_class = SignPersonDataRequest
+    form = SignDataPersonForm
+    form_check = SignDataPersonCheckForm
 
     def check_internal_data(self, data, fields=[]):
         super(Sign_Person_Request_Serializer,
               self).check_internal_data(data, fields=fields)
 
-        if 'format' in data:
-            if data['format'].lower() not in SUPPORTED_DOC_FORMAT:
-                self._errors['format'] = [
-                    _('Format not supported, sopported formats are %s') % (
-                        " ".join(SUPPORTED_DOC_FORMAT))]
+        #FIXME: Eliminar esto, en favor de forms
+        # if 'format' in data:
+        #     if data['format'].lower() not in SUPPORTED_DOC_FORMAT:
+        #         self._errors['format'] = [
+        #             _('Format not supported, sopported formats are %s') % (
+        #                 " ".join(SUPPORTED_DOC_FORMAT))]
 
     def save_subject(self):
         self.adr.person = self.person

@@ -29,6 +29,7 @@ from rest_framework import serializers
 from corebase.validator import ValidateDocument_RequestSerializer,\
     ValidateCertificate_RequestSerializer, Suscriptor_Serializer
 from person.serializer import PersonBaseSerializer
+from person.validator.forms import ValidatePersonCertificateDataForm, ValidatePersonDocumentDataForm
 
 
 class ValidatePersonCertificate_Request_Serializer(
@@ -40,6 +41,7 @@ class ValidatePersonCertificate_Request_Serializer(
 
     validate_request_class = ValidatePersonCertificateRequest
     validate_data_class = ValidatePersonCertificateDataRequest
+    form = ValidatePersonCertificateDataForm
 
     def save_subject(self):
         self.adr.person = self.person
@@ -60,6 +62,7 @@ class ValidatePersonDocument_Request_Serializer(
 
     validate_request_class = ValidatePersonDocumentRequest
     validate_data_class = ValidatePersonDocumentDataRequest
+    form = ValidatePersonDocumentDataForm
 
     def save_subject(self):
         self.adr.person = self.person

@@ -227,7 +227,8 @@ class ValidatePersonDocumentDataRequest(BaseDocument):
         ('cofirma', 'CoFirma'),
         ('contrafirma', 'ContraFirma'),
         ('msoffice', 'MS Office'),
-        ('odf', 'Open Document Format')
+        ('odf', 'Open Document Format'),
+        ('pdf', 'PDF')
     )
     STATUS = ((1, 'Solicitud recibida correctamente'),
               (2, 'Ha ocurrido algún problema al solicitar la firma'),

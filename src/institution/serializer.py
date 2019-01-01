@@ -102,6 +102,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                 self.requestdata, fields=self.check_internal_fields)
             self.check_received_extra_data(self.requestdata)
         except Exception as e:
+            self.requestdata = None
             self._errors['data'] = [_('Data was not decrypted well')]
             logger.error('Data was not decrypted well %r' % (e,))
             return False

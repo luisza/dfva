@@ -26,7 +26,7 @@ import json
 from corebase.rsa import encrypt, get_hash_sum
 from corebase.test.institution_utils import create_institution, create_url
 from django.test.testcases import TestCase
-
+from django.conf import settings
 
 class BaseInstitutionTest(TestCase):
 
@@ -66,7 +66,7 @@ class BaseInstitutionTest(TestCase):
 
     def ok_test(self, response):
         self.assertNotEqual(response['code'], 'N/D')
-        self.assertEqual(response['status'], 1)
+        self.assertEqual(response['status'], settings.DEFAULT_SUCCESS_BCCR)
 
     def check_wrong_url_test(self, response):
         self.assertEqual(response['code'], 'N/D')

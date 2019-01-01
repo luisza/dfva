@@ -19,6 +19,7 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+from django.forms import modelform_factory
 
 from corebase.rsa import get_hash_sum,  decrypt
 from corebase.models import ALGORITHM
@@ -29,10 +30,9 @@ from django.utils.translation import ugettext_lazy as _
 import logging
 from corebase.ca_management import check_certificate
 from django.conf import settings
-
+from corebase.time import parse_datetime
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
-
 
 class CoreBaseBaseSerializer(object):
 
@@ -55,6 +55,22 @@ class CoreBaseBaseSerializer(object):
     def check_received_extra_data(self, data):
         pass
 
+    def get_form(self):
+        return self.form
+
+    def check_form_data(self):
+          if hasattr(self, 'requestdata') and self.requestdata:
+            data = {}
+            data.update(self.requestdata)
+            if 'request_datetime' in data:
+                data['request_datetime'] = parse_datetime(
+                self.requestdata['request_datetime'])
+
+            form = self.get_form()
+            form = form(data)
+            if not form.is_valid():
+                self._errors['data_internal'] = [form.errors.as_json()]
+
     def check_internal_data(self, data, fields=[]):
         for field in fields:
             if field not in data:
@@ -62,6 +78,7 @@ class CoreBaseBaseSerializer(object):
         self._check_internal_data(data, fields=self.check_internal_fields)
         self.check_hash_algorithm(data)
         self.check_received_extra_data(data)
+
 
     def check_hash_algorithm(self, data):
         if 'algorithm_hash' in data:
@@ -88,6 +105,7 @@ class CoreBaseBaseSerializer(object):
                 logger.debug("Data: %r" % (self.requestdata,))
                 self.check_internal_data(self.requestdata)
             except Exception as e:
+                self.requestdata = None
                 self._errors['data'] = [
                     _('Data was not decrypted well %r') % (e,)]
                 logger.error('Data was not decrypted well %r' % (e,))
@@ -98,7 +116,7 @@ class CoreBaseBaseSerializer(object):
             self, raise_exception=raise_exception)
         self.validate_digest()
         self.validate_certificate()
-
+        self.check_form_data()
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
@@ -109,6 +127,7 @@ class CheckBaseBaseSerializer():
     def check_code(self, code, raise_exception=False):
         dev = False
         self.check_internal_fields = self.check_show_fields
+        self.form = self.form_check
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {

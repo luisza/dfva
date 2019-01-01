@@ -21,6 +21,8 @@
 '''
 
 import logging
+
+from institution.authenticator.forms import AuthenticateForm, AuthenticateCheckForm
 from institution.models import AuthenticateRequest, AuthenticateDataRequest
 from corebase.authenticate import Authenticate_RequestSerializer
 from rest_framework import serializers
@@ -40,6 +42,9 @@ class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer,
                          'notification_url',
                          # 'identification',
                          'request_datetime']
+
+    form = AuthenticateForm
+    form_check = AuthenticateCheckForm
 
     validate_request_class = AuthenticateRequest
     validate_data_class = AuthenticateDataRequest

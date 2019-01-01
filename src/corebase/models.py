@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
 identification_validator = RegexValidator(
-    r'"(^[1|5]\d{11}$)|(^\d{2}-\d{4}-\d{4}$)"',
+    r'(^[1|5]\d{11}$)|(^\d{2}-\d{4}-\d{4}$)',
     message=_("Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o 100000000000"))
 
 ALGORITHM = (
