@@ -1,10 +1,5 @@
 import os
 
-ELK_INSTALLED_APPS = [
-    'django_elasticsearch_dsl',
-]
-
-
 ELASTICSEARCH_DSL={
     'default': {
         'hosts':  os.getenv('ELASTICSEARCH_HOST', 'localhost:9200')
@@ -12,7 +7,7 @@ ELASTICSEARCH_DSL={
 }
 
 LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', 'localhost')
-
+LOGSTASH_PORT = int(os.getenv('LOGSTASH_HOST', '5000'))
 LOGGING = {
   'version': 1,
   'disable_existing_loggers': False,
@@ -28,10 +23,10 @@ LOGGING = {
             'formatter': 'simple'
         },
         'logstash': {
-            'level': 'WARNING',
+            'level': 'INFO',
             'class': 'logstash.TCPLogstashHandler',
             'host': LOGSTASH_HOST,
-            'port': 5000, # Default value: 5959
+            'port': LOGSTASH_PORT, # Default value: 5959
             'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
             'message_type': 'django',  # 'type' field in logstash message. Default value: 'logstash'.
             'fqdn': False, # Fully qualified domain name. Default value: false.
@@ -41,7 +36,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logstash.TCPLogstashHandler',
             'host': LOGSTASH_HOST,
-            'port': 5000, # Default value: 5959
+            'port': LOGSTASH_PORT, # Default value: 5959
             'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
             'message_type': 'dfva',  # 'type' field in logstash message. Default value: 'logstash'.
             'fqdn': False, # Fully qualified domain name. Default value: false.
@@ -51,7 +46,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logstash.TCPLogstashHandler',
             'host': LOGSTASH_HOST,
-            'port': 5000, # Default value: 5959
+            'port': LOGSTASH_PORT, # Default value: 5959
             'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
             'message_type': 'dfvasign',  # 'type' field in logstash message. Default value: 'logstash'.
             'fqdn': False, # Fully qualified domain name. Default value: false.
@@ -61,7 +56,7 @@ LOGGING = {
   'loggers': {
         'django.request': {
             'handlers': ['logstash'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': True,
         },
         'django': {

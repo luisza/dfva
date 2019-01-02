@@ -343,3 +343,10 @@ INSTITUION_AUTHORIZATION = 'authorization_management.terms_conditions.autorized_
 
 EMAIL_PORT = 1025
 EMAIL_HOST = 'localhost'
+
+ELK_LOGGING = os.getenv('ELK_LOGGING', 'True') == 'True'
+
+if ELK_LOGGING:
+    INSTALLED_APPS += ['django_elasticsearch_dsl', 'elk_logging']
+    from elk_logging.elk_logs import *
+

@@ -68,6 +68,19 @@ Asegurese de configurar la base de datos, y el motor de base de datos
 
    python manage.py migrate
 
+Integrado con ELK (elasticSearch, Logstash, Kibana)
+-----------------------------------------------------
+
+Recuerde cambiar en settings `ELK_LOGGING=True` y configurar ELK.
+La configuración se encuentra en src/elk_logging/elk_logs.py, puede usar elk con docker desde
+https://github.com/deviantony/docker-elk
+
+Cree en índice en Elastic Search usuando el siguiente commando
+
+::
+
+   python manage.py search_index --rebuild
+
 
 Corra el programa
 --------------------

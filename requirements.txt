@@ -34,3 +34,6 @@ gunicorn
 psycopg2-binary
 https://github.com/Solvosoft/soapfish/archive/v0.6.0.zip
 django-crispy-forms==1.7.2
+django-elasticsearch-dsl==0.5.1
+elasticsearch-dsl>=6.0,<6.2
+python-logstash==0.4.6

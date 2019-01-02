@@ -44,7 +44,7 @@ def create_default_templates(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('institution', '0008_institution_administrative_institution'),
+        ('institution', '0001_initial'),
     ]
 
     operations = [

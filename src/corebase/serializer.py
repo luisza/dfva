@@ -34,6 +34,7 @@ from corebase.time import parse_datetime
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
+
 class CoreBaseBaseSerializer(object):
 
     def validate_digest(self):

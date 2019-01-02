@@ -22,8 +22,8 @@
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
-from corebase.models import identification_validator,\
-    BaseDocument, BaseRequestModel, ALGORITHM
+from corebase.models import identification_validator, \
+    BaseDocument, BaseRequestModel, ALGORITHM, BaseAuthenticate, BaseSign, BaseValidateCertificate
 from django.contrib.auth.models import User
 
 
@@ -73,35 +73,8 @@ class PersonLogin(models.Model):
         return self.person
 
 
-class AuthenticatePersonDataRequest(models.Model):
+class AuthenticatePersonDataRequest(BaseAuthenticate):
     person = models.ForeignKey(Person)
-    identification = models.CharField(
-        max_length=15, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
-    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
-    code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
-    status_text = models.CharField(max_length=256, default='n/d')
-    sign_document = models.TextField(null=True, blank=True)
-    response_datetime = models.DateTimeField(auto_now=True)
-    expiration_datetime = models.DateTimeField()
-    id_transaction = models.IntegerField(default=0)
-    duration = models.SmallIntegerField(default=3)
-    received_notification = models.BooleanField(default=False)
-    hash_docsigned = models.TextField(null=True, blank=True)
-    hash_id_docsigned = models.SmallIntegerField(default=0)
 
     @property
     def left_time(self):
@@ -130,35 +103,8 @@ class AuthenticatePersonRequest(BasePersonRequestModel):
         )
 
 
-class SignPersonDataRequest(models.Model):
+class SignPersonDataRequest(BaseSign):
     person = models.ForeignKey(Person)
-    identification = models.CharField(
-        max_length=15, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
-    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
-    code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
-    status_text = models.CharField(max_length=256, default='n/d')
-    response_datetime = models.DateTimeField(auto_now=True)
-    expiration_datetime = models.DateTimeField()
-    id_transaction = models.IntegerField(default=0)
-    sign_document = models.TextField(null=True, blank=True)
-    duration = models.SmallIntegerField(default=3)
-    received_notification = models.BooleanField(default=False)
-    hash_docsigned = models.TextField(null=True, blank=True)
-    hash_id_docsigned = models.SmallIntegerField(default=0)
 
     @property
     def left_time(self):
@@ -187,32 +133,8 @@ class SignPersonRequest(BasePersonRequestModel):
         )
 
 
-class ValidatePersonCertificateDataRequest(models.Model):
+class ValidatePersonCertificateDataRequest(BaseValidateCertificate):
     person = models.ForeignKey(Person)
-    identification = models.CharField(
-        max_length=15, null=True, validators=[identification_validator],
-        help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
-    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
-    code = models.CharField(max_length=20, default='N/D')
-
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
-    status = models.IntegerField(choices=STATUS, default=1)
-    status_text = models.CharField(max_length=256, default='n/d')
-    response_datetime = models.DateTimeField(auto_now=True)
-    was_successfully = models.BooleanField(default=True)
-    full_name = models.CharField(max_length=250, null=True)
-    start_validity = models.DateTimeField(null=True)
-    end_validity = models.DateTimeField(null=True)
 
     class Meta:
         ordering = ('request_datetime',)
@@ -223,31 +145,7 @@ class ValidatePersonCertificateDataRequest(models.Model):
 
 
 class ValidatePersonDocumentDataRequest(BaseDocument):
-    FORMATS = (
-        ('cofirma', 'CoFirma'),
-        ('contrafirma', 'ContraFirma'),
-        ('msoffice', 'MS Office'),
-        ('odf', 'Open Document Format'),
-        ('pdf', 'PDF')
-    )
-    STATUS = ((1, 'Solicitud recibida correctamente'),
-              (2, 'Ha ocurrido algún problema al solicitar la firma'),
-              (3, 'Solicitud con campos incompletos'),
-              (4, 'Diferencia de hora no permitida entre cliente y servidor'),
-              (5, 'La entidad no se encuentra registrada'),
-              (6, 'La entidad se encuentra en estado inactiva'),
-              (7, 'La URL no pertenece a la entidad solicitante'),
-              (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
-              (9, 'Algoritmo desconocido'),
-              (10, 'Certificado incorrecto'))
     person = models.ForeignKey(Person)
-    # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
-    request_datetime = models.DateTimeField()
-    code = models.CharField(max_length=20, default='N/D')
-    format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
-    status = models.IntegerField(choices=STATUS, default=1)
-    status_text = models.CharField(max_length=256, default='n/d')
-    was_successfully = models.BooleanField(default=True)
 
     @property
     def id_transaction(self):
