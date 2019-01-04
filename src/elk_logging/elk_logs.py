@@ -1,3 +1,26 @@
+# encoding: utf-8
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+'''
+@date: 1/01/2019
+@author: Universidad de Costa Rica
+@maintainer: Luis Zarate Montero
+@contact: luis.zarate@solvosoft.com
+@license: GPLv3
+'''
+
+
 import os
 
 ELASTICSEARCH_DSL={
@@ -12,9 +35,12 @@ LOGGING = {
   'version': 1,
   'disable_existing_loggers': False,
   'formatters': {
+      'verbose': {
+          'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+      },
       'simple': {
-            'format': 'velname)s %(message)s'
-        },
+          'format': '%(levelname)s %(message)s'
+      },
   },
   'handlers': {
         'console': {
@@ -23,7 +49,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'logstash': {
-            'level': 'INFO',
+            #'level': 'INFO',
             'class': 'logstash.TCPLogstashHandler',
             'host': LOGSTASH_HOST,
             'port': LOGSTASH_PORT, # Default value: 5959
@@ -33,7 +59,7 @@ LOGGING = {
             'tags': ['django.request'], # list of tags. Default: None.
         },
         'dfvalogstash': {
-            'level': 'INFO',
+           # 'level': 'INFO',
             'class': 'logstash.TCPLogstashHandler',
             'host': LOGSTASH_HOST,
             'port': LOGSTASH_PORT, # Default value: 5959
@@ -54,10 +80,14 @@ LOGGING = {
         },
   },
   'loggers': {
-        'django.request': {
-            'handlers': ['logstash'],
-            'level': 'INFO',
-            'propagate': True,
+        'root': {
+            'level': 'DEBUG',
+            'handlers': ['console']
+        },
+        'django.server': {
+            'handlers': ['logstash', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
         'django': {
             'handlers': ['console'],
@@ -70,7 +100,7 @@ LOGGING = {
         },
         'soapfish':  {
             'handlers': ['dfvalogstash'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': True,
         },
         'pyfva':  {

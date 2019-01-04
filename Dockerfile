@@ -22,8 +22,7 @@ COPY dogtag_requirements.txt  /dfva_app
 # Install any needed packages specified in requirements.txt
 
 RUN pip install --trusted-host pypi.python.org --no-cache-dir -r requirements.txt && \
-    pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt && \
-    pip install python-logstash django-elasticsearch-dsl 'elasticsearch-dsl>=5.0,<6.0'
+    pip install --trusted-host pypi.python.org --no-cache-dir -r dogtag_requirements.txt
 RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev && \
     apt-get -y autoremove && \
     apt-get -y clean
