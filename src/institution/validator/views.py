@@ -33,7 +33,7 @@ from institution.models import ValidateCertificateRequest,\
     ValidateDocumentRequest
 from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 from corebase.logging import get_ip, get_log_institution_information
 from django.conf import settings
 
@@ -46,7 +46,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     response_class = ValidateCertificateRequest_Response_Serializer
     DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
         """
         ::
@@ -90,7 +90,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_document(self, request, *args, **kwargs):
         """
         ::
@@ -145,7 +145,7 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
     serializer_class = SuscriptorInstitution_Serializer
     queryset = ValidateCertificateRequest.objects.all()
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_suscriptor_connected(self, request, *args, **kwargs):
         """
         ::

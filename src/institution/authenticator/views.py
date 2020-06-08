@@ -26,7 +26,7 @@ from rest_framework.response import Response
 
 from django.utils import timezone
 import logging
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from corebase.views import ViewSetBase
 import pyfva
 from pyfva.constants import get_text_representation
@@ -48,7 +48,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
     queryset = AuthenticateRequest.objects.all()
     response_class = Authenticate_Response_Serializer
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution(self, request, *args, **kwargs):
         """
         ::
@@ -89,7 +89,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
                     get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_show(self, request, *args, **kwargs):
         """
         ::
@@ -152,7 +152,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
 
         return Response(self.get_encrypted_response(dev, serializer))
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_delete(self, request, *args, **kwargs):
         """
         ::

@@ -18,6 +18,7 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+from rest_framework.decorators import action
 
 from corebase.views import ViewSetBase, BaseSuscriptor
 from rest_framework import viewsets
@@ -29,7 +30,7 @@ from person.validator.serializer import \
     SuscriptorPerson_Serializer
 from person.models import ValidatePersonCertificateRequest,\
     ValidatePersonDocumentRequest
-from rest_framework.decorators import list_route
+
 from corebase.logging import get_ip, get_log_person_information
 from pyfva.constants import ERRORES_VALIDA_CERTIFICADO,\
     ERRORES_VALIDAR_XMLCOFIRMA
@@ -43,7 +44,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
     queryset = ValidatePersonCertificateRequest.objects.all()
     response_class = ValidatePersonCertificateRequest_Response_Serializer
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person_certificate(self, request, *args, **kwargs):
         """
         ::
@@ -84,7 +85,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person_document(self, request, *args, **kwargs):
         """
         ::
@@ -134,7 +135,7 @@ class ValidateSubscriptorPersonViewSet(BaseSuscriptor, viewsets.GenericViewSet):
     serializer_class = SuscriptorPerson_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person_suscriptor_connected(self, request, *args, **kwargs):
         """
         ::

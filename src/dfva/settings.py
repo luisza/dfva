@@ -71,9 +71,9 @@ INSTALLED_APPS = [
     'institution',
     'person',
     'receptor',
-    'rest_framework',
-    'authorization_management'
-    # 'django_extensions',
+    #'rest_framework',
+    'authorization_management',
+    'django_extensions',
 
 ]
 

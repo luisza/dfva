@@ -20,7 +20,7 @@
 @license: GPLv3
 '''
 
-from rest_framework.decorators import detail_route, list_route
+
 from django.utils import timezone
 from corebase.views import ViewSetBase
 from rest_framework import viewsets
@@ -33,6 +33,7 @@ from pyfva.constants import get_text_representation
 import pyfva
 import logging
 from django.conf import settings
+from rest_framework.decorators import action
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
@@ -44,7 +45,7 @@ class SignRequestViewSet(ViewSetBase,
     queryset = SignRequest.objects.all()
     response_class = Sign_Response_Serializer
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution(self, request, *args, **kwargs):
         """
         ::
@@ -93,7 +94,7 @@ class SignRequestViewSet(ViewSetBase,
                     get_log_institution_information(request))
         return self._create(request, *args, **kwargs)
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_show(self, request, *args, **kwargs):
         """
         ::
@@ -136,7 +137,7 @@ class SignRequestViewSet(ViewSetBase,
                     get_log_institution_information(request))
         return self.show(request, *args, **kwargs)
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def institution_delete(self, request, *args, **kwargs):
         """
         ::

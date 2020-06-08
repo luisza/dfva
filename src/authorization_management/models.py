@@ -25,13 +25,13 @@ from django.utils.translation import gettext as _
 
 
 class AuthorizationRequest(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     request_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
     authorized = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     who_authorized = models.ForeignKey(User, related_name="who_authorized",
-                                       null=True, blank=True)
+                                       null=True, blank=True, on_delete=models.DO_NOTHING)
     observations = models.TextField(null=True, blank=True)
 
     @property
@@ -50,7 +50,7 @@ class AuthorizationRequest(models.Model):
 
 
 class UserConditionsAndTerms(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     document_signed = models.TextField()

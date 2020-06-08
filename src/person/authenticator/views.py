@@ -20,11 +20,12 @@
 '''
 
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.utils import timezone
 import logging
-from rest_framework.decorators import detail_route, list_route
+
 from corebase.views import ViewSetBase
 from corebase.logging import get_ip, get_log_person_information
 from person.models import AuthenticatePersonRequest
@@ -42,7 +43,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
     queryset = AuthenticatePersonRequest.objects.all()
     response_class = Authenticate_Person_Response_Serializer
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person(self, request, *args, **kwargs):
         """
         ::
@@ -76,7 +77,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
                     get_log_person_information(request))
         return self._create(request, *args, **kwargs)
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person_show(self, request, *args, **kwargs):
         """
         ::

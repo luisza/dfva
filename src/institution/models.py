@@ -45,7 +45,7 @@ class EncrytedText(models.TextField):
 
 
 class Institution(models.Model, PEMpresentation):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     code = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
@@ -81,9 +81,7 @@ class Institution(models.Model, PEMpresentation):
 
     class Meta:
         ordering = ('pk',)
-        permissions = (
-            ("view_institution", "Can see available tasks"),
-        )
+
 
 
 class NotificationURL(models.Model):
@@ -101,13 +99,11 @@ class NotificationURL(models.Model):
 
     class Meta:
         ordering = ('institution',)
-        permissions = (
-            ("view_notificationurl", "Can see available notification urls"),
-        )
+
 
 
 class InstitutionStats(models.Model):
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
     status = models.SmallIntegerField(default=1)
     notified = models.BooleanField(default=False)
@@ -144,7 +140,7 @@ class BaseInstitutionRequestModel(BaseRequestModel):
 
 
 class AuthenticateDataRequest(models.Model):
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
@@ -186,10 +182,7 @@ class AuthenticateDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_authenticatedatarequest",
-             "Can see available Authenticate Data Request"),
-        )
+
 
 
 class AuthenticateRequest(BaseInstitutionRequestModel):
@@ -200,13 +193,10 @@ class AuthenticateRequest(BaseInstitutionRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_authenticaterequest", "Can see available Authenticate Request"),
-        )
 
 
 class SignDataRequest(models.Model):
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
@@ -252,10 +242,6 @@ class SignDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_signerdatarequest",
-             "Can see available Signer Data Request"),
-        )
 
 
 class SignRequest(BaseInstitutionRequestModel):
@@ -266,13 +252,11 @@ class SignRequest(BaseInstitutionRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_signrequest", "Can see available Sign Request"),
-        )
+
 
 
 class ValidateCertificateDataRequest(models.Model):
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     notification_url = models.URLField()
     identification = models.CharField(
         max_length=15, null=True, validators=[identification_validator],
@@ -314,10 +298,7 @@ class ValidateCertificateDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_validatecertificatedatarequest",
-             "Can see available validate certificate Data Request"),
-        )
+
 
 
 class ValidateCertificateRequest(BaseInstitutionRequestModel):
@@ -327,9 +308,7 @@ class ValidateCertificateRequest(BaseInstitutionRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_validaterequest", "Can see available validate certificate Request"),
-        )
+
 
 
 class ValidateDocumentDataRequest(BaseDocument):
@@ -340,7 +319,7 @@ class ValidateDocumentDataRequest(BaseDocument):
         ('odf', 'Open Document Format'),
         ('pdf', 'PDF')
     )
-    institution = models.ForeignKey(Institution)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     notification_url = models.URLField()
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
     request_datetime = models.DateTimeField()
@@ -383,10 +362,7 @@ class ValidateDocumentDataRequest(BaseDocument):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_validatedocumentdatarequest",
-             "Can see available validate document Data Request"),
-        )
+
 
 
 class ValidateDocumentRequest(BaseInstitutionRequestModel):
@@ -397,7 +373,4 @@ class ValidateDocumentRequest(BaseInstitutionRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_validatedocumentrequest",
-             "Can see validate document Sign Request"),
-        )
+

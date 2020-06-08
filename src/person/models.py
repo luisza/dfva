@@ -34,7 +34,7 @@ class Person(models.Model):
         (3, 'Error no determinado')
 
     )
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     identification = models.CharField(max_length=20, primary_key=True)
     token = models.TextField(null=True, blank=True)
     cipher_token = models.TextField(null=True, blank=True)
@@ -74,7 +74,7 @@ class PersonLogin(models.Model):
 
 
 class AuthenticatePersonDataRequest(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
@@ -111,10 +111,7 @@ class AuthenticatePersonDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_authenticatepersondatarequest",
-             "Can see available Authenticate Person Data Request"),
-        )
+
 
 
 class AuthenticatePersonRequest(BasePersonRequestModel):
@@ -124,14 +121,11 @@ class AuthenticatePersonRequest(BasePersonRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_authenticatepersonrequest",
-             "Can see available Authenticate Person Request"),
-        )
+
 
 
 class SignPersonDataRequest(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     identification = models.CharField(
         max_length=15, validators=[identification_validator],
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
@@ -168,10 +162,7 @@ class SignPersonDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_signerdatarequest",
-             "Can see available Signer Person Data Request"),
-        )
+
 
 
 class SignPersonRequest(BasePersonRequestModel):
@@ -182,13 +173,10 @@ class SignPersonRequest(BasePersonRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_signpersonrequest", "Can see available Person Sign Request"),
-        )
 
 
 class ValidatePersonCertificateDataRequest(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     identification = models.CharField(
         max_length=15, null=True, validators=[identification_validator],
         help_text="""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'""")
@@ -216,10 +204,7 @@ class ValidatePersonCertificateDataRequest(models.Model):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_validatePersoncertificatedatarequest",
-             "Can see available validate Person certificate Data Request"),
-        )
+
 
 
 class ValidatePersonDocumentDataRequest(BaseDocument):
@@ -239,7 +224,7 @@ class ValidatePersonDocumentDataRequest(BaseDocument):
               (8, 'El tamaño de hash debe ser entre 1 y 130 caracteres'),
               (9, 'Algoritmo desconocido'),
               (10, 'Certificado incorrecto'))
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     # '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
     request_datetime = models.DateTimeField()
     code = models.CharField(max_length=20, default='N/D')
@@ -254,10 +239,7 @@ class ValidatePersonDocumentDataRequest(BaseDocument):
 
     class Meta:
         ordering = ('request_datetime',)
-        permissions = (
-            ("view_validatepersondocumentdatarequest",
-             "Can see available validate document Data Request"),
-        )
+
 
 
 class ValidatePersonDocumentRequest(BasePersonRequestModel):
@@ -267,10 +249,7 @@ class ValidatePersonDocumentRequest(BasePersonRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_validatepersondocumentrequest",
-             "Can see validate document Sign Request"),
-        )
+
 
 
 class ValidatePersonCertificateRequest(BasePersonRequestModel):
@@ -281,7 +260,4 @@ class ValidatePersonCertificateRequest(BasePersonRequestModel):
 
     class Meta:
         ordering = ('arrived_time',)
-        permissions = (
-            ("view_validatePersonrequest",
-             "Can see available validate certificate Request"),
-        )
+

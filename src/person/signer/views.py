@@ -18,12 +18,12 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+from rest_framework.decorators import action
 
 from pyfva.constants import get_text_representation
 import pyfva
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route, list_route
 from django.utils import timezone
 from corebase.views import ViewSetBase
 
@@ -43,7 +43,7 @@ class SignPersonRequestViewSet(ViewSetBase,
     queryset = SignPersonRequest.objects.all()
     response_class = Sign_Person_Response_Serializer
 
-    @list_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person(self, request, *args, **kwargs):
         """
         ::
@@ -85,7 +85,7 @@ class SignPersonRequestViewSet(ViewSetBase,
                     get_log_person_information(request))
         return self._create(request, *args, **kwargs)
 
-    @detail_route(methods=['post'])
+    @action(detail=True, methods=['post'])
     def person_show(self, request, *args, **kwargs):
         """
         ::
