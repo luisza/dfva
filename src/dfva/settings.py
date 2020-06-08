@@ -36,7 +36,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(BASE_DIR)
-
+DOC_ROOT = os.path.join(BASE_DIR, 'docs/_build/html')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -44,9 +44,16 @@ BASE_DIR = os.path.dirname(BASE_DIR)
 SECRET_KEY = '!_mhp-(ve9hie2=-hcjo)svw-6mni0w0i0%^0+$5@s-1^5oj6v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# - debug
 DEBUG = True
+# - enddebug
+# - demo
 DEMO = True  # Set False in production
+ELK_LOGGING = False
+# - enddemo
+# - onlybccr
 ONLY_BCCR = os.getenv('ONLY_BCCR', '') == 'True'
+# - endonlybccr
 DOCKER = False  # Is running in docker container
 if os.getenv('ALLOWED_HOSTS', ''):
     ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
@@ -54,10 +61,8 @@ else:
     ALLOWED_HOSTS = []
 
 MUTUAL_AUTH = os.getenv('MUTUAL_AUTH', '') == 'True'
-USE_DOGTAG = os.getenv('USE_DOGTAG', '') == 'True'
-
 # Application definition
-
+DEBUG_LAST_REQUESTS=True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,9 +76,12 @@ INSTALLED_APPS = [
     'institution',
     'person',
     'receptor',
-    #'rest_framework',
+    'rest_framework',
     'authorization_management',
-    'django_extensions',
+    'django_celery_beat',
+    'django_celery_results',
+
+    #'django_extensions'
 
 ]
 
@@ -92,7 +100,7 @@ ROOT_URLCONF = 'dfva.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'src/templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,7 +117,7 @@ WSGI_APPLICATION = 'dfva.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
+# - database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -117,6 +125,7 @@ DATABASES = {
     }
 }
 
+# - enddatabase
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -177,129 +186,177 @@ INTERNAL_IPS = ('127.0.0.1',)
 CA_PATH = os.path.join(BASE_DIR, 'internal_ca')
 CA_CERT = os.path.join(CA_PATH, 'ca_cert.pem')
 CA_KEY = os.path.join(CA_PATH, 'ca_key.pem')
+# - simpleca
 CA_KEY_PASSWD = None
+# - endsimpleca
 CA_CRL = os.path.join(CA_PATH, 'crl.pem')
 CA_CERT_DURATION = 365
 
+# - dogtag
+USE_DOGTAG = os.getenv('USE_DOGTAG', '') == 'True'
 # DOGTAG settings (remove if not used)
 if USE_DOGTAG:
     CAMANAGER_CLASS = "corebase.ca_management.dogtag"
-    DOGTAG_HOST = 'ipa.mifirmacr.org'
-    DOGTAG_PORT = '8443'
-    DOGTAG_SCHEME = 'https'
-    DOGTAG_AGENT_PEM_CERTIFICATE_PATH = os.path.join(
-        BASE_DIR, 'admin_cert.pem')
-    DOGTAG_CERTIFICATE_SCHEME = {
-        # 'O': 'MIFIRMACR.ORG'
 
+    DOGTAG_HOST=os.getenv('DOGTAG_HOST','ipa.mifirmadigitalcr.com')
+    DOGTAG_PORT=os.getenv('DOGTAG_PORT', '8443')
+    DOGTAG_SCHEME=os.getenv('DOGTAG_SCHEME','https')
+
+
+    DOGTAG_AGENT_PEM_CERTIFICATE_PATH=os.path.join(
+                    BASE_DIR, 'admin_cert.pem')
+    DOGTAG_CERTIFICATE_SCHEME={
         'country_name': 'CR',
         'state_or_province_name': 'Costa Rica',
         'locality_name': 'San Jose',
-        # 'organization_name': 'Codex Non Sufficit LC',
-        # 'common_name': 'Will Bond',
-
+        'organizational_unit_name': 'DFVA',
     }
-    DOGTAG_CERT_REQUESTER = 'dfva'
-    DOGTAG_CERT_REQUESTER_EMAIL = 'dfva@mifirmacr.org'
+    DOGTAG_CERT_REQUESTER=os.getenv('DOGTAG_CERT_REQUESTER','ucrfva')
+    DOGTAG_CERT_REQUESTER_EMAIL=os.getenv('DOGTAG_CERT_REQUESTER_EMAIL','ucrfva@core.ucr.ac.cr')
+
+
+if not DEBUG:
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_CONTENT_TYPE_NOSNIFF=True
+    SECURE_BROWSER_XSS_FILTER=True
+    SESSION_COOKIE_SECURE=True
+    X_FRAME_OPTIONS='DENY'
+    CSRF_COOKIE_SECURE=True
+
+
+
+# - enddogtag
 
 ALLOWED_BCCR_IP = []  # ['192.168.1.119']
 
 EXPIRED_DELTA = 5  # in minutes
 LOGIN_REDIRECT_URL = '/'
+
+# - fvabccr
 #FVA_HOST = "http://localhost:8001/"
 FVA_HOST = 'http://bccr.fva.cr/'
 STUB_SCHEME = 'http'
 STUB_HOST = "localhost:8001"
 RECEPTOR_HOST = "http://localhost:8000/"
 #RECEPTOR_HOST = 'http://bccr.fva.cr/'
-
+#DEFAULT_NOTIFICATION_URL = r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$'
+DEFAULT_NOTIFICATION_URL = r'^notifica$'
 DEFAULT_BUSSINESS = 1
 DEFAULT_ENTITY = 1
+# - endfvabccr
 
 RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
-DEMO_DFVA_SERVER_URL = 'http://localhost:8000'
-DO_LOGGIN = not bool(os.environ.get('NOLOGGING', ''))
-LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR)
+UCR_FVA_SERVER_URL = 'http://localhost:8000'
+DO_LOGGIN = True
+LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR+'/logs/')
 DEFAULT_LOGGER_NAME = 'dfva'
+DEFAULT_LOGGER_LEVEL = 'INFO'
+DEFAULT_LOGGER_HANDLER = ['file_info_graylog']
+GRAY_LOG_SERVER = 'localhost'
+GRAY_LOG_PORT = 12201
+APP_SERVER_NAME = os.uname().nodename
 
-if DO_LOGGIN:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_BASE_DIR, 'logs/debug.log'),
-                'formatter': 'verbose',
-            },
-            'file_info': {
-                'level': 'INFO',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_BASE_DIR, 'logs/info.log'),
-                'formatter': 'simple',
-            },
-            'remove_authentication': {
-                'level': 'INFO',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_BASE_DIR, 'logs/authentication.log'),
-                'formatter': 'quiet',
-            },
-            'remove_sign': {
-                'level': 'INFO',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_BASE_DIR, 'logs/sign.log'),
-                'formatter': 'quiet',
-            },
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple',
-            },
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+
+        'file': {
+            'class': 'pygelf.GelfUdpHandler',
+            'host': GRAY_LOG_SERVER,
+            'port': GRAY_LOG_PORT,
+            '_app_name': 'dfva',
+            '_customlevel': "debug",
+            '_application': APP_SERVER_NAME
 
         },
-        'loggers': {
-            DEFAULT_LOGGER_NAME: {
-                'handlers': ['file_info'],  # 'console',
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'soapfish':  {
-                'handlers': ['file_info'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'pyfva':  {
-                'handlers': ['file_info'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'dfva_authentication': {
-                'handlers': ['remove_authentication'],  # 'log/authentication',
-                'level': 'INFO',
-                'propagate': False,
 
-            },
-            'dfva_sign': {
-                'handlers': ['remove_sign'],  # 'log/sign',
-                'level': 'INFO',
-                'propagate': False,
+        'file_info_graylog': {
+            'class': 'pygelf.GelfUdpHandler',
+            'host': GRAY_LOG_SERVER,
+            'port': GRAY_LOG_PORT,
+            '_app_name': 'ucrfva',
+            '_customlevel': "info",
+            '_application': APP_SERVER_NAME,
 
-            }
         },
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(asctime)s %(module)s %(message)s'
-            },
-            'quiet': {
-                'format': '\n--- %(asctime)s ---\n %(message)s'
-            },
+        'remove_authentication': {
+            'class': 'pygelf.GelfUdpHandler',
+            'host': GRAY_LOG_SERVER,
+            'port': GRAY_LOG_PORT,
+            '_app_name': 'ucrfva',
+            '_customlevel': "remove_authentication",
+            '_application': APP_SERVER_NAME
         },
-    }
+        'remove_sign': {
+            'class': 'pygelf.GelfUdpHandler',
+            'host': GRAY_LOG_SERVER,
+            'port': GRAY_LOG_PORT,
+            '_app_name': 'ucrfva',
+            '_customlevel': "remove_authentication",
+            '_application': APP_SERVER_NAME
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+
+    },
+    'loggers': {
+        DEFAULT_LOGGER_NAME: {
+            'handlers':  DEFAULT_LOGGER_HANDLER,  # ['file_info'],  # 'console',
+            'level': DEFAULT_LOGGER_LEVEL,
+
+        },
+        'django': {
+            'handlers': DEFAULT_LOGGER_HANDLER,
+            'level': DEFAULT_LOGGER_LEVEL,
+            'propagate': True
+        },
+        'django.request': {
+            'handlers': DEFAULT_LOGGER_HANDLER,
+            'level': DEFAULT_LOGGER_LEVEL,
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': DEFAULT_LOGGER_HANDLER,
+            'level': DEFAULT_LOGGER_LEVEL,
+            'propagate': True
+        },
+        'soapfish':  {
+            'handlers': DEFAULT_LOGGER_HANDLER,
+            'level': DEFAULT_LOGGER_LEVEL,
+
+        },
+        'pyfva':  {
+            'handlers': DEFAULT_LOGGER_HANDLER,
+            'level': DEFAULT_LOGGER_LEVEL,
+        },
+        'dfva_authentication': {
+            'handlers': ['remove_authentication'],  # 'log/authentication',
+            'level': 'INFO',
+        },
+        'dfva_sign': {
+            'handlers': ['remove_sign'],  # 'log/sign',
+            'level': 'INFO',
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(name)s %(levelname)s %(asctime)s %(module)s %(funcName)s %(process)d %(processName)s %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(module)s %(message)s'
+        },
+        'quiet': {
+            'format': '\n--- %(asctime)s ---\n %(message)s'
+        },
+    },
+}
 
 LOGGING_ENCRYPTED_DATA = False
 DFVA_REMOVE_AUTHENTICATION = 5  # minutes
@@ -308,6 +365,7 @@ DFVA_PERSON_SESSION = 25
 CELERY_MODULE = "dfva.celery"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_BACKEND = 'django-db'
 
 from celery.schedules import crontab
 
@@ -321,7 +379,7 @@ CELERYBEAT_SCHEDULE = {
     'remove_sign': {
         'task': 'institution.tasks.remove_expired_signs',
         # 'schedule': crontab(minute=30, hour=0),
-        'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
+        'schedule': crontab(minute='*/%d' % (DFVA_REMOVE_SIGN, )),
     },
     'check_certificates': {
         'task': 'institution.tasks.notify_certs_expiration',
@@ -343,3 +401,11 @@ INSTITUION_AUTHORIZATION = 'authorization_management.terms_conditions.autorized_
 
 EMAIL_PORT = 1025
 EMAIL_HOST = 'localhost'
+
+# - broker
+CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+# - endbroker
+
+
+if ELK_LOGGING:
+    INSTALLED_APPS += ['django_elasticsearch_dsl', 'elk_logging']

@@ -40,13 +40,16 @@ from institution.forms import InstitutionCreateForm, InstitutionEditForm, \
 from institution.models import Institution, NotificationURL
 from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(permission_required('institution.add_institution'),
                   name='dispatch')
 class CreateInstitution(CreateView):
+    """
+    Permite crear una institución
+    """
     model = Institution
     form_class = InstitutionCreateForm
 
@@ -56,8 +59,8 @@ class CreateInstitution(CreateView):
             self.object = create_certiticate(
                 self.object.domain, self.object)
         except Exception as e:
-            logger.error(
-                'CreateInstitution: Error building certificates %r' % (e,))
+            logger.error({'message': 'CreateInstitution: Error building certificates',
+                         'data': e, 'location': __file__})
             messages.warning(
                 self.request,
                 _("Something was wrong building the certificates,\
@@ -71,9 +74,8 @@ class CreateInstitution(CreateView):
         self.object.save()
         self.object.private_key = private_key
         context = self.get_context_data()
-        logger.info("CreateInstitution: %s by %s" % (
-            self.object.name,
-            self.request.user.username))
+        logger.info({'message': "CreateInstitution:", 'data':{'institution':
+            self.object.name,  'username': self.request.user.username}, 'location': __file__})
         return render(self.request, 'institution/show_create_institution.html',
                       context=context)
 
@@ -88,8 +90,7 @@ def get_new_certificates(request, pk):
             institution.public_certificate.decode('utf-8'))
     except Exception as e:
         ok = False
-        logger.error(
-            'Error revoking certificates, %r' % (e,))
+        logger.error({'message': 'Error revoking certificates', 'data':e, 'location': __file__})
         messages.warning(
             request,
             _("Something was wrong revoking certificates, please try again"))
@@ -104,11 +105,12 @@ def get_new_certificates(request, pk):
         Private key was not stored, if you lost it, click in build new keys")
             institution.save()
             institution.private_key = private_key
-            logger.info("Regenerate keys: %s by %s" % (institution.name,
-                                                       request.user.username))
+            logger.info({'message': "Regenerate keys",
+                         'data': {'institution': institution.name,
+                                'username': request.user.username}, 'location': __file__})
         except Exception as e:
-            logger.error(
-                'get_new_certificates: Error building certificates %r' % (e,))
+            logger.error({'message': 'get_new_certificates: Error building certificates',
+                          'data': e, 'location': __file__})
             messages.warning(
                 request,
                 _("Something was wrong building the certificates,\
@@ -145,9 +147,8 @@ class DeleteInstitution(DeleteView):
         success_url = self.get_success_url()
         revoke_certificate(
             self.object.public_certificate.decode('utf-8'))
-        logger.info("DeleteInstitution: %s delete by %r" % (
-            self.object.name,
-            request.user.username))
+        logger.info({'message':"DeleteInstitution ", 'data': {'institution': self.object.name,
+            'usernae': request.user.username}, 'location': __file__})
         self.object.delete()
         return HttpResponseRedirect(success_url)
 
@@ -224,10 +225,10 @@ def delete_notificationurls(request, pk):
                                     pk=notification_url.institution.pk,
                                     user=request.user)
 
-    logger.info("Delete notification urls: in %s url %s -- %s" % (
-        institution.name,
-        notification_url.description,
-        notification_url.url))
+    logger.info({'message': "Delete notification urls", 'data': {
+        'institution':institution.name,
+        'description': notification_url.description,
+        'url': notification_url.url}, 'location': __file__})
     notification_url.delete()
     messages.success(
         request, _('Notification Url was delete succesfully'))

@@ -30,7 +30,7 @@ from institution.authenticator.serializer import \
 from institution.signer.serializer import Sign_Response_Serializer
 from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 def get_datarequest_serializer(data):
@@ -91,7 +91,7 @@ def send_notification(data, serializer=None, request=None,
         response.raise_for_status()
     except Exception as e:
         error = e
-        logger.error('Receptor: notificando a %s lanza %s' %
-                     (data.notification_url, e))
+        logger.error({'message':'Receptor: notificando', 'data': {'url':
+                     data.notification_url, 'error': e}, 'location': __file__})
 
     return error

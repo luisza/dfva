@@ -37,14 +37,14 @@ from rest_framework.decorators import action
 from corebase.logging import get_ip, get_log_institution_information
 from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
-
+from corebase import logger
 
 class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     serializer_class = ValidateCertificate_Request_Serializer
     queryset = ValidateCertificateRequest.objects.all()
     response_class = ValidateCertificateRequest_Response_Serializer
     DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
+    log_sector = 'validate'
 
     @action(detail=True, methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
@@ -81,14 +81,18 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         end_validity deben ignorase o son nulos.
 
         """
+        self.log_sector = 'validate_certificate'
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Validator: Certificate Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Validator: Certificate Institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message':'Certificate Institution',
+                          'data': {'ip':ip, 'data':request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message':'Certificate Institution', 'data':
+                    get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
-        return self._create(request, *args, **kwargs)
+        self.time_messages['operation_type'] = "Validate Certificate"
+        response = self._create(request, *args, **kwargs)
+        self.save_request_metrics(request)
+        return response
 
     @action(detail=True, methods=['post'])
     def institution_document(self, request, *args, **kwargs):
@@ -120,30 +124,33 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         * **warnings:** Lista de advertencias
         * **errors:** Lista de errores encontrados en el documento del tipo [ {'code': 'codigo','description': 'descripción'}, ... ]
         * **signers:** Lista con la información de los firmantes 
-        [ {'identification_number': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
+                       [ {'identification_number': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
 
 
         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
 
         """
-
+        self.log_sector = 'validate_document'
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Validator: Document Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Validator: Document Institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message': 'Validator: Document Institution', 'data':
+                {'ip': ip, 'data': request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message':'Validator: Document Institution', 'data':
+                    get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
         self.serializer_class = ValidateDocument_Request_Serializer
         self.queryset = ValidateDocumentRequest.objects.all()
         self.response_class = ValidateDocumentRequest_Response_Serializer
         self.DEFAULT_ERROR = ERRORES_VALIDAR_XMLCOFIRMA
-        return self._create(request, *args, **kwargs)
-
+        self.time_messages['operation_type'] = "Validate Document"
+        response = self._create(request, *args, **kwargs)
+        self.save_request_metrics(request)
+        return response
 
 class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
                                             viewsets.GenericViewSet):
     serializer_class = SuscriptorInstitution_Serializer
     queryset = ValidateCertificateRequest.objects.all()
+    log_sector = 'validate_suscriptor'
 
     @action(detail=True, methods=['post'])
     def institution_suscriptor_connected(self, request, *args, **kwargs):
@@ -169,8 +176,8 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Connected:  institution %s %r' %
-                         (ip, request.data))
-        logger.info('Connected:  institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message': 'Connected:  institution', 'data':
+                {'ip':ip, 'data':request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message':'Connected:  institution', 'data':
+                    get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
         return self._create(request,  *args, **kwargs)

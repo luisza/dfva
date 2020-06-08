@@ -30,22 +30,31 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse, HttpResponse
 from authorization_management.models import UserConditionsAndTerms
+from authorization_management.utils import authorize_user_to_create_institution
 from pyfva.clientes.firmador import ClienteFirmador
 from django.conf import settings
 from base64 import b64encode
 from corebase.rsa import get_hash_sum
-import logging
 from institution.models import SignDataRequest, Institution
 from django.utils import timezone
 import json
 from importlib import import_module
 
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 @login_required
 def check_autorization(request):
+    """
+    Verifica si un usuario está autorizado o no, si lo está envía el usuario para que se agregue al grupo de usuarios
+    autorizados
+    Además verifica que los términos y condiciones se encuentre firmado por el usuario.
+    Esta vista es llamada cada vez que un usuario se autentica
+
+    :param request: Django request
+    :return: Redireción a home
+    """
     obj = get_object_or_404(UserConditionsAndTerms, user=request.user)
     if obj.signed:
         authorizationCM = import_module(settings.INSTITUION_AUTHORIZATION)
@@ -54,8 +63,8 @@ def check_autorization(request):
             authorize_user_to_create_institution(request.user)
 
     else:
-        messages.warning(request, _(
-            "User didn't sign the terms and conditions "))
+        messages.warning({'data': repr(request), 'message': _(
+            "User didn't sign the terms and conditions ")})
     return redirect(reverse('home'))
 
 
@@ -71,7 +80,7 @@ def sign_document_terms(request, pk):
     if signclient.validar_servicio():
         document_resume = "Acepta términos para el uso responsable de la aplicación"
         document = b64encode(obj.document_signed.encode())
-        hash_sum = get_hash_sum(document, 'sha512')
+        hash_sum = get_hash_sum(obj.document_signed.encode(), 'sha512', b64=True)
         data = signclient.firme(
             request.user.username,
             document.decode(),
@@ -97,7 +106,7 @@ def sign_document_terms(request, pk):
         )
         request.session['signed_doc'] = signed_doc.pk
     else:
-        logger.warning("Sign BCCR not available")
+        logger.warning({'messages': "Sign BCCR not available", 'location': __file__})
         data = signclient.DEFAULT_ERROR
 
     success = data['codigo_error'] == settings.DEFAULT_SUCCESS_BCCR
@@ -187,8 +196,8 @@ def sign_terms(request):
         instance.save()
         context['object'] = instance
     else:
-        messages.warning(request, _(
-            'Request is invalid or incomplete, please try again'))
+        messages.warning({'data': repr(request), 'message':_(
+            'Request is invalid or incomplete, please try again')})
         return redirect(reverse('home'))
 
     return render(request, 'terms_conditions/sign_terms.html', context)

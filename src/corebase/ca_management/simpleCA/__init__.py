@@ -37,7 +37,7 @@ from crlbuilder import CertificateListBuilder
 import logging
 
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 @register()
@@ -51,6 +51,7 @@ def check_ca_in_settings(app_configs, **kwargs):
 class CAManager(CAManagerInterface):
     ca_crt = settings.CA_CERT
     ca_key = settings.CA_KEY
+    log_sector = 'ca_manager'
 
     def generate_certificate(self, domain, save_model):
         """This function takes a domain name as a parameter and then creates
@@ -59,7 +60,8 @@ class CAManager(CAManagerInterface):
         returns the path of key and cert files. If you are yet to generate a CA
         then check the top comments"""
 
-        logger.info("SimpleCA: certificate creation request %s" % (domain,))
+        logger.info({'message': "SimpleCA: certificate creation request ",
+                    'data': (domain, save_model), 'location': __file__}, sector=self.log_sector)
 
         ca_private_key = asymmetric.load_private_key(
             self.ca_key,
@@ -103,8 +105,9 @@ class CAManager(CAManagerInterface):
         save_model.server_public_key = asymmetric.dump_public_key(
             server_public_key)
 
-        logger.debug("SimpleCA: New certificate for %s is %r" %
-                     (domain, save_model.public_certificate))
+        logger.debug({'message': "SimpleCA: New certificate ", 'data':
+                     {'domain': domain, 'public_certificate': save_model.public_certificate},
+                      'location': __file__}, sector=self.log_sector)
         return save_model
 
     def check_certificate(self, certificate):
@@ -113,7 +116,8 @@ class CAManager(CAManagerInterface):
             certificate = fix_certificate(certificate)
             dev = self._check_certificate(certificate)
         except Exception as e:
-            logger.error("SimpleCA: validate EXCEPTION %r" % (e))
+            logger.error({'message': "SimpleCA: validate EXCEPTION ", 'data':e,
+                          'location': __file__}, sector=self.log_sector)
             dev = False
         return dev
 
@@ -143,13 +147,15 @@ class CAManager(CAManagerInterface):
             )
             dev = True
         except errors.PathValidationError as e:
-            logger.debug("SimpleCA: validate PathValidationError %r" % (e))
+            logger.debug({'message': "SimpleCA: validate PathValidationError ",
+                          'data': e, 'location': __file__}, sector=self.log_sector)
             dev = False
         except errors.PathBuildingError as e:
-            logger.debug("SimpleCA: validate PathBuildingError %r" % (e))
+            logger.debug({'message': "SimpleCA: validate PathBuildingError ",
+                          'data': e, 'location': __file__}, sector=self.log_sector)
             dev = False
-        logger.info("SimpleCA: validate cert %r == %r" %
-                    (certificate.serial_number, dev))
+        logger.info({'message': "SimpleCA: validate cert", 'data': {'serial':
+                    certificate.serial_number,  'result': dev}, 'location': __file__}, sector=self.log_sector)
         return dev
 
     def revoke_certificate(self, certificate):
@@ -198,4 +204,4 @@ class CAManager(CAManagerInterface):
         with open(settings.CA_CRL, 'wb') as f:
             f.write(crl_list.dump())
 
-        logger.info("SimpleCA: revoke certificate, don't make anything")
+        logger.info({'message': "SimpleCA: revoke certificate", 'location': __file__}, sector=self.log_sector)

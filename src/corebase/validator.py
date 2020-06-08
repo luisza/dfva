@@ -19,7 +19,7 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
-
+from django.utils import timezone
 from rest_framework import serializers
 from pyfva.clientes.validador import ClienteValidador
 from corebase.time import parse_datetime
@@ -36,44 +36,71 @@ from django.conf import settings
 import logging
 
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 def get_code_from_uuid(code):
+    """
+    Genera un código como el del BCCR basado en un código UUID
+
+    :param code: str - UUID pa calcularle el code
+    :return: str - código semejante al BCCR
+    """
     return str(code).split("-")[-1][:9]
 
 
 class ValidateCertificate_RequestSerializer(
         serializers.HyperlinkedModelSerializer):
+    """
+    Serializador para validar peticiones de validación de certificados
+    """
+    log_sector = 'validate_certificate'
+
+    #: Almacena la petición encriptada
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado \
         encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
         con PKCS1_OAEP """)
-    readonly_fields = ['data']
-    check_internal_fields = None
 
+    readonly_fields = ['data']
+    #: Campos a validar una vez desencriptados
+    check_internal_fields = None
+    #: Modelo donde almacenar las solicitudes
     validate_request_class = None
+    #: Modelo para almacenar los datos desencriptados
     validate_data_class = None
+    #: Almacena las métricas de tiempo
+    time_messages = {}
 
     def save_subject(self):
+        """
+        No hace nada de momento, solo existe para sobreescribir al padre
+        """
         pass
 
     def call_BCCR(self):
+        """
+        Hace la petición de validación en el servicio del BCCR
+
+        :return: Nada
+        """
         client = ClienteValidador(
             negocio=self.institution.bccr_bussiness,
             entidad=self.institution.bccr_entity,
         )
+        self.time_messages['start_bccr_call'] = timezone.now()
         if client.validar_servicio('certificado'):
-
             data = client.validar_certificado_autenticacion(
                 self.requestdata['document'])
             data['code'] = get_code_from_uuid(self.cert_request.code)
         else:
-            logger.warning("Validate certificate BCCR not available")
+            logger.warning({'message': "Validate certificate BCCR not available",
+                            'location': __file__}, sector=self.log_sector)
             data = client.DEFAULT_CERTIFICATE_ERROR
             data['code'] = 'N/D'
-
-        logger.debug("Validator BCCR: certificate %r" % (data, ))
+        self.time_messages['end_bccr_call'] = timezone.now()
+        logger.debug({'message': "Validator BCCR: certificate ", 'data': data, 'location': __file__},
+                     sector=self.log_sector)
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
@@ -92,7 +119,14 @@ class ValidateCertificate_RequestSerializer(
             self.adr.start_validity = data['certificado']['inicio_vigencia']
             self.adr.end_validity = data['certificado']['fin_vigencia']
 
+        self.time_messages['transaction_status'] = self.adr.status
+        self.time_messages['transaction_status_text'] = self.adr.status_text
+        self.time_messages['transaction_success'] = self.adr.was_successfully
+
     def save(self, **kwargs):
+        """
+        Guarda en la base de datos la petición y la respuesta del BCCR
+        """
         odata = {}
         for field in self.Meta.fields:
             if field == 'data':
@@ -103,29 +137,42 @@ class ValidateCertificate_RequestSerializer(
         self.cert_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()
         self.call_BCCR()
+        self.time_messages['start_save_database'] = timezone.now()
         self.adr.save()
-
         self.cert_request.data_request = self.adr
         self.cert_request.save()
+        self.time_messages['end_save_database'] = timezone.now()
         return self.cert_request
 
-
+# TODO: Hacer el cálculo del tiempo de duración
 class ValidateDocument_RequestSerializer(
         serializers.HyperlinkedModelSerializer):
+    """
+    Serializador para validar peticiones de validación de documentos
+    """
+    #: Almacena la petición encriptada
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado \
         encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
         con PKCS1_OAEP """)
     readonly_fields = ['data']
+    #: Campos a validar una vez desencriptados
     check_internal_fields = None
-
+    #: Modelo de db donde almacenar las solicitudes
     validate_request_class = None
+    #: Modelo de db para almacenar los datos desencriptados
     validate_data_class = None
+    log_sector = 'validate_document'
 
     def save_subject(self):
         pass
 
     def get_default_error(self):
+        """
+        Retorna la estructura de datos de error adecuada dependiendo del formato del documento
+
+        :return: dict - Respuesta de error según formato
+        """
         dev = ERRORES_VALIDAR_XMLCOFIRMA
         if self.requestdata['format'] == 'cofirma':
             dev = ERRORES_VALIDAR_XMLCOFIRMA
@@ -140,19 +187,27 @@ class ValidateDocument_RequestSerializer(
         return dev
 
     def call_BCCR(self):
+        """
+        Llama al Validador de documentos del BCCR
+
+        :return:  Nada
+        """
         client = ClienteValidador(
             negocio=self.institution.bccr_bussiness,
             entidad=self.institution.bccr_entity,
         )
+        self.time_messages['start_bccr_call'] = timezone.now()
         if client.validar_servicio('documento'):
             data = client.validar_documento(
                 self.requestdata['document'], self.requestdata['format'])
 
         else:
-            logger.warning("Validate document BCCR not available")
+            logger.warning({'message': "Validate document BCCR not available", 'location': __file__},
+                           sector=self.log_sector)
             data = client.DEFAULT_DOCUMENT_ERROR(self.get_default_error())
-
-        logger.debug("Validator BCCR:  document %r" % (data, ))
+        self.time_messages['end_bccr_call'] = timezone.now()
+        logger.debug({'message': "Validator BCCR:  document", 'data': data, 'location': __file__},
+                     sector=self.log_sector)
         self.save_subject()
         self.adr.request_datetime = parse_datetime(
             self.requestdata['request_datetime'])
@@ -165,14 +220,23 @@ class ValidateDocument_RequestSerializer(
                 self.get_default_error(),  data['codigo_error'])
         self.adr.was_successfully = data['exitosa']
 
-        self.adr.save()
+        self.time_messages['transaction_status'] = self.adr.status
+        self.time_messages['transaction_status_text'] = self.adr.status_text
+        self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == self.adr.status
 
-        if data['exitosa']:
-            self.get_warnings(data['advertencias'])
-            self.get_found_errors(data['errores_encontrados'])
-            self.get_signers(data['firmantes'])
+        self.time_messages['start_save_database'] = timezone.now()
+        self.adr.save()
+        self.get_warnings(data['advertencias'])
+        self.get_found_errors(data['errores_encontrados'])
+        self.get_signers(data['firmantes'])
 
     def get_signers(self, signers):
+        """
+        Extrae la información de los firmantes del documento
+
+        :param signers:  Lista de firmantes del documento recibido del BCCR
+        :return: Nada
+        """
         if signers is None:
             return
         for signer in signers:
@@ -184,6 +248,12 @@ class ValidateDocument_RequestSerializer(
             self.adr.signers.add(signerobj)
 
     def get_found_errors(self, errors):
+        """
+        Retorna la lista de errores encontrados en el documento
+
+        :param errors: Lista datos de error del BCCR
+        :return: Nada
+        """
         if errors is None:
             return
         for error in errors:
@@ -194,6 +264,12 @@ class ValidateDocument_RequestSerializer(
             self.adr.errors.add(error)
 
     def get_warnings(self, warnings):
+        """
+        Extrae las advertencias del documento de la información obtenida del BCCR
+
+        :param warnings: Lista de advertencias del BCCR
+        :return: Nada
+        """
         if warnings is None:
             return
         for warning in warnings:
@@ -204,6 +280,9 @@ class ValidateDocument_RequestSerializer(
                 self.adr.warnings.add(adv)
 
     def save(self, **kwargs):
+        """
+        Guarda los datos en la base de datos
+        """
         odata = {}
         for field in self.Meta.fields:
             if field == 'data':
@@ -219,17 +298,29 @@ class ValidateDocument_RequestSerializer(
 
         self.document_request.data_request = self.adr
         self.document_request.save()
+        self.time_messages['end_save_database'] = timezone.now()
         return self.document_request
 
 
 class Suscriptor_Serializer(serializers.ModelSerializer):
+    """
+    Verifica si un usuario está conectado en este momento
+    """
+    #: Almacena la petición encriptada
     data = serializers.CharField(
         help_text="""Datos de solicitud de validación de certificado \
         encriptados usando AES.MODE_EAX con la llave de sesión encriptada \
         con PKCS1_OAEP""")
     readonly_fields = ['data']
+    log_sector = 'validate_suscriptor'
 
     def is_valid(self, raise_exception=False):
+        """
+        Verifica si la información suminstrada es correcta
+
+        :param raise_exception:  Si es True relanza la excepción
+        :return: False si existen algún error y True si los datos son correctos
+        """
         serializers.Serializer.is_valid(
             self, raise_exception=raise_exception)
         self.validate_digest()
@@ -239,6 +330,14 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
         return not bool(self._errors)
 
     def call_BCCR(self):
+        """
+        Llama al métido de verificar si el suscriptor está conectado.
+
+        .. note:: Si existe algún problema de comunicación con el BCCR se responde como False, aunque el usuario si esté
+                  conectado, pero ante la imposibilidad de determinar si lo está o no, se prefiere el no está conectado
+
+        :return: True o False dependiendo el suscriptor está desconectado o no
+        """
         signclient = ClienteFirmador(
             negocio=self.institution.bccr_bussiness,
             entidad=self.institution.bccr_entity,
@@ -248,9 +347,10 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
             data = signclient.suscriptor_conectado(
                 self.requestdata['identification'])
         else:
-            logger.warning("Sign/Validate:  BCCR No disponible")
+            logger.warning({'message': "Sign/Validate:  BCCR No disponible", 'location': __file__},
+                           sector=self.log_sector)
             data = False
-        logger.debug('Subscriptor %r' % (data,))
+        logger.debug({'message':'Subscriptor ', 'data': data, 'location': __file__}, sector=self.log_sector)
         return data
 
     def save(self, **kwargs):
@@ -258,12 +358,18 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
 
 
 class ErrorFoundSerializer(serializers.ModelSerializer):
+    """
+    Serializa los mensaje de error, para retornarse las respuestas
+    """
     class Meta:
         model = ErrorFound
         fields = ('code', 'detail')
 
 
 class SignerSerializer(serializers.ModelSerializer):
+    """
+    Serializa los usuarios firmantes.
+    """
     class Meta:
         model = Signer
         fields = ('identification_number',

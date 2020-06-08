@@ -1,0 +1,88 @@
+{% extends 'adminlte/base.html'%}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="jumbotron">
+	<form method="GET" action="">
+
+		  <div class="row">
+			  <div class="col-sm">Página: <br><input type="text" value="{{p}}" name="p" /><br>
+		Elementos por página: <br> <input type="text" value="{{c}}" name="c" /><br>
+		Total de páginas: {{pages}}</div>
+			   <div class="col-sm">
+				   <table>
+					   {{form}}
+				   </table>
+			   </div>
+			   <div class="col-sm"> <input class="btn btn-info" type="submit" value="Filtrar"> </div>
+		  </div>
+
+
+
+
+	</form>
+
+</div>
+
+	<div style="width:100%;">
+		<canvas id="canvas"></canvas>
+	</div>
+
+{% endblock %}
+{% block javascript_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="{% static 'js/Chart_2.4.0.min.js' %}"></script>
+<script>
+var timeFormat = 'll HH:mm';
+var config = {
+			type: 'line',
+			data: {
+				labels: [ // Date Objects
+					{% for label in dates_requested %}
+                      new Date({{label|date:"Y, m, d, H, i, 0"}}) {% if not forloop.last %},{% endif %}
+					{% endfor %}
+				],
+				datasets: [{
+					label: 'Sumatoria de peticiones por minuto',
+					backgroundColor: "{{color}}",
+					borderColor: "{{color}}",
+					fill: false,
+					data: [{{data|join:","}} ],
+				}]
+			},
+			options: {
+				title: {
+					text: 'Peticiones por minuto'
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							parser: timeFormat,
+							// round: 'day'
+							tooltipFormat: 'll HH:mm',
+							//unit: 'minute'
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Horas'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Cantidad de peticiones'
+						}
+					}]
+				},
+			}
+		};
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+
+		};
+</script>
+
+
+{% endblock %}

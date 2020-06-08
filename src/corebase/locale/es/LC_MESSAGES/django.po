@@ -7,22 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-11 20:34-0600\n"
-"PO-Revision-Date: 2018-09-11 20:41-0600\n"
+"POT-Creation-Date: 2019-09-30 22:05-0600\n"
+"PO-Revision-Date: 2019-09-30 22:08-0600\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.2.1\n"
 
-#: forms.py:24 forms.py:39
-msgid "Continue"
-msgstr "Continuar"
-
-#: models.py:9
+#: models.py:36 models.py:82 models.py:150
 msgid ""
 "Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o "
 "100000000000"
@@ -30,7 +26,7 @@ msgstr ""
 "Debe tener el formato 08-8888-8888 para nacionales o 500000000000 o "
 "100000000000"
 
-#: models.py:26
+#: models.py:61
 msgid ""
 "Suma hash de datos de tamaño máximo 130 caracteres, usando el\n"
 "                                 algoritmo especificado "
@@ -38,29 +34,37 @@ msgstr ""
 "Suma hash de datos de tamaño máximo 130 caracteres, usando el\n"
 "                                 algoritmo especificado "
 
-#: models.py:29
+#: models.py:65
 msgid " Debe ser alguno de los siguientes: sha256, sha384, sha512"
-msgstr "Debe ser alguno de los siguientes: sha256, sha384, sha512"
+msgstr " Debe ser alguno de los siguientes: sha256, sha384, sha512"
 
-#: models.py:75
-msgid "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
-msgstr "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
+#: models.py:86 models.py:154
+msgid "'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'"
+msgstr "'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'"
 
-#: serializer.py:24
+#: models.py:272
 #, python-format
-msgid "Hash sums are not equal %s != %s"
-msgstr "Suma Hash no son iguales %s != %s"
+msgid "No code reference %d"
+msgstr "Sin código de referencias %d"
 
 #: serializer.py:48
 #, python-format
-msgid "%s is not valid algorithm. supported are %s "
-msgstr "%s no es un algoritmo válido, los soportados son %s"
+msgid "Hash sums are not equal %(hashsum)s != %(datahash)s"
+msgstr "Suma Hash no son iguales %(hashsum)s != %(datahash)s"
 
-#: serializer.py:59
+#: serializer.py:97
+#, python-format
+msgid ""
+"%(algorithm_hash)s is not valid algorithm. supported are %(supported_algo)s "
+msgstr ""
+"%(algorithm_hash)s no es un algoritmo válido, los soportados son  "
+"%(supported_algo)s "
+
+#: serializer.py:109
 msgid "Invalid certificate"
 msgstr "Certificado inválido"
 
-#: serializer.py:69
+#: serializer.py:122
 #, python-format
 msgid "Data was not decrypted well %r"
 msgstr "Datos no fueron desencriptados bien %r"
@@ -77,15 +81,27 @@ msgstr "Mis Aplicaciones"
 msgid "Add new application"
 msgstr "Agregar nueva aplicación"
 
-#: templates/adminlte/base.html:60
+#: templates/adminlte/base.html:61
+msgid "Manage who can create institutions"
+msgstr "Administra quienes crean instituciones"
+
+#: templates/adminlte/base.html:62
+msgid "Authorizations"
+msgstr "Autorizaciones"
+
+#: templates/adminlte/base.html:68 templates/adminlte/base.html:69
+msgid "Show system stats"
+msgstr "Estadísticas de sistema"
+
+#: templates/adminlte/base.html:77
 msgid "Documentation"
 msgstr "Documentación"
 
-#: templates/adminlte/base.html:70 templates/adminlte/base.html:72
+#: templates/adminlte/base.html:87 templates/adminlte/base.html:89
 msgid "Logout"
 msgstr "Salir"
 
-#: templates/adminlte/base.html:75 templates/adminlte/base.html:77
+#: templates/adminlte/base.html:92 templates/adminlte/base.html:94
 #: templates/registration/login.html:38 templates/registration/login.html:44
 #: templates/registration/login.html:52
 msgid "Login"
@@ -127,14 +143,17 @@ msgstr "Autenticarse con firma digital"
 msgid "To administrate this site you need to use Digital signature"
 msgstr "Para administrar este sitio usted necesita tener firma digital"
 
-#: terms_conditions/__init__.py:37
-msgid "User didn't sign the terms and conditions "
-msgstr "El usuario no ha firmado los términos y condiciones"
+#~ msgid "Continue"
+#~ msgstr "Continuar"
 
-#: terms_conditions/__init__.py:167
-msgid "Request is invalid or incomplete, please try again"
-msgstr "La petición es inválida o incompleta, por favor vuelva a intentarlo"
+#~ msgid "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
+#~ msgstr "¿Porqué nosotros deberíamos permitirle usar el servicio de firma?"
 
-#: terms_conditions/simple_authorization.py:12
-msgid "Congrats!, Your can now add applications"
-msgstr "Felicidades, usted ya puede agregar aplicaciones"
+#~ msgid "User didn't sign the terms and conditions "
+#~ msgstr "El usuario no ha firmado los términos y condiciones"
+
+#~ msgid "Request is invalid or incomplete, please try again"
+#~ msgstr "La petición es inválida o incompleta, por favor vuelva a intentarlo"
+
+#~ msgid "Congrats!, Your can now add applications"
+#~ msgstr "Felicidades, usted ya puede agregar aplicaciones"

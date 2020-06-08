@@ -30,12 +30,33 @@ from institution.models import AuthenticateDataRequest, Institution
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def login_with_bccr(request):
+    '''
+    Esta vista permite iniciar el proceso de autenticación mediante firma digital, es llamada después de solicitarle
+    la identificación al usuario.
+    Se encarga de llamar al servicio de autenticación del BCCR con la identificación del usuario y responderle a la vista
+    de procesamiento de firma los valores necesarios para que el flujo continue
+
+    :param request: POST -- se debe enviar el campo **Identificacion** el cual contiene el número de identificación del
+        usuario a identificar en el formato soportado por el BCCR.
+
+    :return: JSON -- Se retorna un objeto JSON con los siguientes campos
+
+        - FueExitosaLaSolicitud: La solicitud se procesó sin problemas (True, False)
+        - TiempoMaximoDeFirmaEnSegundos: Tiempo máximo en que la vista debe mostrarse al usuario, por defecto 240,
+        - TiempoDeEsperaParaConsultarLaFirmaEnSegundos: Cada cuantos segundos debe preguntar si la autenticación ya se realizó
+        - CodigoDeVerificacion:  Código de verificación de la transacción que debe mostrarse al usuario
+        - IdDeLaSolicitud: Código de identificación de la solicitud, usado para consultar el estado de la transacción
+        - DebeMostrarElError: Debe mostrar un mensaje al usuario, generalmente usado cuando existen errores
+        - DescripcionDelError: Mensaje de error a mostrar si se habilita la opción DebeMostrarElError
+        - ResumenDelDocumento: Resumen del documento a firmar
+
+    '''
     identification = request.POST.get('Identificacion', '')
     if identification:
         authclient = ClienteAutenticador(settings.DEFAULT_BUSSINESS,
@@ -45,7 +66,7 @@ def login_with_bccr(request):
                 identification)
 
         else:
-            logger.warning("Auth BCCR not available")
+            logger.warning({'message':"Auth BCCR not available", 'location': __file__})
             data = authclient.DEFAULT_ERROR
 
         obj = AuthenticateDataRequest.objects.create(
@@ -82,6 +103,24 @@ def login_with_bccr(request):
 
 
 def consute_firma(request):
+    '''
+    Verifica si un proceso de firma ya se realizó con éxito, esta vista es llamada por dfva_html para saber cuando el usuario
+    ya está autenticado o para saber si existe algún error que deba mostrarse al usuario.
+    Esta vista supone que se llama mediante JSONP
+
+    :param request: GET -- Debe ingresarse vía GET los siguientes parámetros
+
+        - callback: Función a llamar después para retornar los datos solicitados
+        - IdDeLaSolicitud: Id de transacción usado para verificar el estado de la transacción
+
+    :return: JSON -- Retorna un string con el formato nombre_función(parámetros), la función es la que se ingresa por
+        callback y los parámetros son:
+
+            - DebeMostrarElError: Debe mostrar un mensaje al usuario, generalmente usado cuando existen errores
+            - DescripcionDelError:   Mensaje de error a mostrar si se habilita la opción DebeMostrarElError
+            - FueExitosa: La transacción fue exitosa (no quiere decir que se haya firmado, solo que el proceso de consulta fue exitoso)
+            - SeRealizo: True si ya se realizó el proceso de firma por el usuario o si existe un error a mostrar al usaurio
+    '''
     callback = request.GET.get('callback')
     pk = request.GET.get('IdDeLaSolicitud', '')
     authdata = AuthenticateDataRequest.objects.filter(

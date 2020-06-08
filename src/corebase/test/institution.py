@@ -26,13 +26,15 @@ import json
 from corebase.rsa import encrypt, get_hash_sum
 from corebase.test.institution_utils import create_institution, create_url
 from django.test.testcases import TestCase
-
+from django.conf import settings
 
 class BaseInstitutionTest(TestCase):
 
     URL_NOTIFICATION = 'https://dfva.cr/notification'
     IDENTIFICATION = '08-0888-0888'
     ALGORITHM = 'sha512'
+    REASON = None
+    PLACE = None
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -66,7 +68,7 @@ class BaseInstitutionTest(TestCase):
 
     def ok_test(self, response):
         self.assertNotEqual(response['code'], 'N/D')
-        self.assertEqual(response['status'], 1)
+        self.assertEqual(response['status'], settings.DEFAULT_SUCCESS_BCCR)
 
     def check_wrong_url_test(self, response):
         self.assertEqual(response['code'], 'N/D')

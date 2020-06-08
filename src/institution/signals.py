@@ -40,13 +40,13 @@ def create_group(sender, **kwargs):
     for app_config in apps.get_app_configs():
         if app_config.name == 'institution':
             app_config.models_module = True
-            create_permissions(app_config, apps=apps, verbosity=0)
+            create_permissions(app_config, verbosity=0)
             app_config.models_module = None
 
     group, created = Group.objects.get_or_create(
         name=settings.INSTITUTION_GROUP_NAME)
     if created:
-        for perm in ['add_institution', 'change_institution', 'delete_institution']:
+        for perm in ['view_institution', 'add_institution', 'change_institution', 'delete_institution']:
             add_thing = Permission.objects.get(codename=perm)
             group.permissions.add(add_thing)
         group.save()

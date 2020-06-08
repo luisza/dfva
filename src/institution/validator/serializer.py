@@ -28,6 +28,7 @@ from institution.models import ValidateCertificateRequest,\
 from rest_framework import serializers
 from corebase.validator import SignerSerializer, ErrorFoundSerializer
 from institution.serializer import InstitutionBaseSerializer
+from institution.validator.forms import ValidateCertificateForm, ValidateDocumentForm
 
 
 class ValidateCertificate_Request_Serializer(
@@ -40,7 +41,8 @@ class ValidateCertificate_Request_Serializer(
 
     validate_request_class = ValidateCertificateRequest
     validate_data_class = ValidateCertificateDataRequest
-
+    form = ValidateCertificateForm
+    
     def save_subject(self):
         self.adr.notification_url = self.requestdata['notification_url']
         self.adr.institution = self.institution
@@ -87,6 +89,7 @@ class ValidateDocument_Request_Serializer(InstitutionBaseSerializer,
 
     validate_request_class = ValidateDocumentRequest
     validate_data_class = ValidateDocumentDataRequest
+    form = ValidateDocumentForm
 
     def save_subject(self):
         self.adr.notification_url = self.requestdata['notification_url']

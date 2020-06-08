@@ -18,7 +18,7 @@
   <div class="row">
 
     <div class="col-4 "> {% trans 'Name' %}: </div>
-    <div class="col-8">{{object.name}} --{{object.active}}  </div>
+    <div class="col-8">{{object.name}} -- {{object.active}}  </div>
      
   
     <div class="col-4 border-bottom my-3"> {% trans 'Identification code' %}:</div>
@@ -46,9 +46,9 @@
    
  <div class="row align-items-start"> 
     <div class="col-4 "> {% trans 'Public key' %} </div>
-    <div class="col-8 my-5"> <textarea rows="17" cols="60">{{object.server_public_key}}</textarea> </div>
+    <div class="col-8 my-5"> <textarea rows="17" cols="60">{{object.server_public_key.decode}}</textarea> </div>
     <div class="col-4"> {% trans 'Public certificate' %}: </div>
-    <div class="col-8 my-3"><textarea rows="25" cols="60">{{object.public_certificate}}</textarea></div>  
+    <div class="col-8 my-3"><textarea rows="25" cols="60">{{object.public_certificate.decode}}</textarea></div>
   </div>
 </div>
 

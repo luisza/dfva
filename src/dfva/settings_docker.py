@@ -28,8 +28,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY)
 DOCKER = True
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
-
-
+ELK_LOGGING = True
+DEBUG_LAST_REQUESTS = True
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DATABASE_ENGINE', 'django.db.backends.postgresql'),
@@ -113,3 +113,8 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/%s' % (DFVA_REMOVE_SIGN, )),
     },
 }
+
+
+if ELK_LOGGING:
+    INSTALLED_APPS += ['django_elasticsearch_dsl', 'elk_logging']
+    from elk_logging.elk_logs import *

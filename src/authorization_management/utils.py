@@ -24,5 +24,11 @@ from django.conf import settings
 
 
 def authorize_user_to_create_institution(user):
+    """
+    Agrega un usuario al grupo de usuarios autorizados
+
+    :param user: Usuario a autorizar
+    :return:  None
+    """
     group = Group.objects.get(name=settings.INSTITUTION_GROUP_NAME)
     user.groups.add(group)

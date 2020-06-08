@@ -23,7 +23,7 @@
 from institution.tests.base_institution_test import SignCase, CheckSignCase,\
     DeleteSignCase
 from corebase.test.documents import XMLFILE, HASHXML, ODFFILE, HASHODF, \
-    DOCXFILE,   HASHDOCX
+    DOCXFILE, HASHDOCX, HASHPDF, PDFFILE
 
 
 # ---- Sign -------
@@ -49,6 +49,20 @@ class SignMSOfficeCase(SignCase):
     DOCUMENT = DOCXFILE
     HASH = HASHDOCX
     FORMAT = 'msoffice'
+
+class SignPDFCase(SignCase):
+    DOCUMENT = PDFFILE
+    HASH = HASHPDF
+    FORMAT = 'pdf'
+
+    def test_wrong_reason_size(self):
+        response = self.sign(reason="a"*126)
+        self.assertEqual(response['status'], 8)
+
+    def test_wrong_reason_size(self):
+        response = self.sign(place="a"*151)
+        self.assertEqual(response['status'], 11)
+
 
 # --------- Check sign ---------
 
@@ -76,6 +90,13 @@ class CheckSignMSOfficeCase(CheckSignCase):
     HASH = HASHDOCX
     FORMAT = 'msoffice'
 
+class CheckSignPDFCase(CheckSignCase):
+    DOCUMENT = PDFFILE
+    HASH = HASHPDF
+    FORMAT = 'pdf'
+    REASON = "Una prueba"
+    PLACE = "Un lugar de la mancha"
+
 # ----- DELETE -----------------
 
 
@@ -101,3 +122,10 @@ class DeleteSignMSOfficeCase(DeleteSignCase):
     DOCUMENT = DOCXFILE
     HASH = HASHDOCX
     FORMAT = 'msoffice'
+
+class DeleteSignPDFCase(DeleteSignCase):
+    DOCUMENT = PDFFILE
+    HASH = HASHPDF
+    FORMAT = 'pdf'
+    REASON = "Una prueba"
+    PLACE = "Un lugar de la mancha"

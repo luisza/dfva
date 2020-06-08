@@ -20,25 +20,34 @@
 @license: GPLv3
 '''
 
-from __future__ import unicode_literals
-
-import logging
+from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 from authorization_management.forms import RegistationForm, \
     UserConditionsAndTermsForm
 from authorization_management.models import UserConditionsAndTerms
+from corebase import logger
+from corebase.models import System_Request_Metric
+
 from corebase.rsa import (get_reponse_institution_data_encrypted,
                           get_reponse_person_data_encrypted)
 from pyfva.constants import get_text_representation
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.settings import api_settings
-from django.conf import settings
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
+def check_ok(request):
+    """
+    This view help to check service status with apps like icinga o nagios
+    :param request:
+    :return: OK
+    """
+    return HttpResponse("ok")
 
 def home(request):
     context = {
@@ -51,7 +60,7 @@ def home(request):
     method = request.method
     if method == 'POST':
         form_post = request.POST
-    if user.is_authenticated():
+    if user.is_authenticated:
 
         while check_form:
             check_form = False
@@ -87,65 +96,109 @@ def home(request):
 
 
 class ViewSetBase:
+    """
+    Implementa los métodos que todas las vistas deben implementar para responder en el API
+    """
+    #: Almacena las métricas de tiempo
+    time_messages = {}
+    log_sector = 'corebase'
 
     def get_encrypted_response(self, data, serializer):
+        """
+        Cuando se debe dar una respuesta, esta se encripta usando la llave pública de la institución
+
+        :param data: Información que se debe encriptar
+        :param serializer: Serializador usado para determinar cual es la institución con la que se comunica
+        :return: dict - Serializador ya encriptado
+        """
         dev = {}
+        self.time_messages['start_encryption'] = timezone.now()
         if "institution" in serializer.fields:
             dev = get_reponse_institution_data_encrypted(
                 data, serializer.institution,
                 algorithm=serializer.data.get('algorithm', "sha512"),
                 method=serializer.encrypt_method)
-        else:  # person
-            dev = get_reponse_person_data_encrypted(
-                data,
-                serializer.person.authenticate_certificate if hasattr(
-                    serializer, 'person') else None,
-                algorithm=serializer.data.get('algorithm', "sha512"))
+            if hasattr(serializer, 'institution') and serializer.institution:
+                self.time_messages['institution'] = serializer.institution
 
+        self.time_messages['end_encryption'] = timezone.now()
         return dev
 
     def get_success_headers(self, data):
+        """
+        Retorna los encabezados http a devolver con ls peticiones
+        """
         try:
             return {'Location': data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
 
     def _create(self, request, *args, **kwargs):
+        """
+        Procesa las peticiones de creación (Firma, Autenticación, Validación)
+
+        :return: Http Response con la información serializada e encriptada
+        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=False):
             serializer.save()
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
-            logger.debug('Data create Response: %r' % (serializer.adr,))
+            logger.debug({'message':'Data create Response: ', 'data': serializer.adr,
+                          'location': __file__}, sector=self.log_sector)
             # adr.is_valid(raise_exception=False)
-            logger.info('Response create ok %s' %
-                        (serializer.data['data_hash']))
+            logdata = adr.data
+            if not settings.LOGGING_ENCRYPTED_DATA:
+                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'sign_document']}
 
+            logger.info({'message': 'Response create OK', 'data':
+                        {'data_hash': serializer.data['data_hash'], 'data':logdata},
+                         'location': __file__}, sector=self.log_sector)
+            self.time_messages.update(serializer.time_messages)
             return Response(self.get_encrypted_response(adr.data, serializer),
                             status=status.HTTP_201_CREATED, headers=headers)
-        logger.info('Response create ERROR %s' %
-                    (serializer.data['data_hash'] if 'data_hash' in
-                     serializer.data else '',))
+        logger.info({'messsage': 'Response create ERROR', 'data': {'errors':serializer._errors,
+                    'data_hash': serializer.data['data_hash'] if 'data_hash' in
+                     serializer.data else '',}, 'location': __file__},
+                    sector=self.log_sector)
+        self.time_messages.update(serializer.time_messages)
         return self.get_error_response(serializer)
 
     def show(self, request, *args, **kwargs):
+        """
+        Implementa las vistas authenticate_show, sign_show, es la vista encargada de verificar el estado
+        de la transacción mientras la notificación del BCCR no ha llegado
+
+        :return:  Http Response con la información serializada e encriptada
+        """
         serializer = self.get_serializer(data=request.data)
         if serializer.check_code(kwargs['pk'], raise_exception=False):
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
-            logger.debug('Data create Response: %r' % (serializer.adr,))
-            logger.info('Response show ok %s' %
-                        (serializer.data['data_hash'], ))
+            logger.debug({'message':'Data create Response:', 'data':serializer.adr,
+                          'location': __file__}, sector=self.log_sector)
+            logdata = adr.data
+            if not settings.LOGGING_ENCRYPTED_DATA:
+                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'sign_document']}
+            logger.info({'message': 'Response show OK', 'data':
+                {'data_hash': serializer.data['data_hash'], 'data': logdata}, 'location': __file__},
+                        sector=self.log_sector)
             # adr.is_valid(raise_exception=False)
             return Response(self.get_encrypted_response(adr.data, serializer),
                             status=status.HTTP_201_CREATED, headers=headers)
 
-        logger.info('Response show ERROR %s' %
-                    (serializer.data['data_hash'] if 'data_hash' in
-                     serializer.data else '',))
+        logger.info({'message': 'Response show ERROR', 'data': {'errors': serializer._errors,
+                    'data_hash': serializer.data['data_hash'] if 'data_hash' in
+                     serializer.data else ''}, 'location': __file__}, sector=self.log_sector)
         return self.get_error_response(serializer)
 
     def delete(self, request, *args, **kwargs):
+        """
+        Elimina una transacción del proceso, usada en los métodos authenticate_delete y sign_delete
+
+        :return:  Http Response con la información serializada e encriptada
+        """
+
         dev = False
         serializer = self.get_serializer(data=request.data)
         if serializer.check_code(kwargs['pk'], raise_exception=False):
@@ -155,22 +208,54 @@ class ViewSetBase:
                 serializer.adr.signrequest.delete()
             serializer.adr.delete()
             dev = True
+        logger.info({'message': 'Response delete %s'%( 'OK' if dev else "ERROR"),
+                     'data': request.data, 'location': __file__}, sector=self.log_sector)
         response = {'result': dev}
         headers = self.get_success_headers(response)
         return Response(self.get_encrypted_response(response, serializer),
                         status=status.HTTP_201_CREATED, headers=headers)
 
     def get_error_response(self, serializer):
-        dev = {"error_info": serializer._errors,
+        """
+        Genera un mensaje de error, para cuando no se puede obtener información del BCCR o sucede alguna excepción
+        no controlada
+
+        :param serializer: Serializador usado, en caso de errores si gestionables
+        :return: Http Response con la información serializada e encriptada
+        """
+        error_code = 2
+        if 'data_internal' in serializer.errors and any(
+                ['identification' in x for x in serializer.errors['data_internal'] ]):
+            error_code = 10
+
+        if hasattr(serializer, 'error_code'):
+            error_code = serializer.error_code
+
+        dev = {"error_info": serializer.errors,
                'code': 'N/D',
-               'status': 2,
+               'status': error_code,
                'status_text': get_text_representation(
-                   self.DEFAULT_ERROR,  2),
+                   self.DEFAULT_ERROR,  error_code),
                'id_transaction': 0
                }
-        logger.debug('ViewSetBase Error %r' %
-                     (dev, ))
+        logger.debug({'message': 'ViewSetBase Error', 'data': dev, 'location': __file__},
+                     sector=self.log_sector)
+        self.time_messages['transaction_status'] = dev['status']
+        self.time_messages['transaction_status_text'] = dev['status_text']
+        self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == dev['status']
         return Response(self.get_encrypted_response(dev, serializer))
+
+    def save_request_metrics(self, request):
+        """
+        Almacena las métricas de la transacción antes de responderle al usuario.
+        Este método se llama de último al procesar la transacción.
+
+        :return: System_Request_Metric
+        """
+        self.time_messages['request_size'] = request.META['CONTENT_LENGTH']
+        metric = System_Request_Metric(**self.time_messages)
+        metric.save()
+        return metric
 
 
 class BaseSuscriptor(ViewSetBase):

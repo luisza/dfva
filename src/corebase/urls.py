@@ -22,10 +22,12 @@
 
 from django.conf.urls import url
 
-
+from corebase.reports.serialtime import show_timeperminute
+from corebase.views import check_ok
 from pyfva.receptor.ws_service import ResultadoDeSolicitudSoap_SERVICE
 from corebase.bccr_checks import soap_dispatcher
 from django.conf import settings
+from corebase.reports import views as stats
 
 dispatcher = soap_dispatcher(ResultadoDeSolicitudSoap_SERVICE)
 
@@ -34,6 +36,14 @@ if settings.ONLY_BCCR:
     developurl = r'^$'
 
 urlpatterns = [
+    url('^check$', check_ok, name="check_ok"),
+    url(settings.DEFAULT_NOTIFICATION_URL, dispatcher, name='ws_receptor'),
+    url("corebase_stats", stats.render_stats, name="index_stats"),
+    url("durations_stats", stats.get_durations_stats, name="durations_stats"),
+    url("get_total_stats", stats.get_total_stats, name="total_stats"),
+    url("get_error_stats", stats.get_error_stats, name="error_stats"),
+    url("get_size_stats", stats.get_size_stats, name="size_stats"),
+    url("total_per_minute", show_timeperminute, name="total_per_minute")
 
     url(developurl, dispatcher, name='ws_receptor'),
 ]

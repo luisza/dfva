@@ -37,9 +37,8 @@ from institution.authenticator.serializer import \
 from institution.models import AuthenticateRequest
 from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
-# Create your views here.
 
 
 class AuthenticateRequestViewSet(ViewSetBase,
@@ -47,6 +46,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
     serializer_class = Authenticate_Request_Serializer
     queryset = AuthenticateRequest.objects.all()
     response_class = Authenticate_Response_Serializer
+    log_sector = 'authentication'
 
     @action(detail=True, methods=['post'])
     def institution(self, request, *args, **kwargs):
@@ -83,11 +83,16 @@ class AuthenticateRequestViewSet(ViewSetBase,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Authentication: Create Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Authentication: Create Institution %s %s %s %s' %
-                    get_log_institution_information(request))
-        return self._create(request, *args, **kwargs)
+            logger.debug({'message': 'Create Institution',
+            'data': {'ip':ip, 'data':request.data},  'location': __file__},
+                    sector=self.log_sector)
+        logger.info({'message': 'Create Institution',
+                     'data': get_log_institution_information(request), 'location': __file__},
+                    sector=self.log_sector)
+        self.time_messages['operation_type'] = "Authentication"
+        response = self._create(request, *args, **kwargs)
+        self.save_request_metrics(request)
+        return response
 
     @action(detail=True, methods=['post'])
     def institution_show(self, request, *args, **kwargs):
@@ -124,18 +129,27 @@ class AuthenticateRequestViewSet(ViewSetBase,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Authentication: Show Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Authentication: Show Institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message':'Show Institution', 'data':
+                {'ip':ip, 'data': request.data}, 'location': __file__},
+                    sector=self.log_sector)
+        logger.info({'message':'Show Institution',
+                    'data': get_log_institution_information(request),
+                    'location': __file__},
+                    sector=self.log_sector)
         return self.show(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
+
+        status_code = 2
+        if serializer.status_code != -1:
+            status_code = serializer.status_code
+
+
         dev = {
             'code': 'N/D',
-            'status': 2,
+            'status': status_code,
             'status_text': get_text_representation(
-                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 1),
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, status_code),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
@@ -147,9 +161,11 @@ class AuthenticateRequestViewSet(ViewSetBase,
             'hash_docsigned': None,
             'hash_id_docsigned': 0
         }
-        logger.debug('Authentication: Error Institution %r' %
-                     (dev, ))
-
+        logger.debug({'message':'Authentication: Error Institution',
+                     'data': dev, 'location': __file__} )
+        self.time_messages['transaction_status'] = dev['status']
+        self.time_messages['transaction_status_text'] = dev['status_text']
+        self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == dev['status']
         return Response(self.get_encrypted_response(dev, serializer))
 
     @action(detail=True, methods=['post'])
@@ -178,8 +194,10 @@ class AuthenticateRequestViewSet(ViewSetBase,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Authentication: Delete Institution request %s %r' %
-                         (ip, request.data))
-        logger.info('Authentication: Delete Institution request %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message': 'Delete Institution request',
+                         'data': {'ip':ip, 'data': request.data}, 'location': __file__},
+                    sector=self.log_sector)
+        logger.info({'message': 'Delete Institution request',
+                     'data': get_log_institution_information(request), 'location': __file__},
+                    sector=self.log_sector)
         return self.delete(request, *args, **kwargs)

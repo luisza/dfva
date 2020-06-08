@@ -8,7 +8,13 @@
 <a class="btn" href="{% url 'institution_list' %}" title="{% trans 'Go back'%}">
         <i class="fas fa-reply"></i> {% trans 'Go list institution'%} </a><hr>
 
-
+{% if form.errors%}
+<div class="alert alert-warning">
+        <ul>
+{{form.errors}}
+        </ul>
+</div>
+{%endif%}
 {% crispy form %}
 
 {% endblock%}

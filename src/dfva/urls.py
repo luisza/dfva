@@ -36,13 +36,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
-from django.conf.urls import url, include
+from django.views.generic import RedirectView
+from django.urls import include, path, re_path
 from django.contrib import admin
 from django.conf import settings
 
 urlpatterns = [
-    url(r'^', include('corebase.urls')),
-    url(r'^admin/', admin.site.urls),
+    path('', include('corebase.urls')),
+    path('admin/', admin.site.urls),
 ]
 if not settings.ONLY_BCCR:
     from rest_framework import routers
@@ -60,18 +61,22 @@ if not settings.ONLY_BCCR:
 
 
     urlpatterns += [
-        url(r'^$', home, name="home"),
-        url(r'^accounts/login/$', LoginView.as_view(),
+        path('', home, name="home"),
+        path('accounts/login/', LoginView.as_view(),
             {'redirect_to': reverse_lazy("institution_list")}, name='login'),
-        url(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('home')),
+        path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')),
             name='logout'),
-        url(r'^', include(router.urls)),
-        url(r'^', include('authorization_management.urls'))
+        path('', include(router.urls)),
+        path('', include('authorization_management.urls'))
     ] + institution_urls
 
-if settings.DOCKER:
-    from django.conf.urls.static import static
-    urlpatterns += static(settings.STATIC_URL,
-                          document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+
+from django.views.static import serve
+
+urlpatterns += [
+       re_path(r'^docs/?$', RedirectView.as_view(url='/docs/index.html')),
+       re_path(r'^docs/(?P<path>.*)$', serve, {'document_root': settings.DOC_ROOT}),
+       re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
+       re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT})
+]
+

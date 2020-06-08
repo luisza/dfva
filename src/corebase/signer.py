@@ -27,22 +27,38 @@ from rest_framework import serializers
 from pyfva.clientes.firmador import ClienteFirmador
 from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
+
 
 
 class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializador de peticiones de firma
+    """
 
+    log_sector = 'sign'
+
+    #: Almacena la petición encriptada
     data = serializers.CharField(
         help_text="""Datos de solicitud de autenticación encriptados usando 
         AES.MODE_EAX con la llave de sesión encriptada con PKCS1_OAEP
          """)
     readonly_fields = ['data']
+    #: Almacena las métricas de tiempo
+    time_messages = {}
 
     def call_BCCR(self):
+        """
+        Llama la función de firma de documentos del BCCR.
+
+        :return: Nada
+        """
+
         signclient = ClienteFirmador(
             negocio=self.institution.bccr_bussiness,
             entidad=self.institution.bccr_entity,
         )
+        self.time_messages['start_bccr_call'] = timezone.now()
         if signclient.validar_servicio():
             data = signclient.firme(
                 self.requestdata['identification'],
@@ -55,10 +71,10 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
                 razon=self.requestdata['reason'] if 'reason' in self.requestdata else None
             )
         else:
-            logger.warning("Sign BCCR not available")
+            logger.warning({'message':"Sign BCCR not available", 'location': __file__}, sector=self.log_sector)
             data = signclient.DEFAULT_ERROR
-
-        logger.debug("Sign BCCR: %r" % (data, ))
+        self.time_messages['end_bccr_call'] = timezone.now()
+        logger.debug({'message': "Sign BCCR", 'data':data, 'location': __file__}, sector=self.log_sector)
         self.save_subject()
         self.adr.identification = self.requestdata['identification']
         self.adr.request_datetime = parse_datetime(
@@ -76,8 +92,14 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
         self.adr.resume = self.requestdata['resumen']
         self.adr.lugar = self.requestdata['place'] if 'place' in self.requestdata else None
         self.adr.razon = self.requestdata['reason'] if 'reason' in self.requestdata else None
+        self.time_messages['transaction_status'] = self.adr.status
+        self.time_messages['transaction_status_text'] = self.adr.status_text
+        self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == self.adr.status
 
     def save(self, **kwargs):
+        """
+        Almacena los datos en la base de datos
+        """
         odata = {}
         for field in self.Meta.fields:
             if field == 'data':
@@ -88,8 +110,9 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
         auth_request = self.validate_request_class(**odata)
         self.adr = self.validate_data_class()
         self.call_BCCR()
+        self.time_messages['start_save_database'] = timezone.now()
         self.adr.save()
-
         auth_request.data_request = self.adr
         auth_request.save()
+        self.time_messages['end_save_database'] = timezone.now()
         return auth_request

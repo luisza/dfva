@@ -21,3 +21,54 @@
 '''
 
 from django.contrib import admin
+
+from corebase.admin_utils import CsvExporter
+from corebase.models import System_Request_Metric, BCCR_Monitor
+
+
+
+class AdminMetrics(CsvExporter, admin.ModelAdmin):
+    list_display = ('operation_type', 'transaction_status',
+                    #'transaction_status_text',
+                   'check_institution_certificate', 'decrypt_time', 'bccr_call', 'save_database',
+                    'encrypt_time', 'total_spend_time')
+    actions = ["export_as_csv"]
+    date_hierarchy = 'end_decrypt'
+    csv_field_names = [
+        'operation_type',
+        'transaction_status',
+        'transaction_status_text',
+        'transaction_success',
+        # Spent time
+        'check_institution_certificate',
+        'decrypt_time',
+        'bccr_call',
+        'save_database',
+        'encrypt_time',
+        'total_spend_time',
+        # datetime metric
+        'start_bccr_call',
+        'end_bccr_call',
+        'start_save_database',
+        'end_save_database',
+        'start_check_institution_certificate',
+        'end_check_institution_certificate',
+        'start_decrypt',
+        'end_decrypt',
+        'start_encryption',
+        'end_encryption',
+        'start_hashsum',
+        'end_hashsum'
+    ]
+
+
+class AdminBccrMonitor(CsvExporter, admin.ModelAdmin):
+    list_display = ('medition_time', 'authenticate',
+                    'signer', 'validate_certificate', 'validate_document', 'everything_ok' )
+    actions = ["export_as_csv"]
+    date_hierarchy = 'medition_time'
+    csv_field_names = ['medition_time', 'medition_time', 'authenticate',
+                        'signer', 'validate_certificate', 'validate_document', 'everything_ok']
+
+admin.site.register(BCCR_Monitor, AdminBccrMonitor)
+admin.site.register(System_Request_Metric, AdminMetrics)

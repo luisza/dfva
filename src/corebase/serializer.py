@@ -19,6 +19,7 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+from django.forms import modelform_factory
 
 from corebase.rsa import get_hash_sum,  decrypt
 from corebase.models import ALGORITHM
@@ -29,18 +30,23 @@ from django.utils.translation import ugettext_lazy as _
 import logging
 from corebase.ca_management import check_certificate
 from django.conf import settings
+from corebase.time import parse_datetime
 
-
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import  logger
 
 
 class CoreBaseBaseSerializer(object):
+    status_code = -1
+    time_messages = {}
 
     def validate_digest(self):
+        self.time_messages['start_hashsum'] = timezone.now()
         hashsum = get_hash_sum(self.data['data'], self.data['algorithm'])
+        self.time_messages['end_hashsum'] = timezone.now()
         if hashsum != self.data['data_hash']:
             self._errors['data_hash'] = [
-                _('Hash sums are not equal %s != %s') % (hashsum, self.data['data_hash'])]
+                _('Hash sums are not equal %(hashsum)s != %(datahash)s') % {'hashsum':hashsum,
+                                                         'datahash':self.data['data_hash']}]
             # FIXME:  Hay que hacer algo con los errores de status
 
     def _get_decrypt_key(self):
@@ -55,6 +61,25 @@ class CoreBaseBaseSerializer(object):
     def check_received_extra_data(self, data):
         pass
 
+    def get_form(self):
+        return self.form
+
+    def check_form_data(self):
+          if hasattr(self, 'requestdata') and self.requestdata:
+            data = {}
+            data.update(self.requestdata)
+            if 'request_datetime' in data:
+                data['request_datetime'] = parse_datetime(
+                self.requestdata['request_datetime'])
+
+            form = self.get_form()
+            form = form(data)
+            if not form.is_valid():
+                if 'identification' in form.errors:
+                    self.status_code = 10
+
+                self._errors['data_internal'] = [form.errors.as_json()]
+
     def check_internal_data(self, data, fields=[]):
         for field in fields:
             if field not in data:
@@ -63,34 +88,43 @@ class CoreBaseBaseSerializer(object):
         self.check_hash_algorithm(data)
         self.check_received_extra_data(data)
 
+
     def check_hash_algorithm(self, data):
         if 'algorithm_hash' in data:
             supported_algorithm = [x for x, y in ALGORITHM]
             if data['algorithm_hash'] not in supported_algorithm:
                 self._errors['data'] = [
-                    _('%s is not valid algorithm. supported are %s ') % (
-                        data['algorithm_hash'],
-                        ",".join(
-                            supported_algorithm)
-                    )]
+                    _('%(algorithm_hash)s is not valid algorithm. supported are %(supported_algo)s ') %
+                    {
+                      'algorithm_hash':  data['algorithm_hash'],
+                       'supported_algo': ",".join( supported_algorithm)
+                    }]
 
     def validate_certificate(self):
         self.get_institution()
         if self.check_subject():
+            self.time_messages['start_check_institution_certificate'] = timezone.now()
             if not check_certificate(self.data['public_certificate']):
                 self._errors['public_certificate'] = [
                     _('Invalid certificate')]
+                logger.info({"message": "Validate certificate invalid certificate",
+                              'data': repr(self.data['public_certificate']), 'location': __file__})
+            self.time_messages['end_check_institution_certificate'] = timezone.now()
             try:
-
+                self.time_messages['start_decrypt'] = timezone.now()
                 self.requestdata = decrypt(self._get_decrypt_key(),
                                            self.data['data'],
                                            method=self.encrypt_method)
-                logger.debug("Data: %r" % (self.requestdata,))
+                self.time_messages['end_decrypt'] = timezone.now()
+                logger.debug({"message": "Validate certificate data",
+                              'data': self.requestdata, 'location': __file__})
                 self.check_internal_data(self.requestdata)
             except Exception as e:
+                self.requestdata = None
                 self._errors['data'] = [
                     _('Data was not decrypted well %r') % (e,)]
-                logger.error('Data was not decrypted well %r' % (e,))
+                logger.error({'message':'Validate certificate data was not decrypted well',
+                              'data': repr(e), 'location': __file__})
                 return False
 
     def is_valid(self, raise_exception=False):
@@ -98,17 +132,18 @@ class CoreBaseBaseSerializer(object):
             self, raise_exception=raise_exception)
         self.validate_digest()
         self.validate_certificate()
-
+        self.check_form_data()
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
 
 
-class CheckBaseBaseSerializer():
+class CheckBaseBaseSerializer:
 
     def check_code(self, code, raise_exception=False):
         dev = False
         self.check_internal_fields = self.check_show_fields
+        self.form = self.form_check
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {

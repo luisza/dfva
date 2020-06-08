@@ -19,19 +19,15 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
-
-from corebase.serializer import CheckBaseBaseSerializer, CoreBaseBaseSerializer
-from institution.models import Institution, NotificationURL
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-
-import logging
-from corebase.rsa import decrypt
+from corebase import logger
 from corebase.ca_management import check_certificate
 from corebase.ciphers import Available_ciphers
-from django.conf import settings
-
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase.rsa import decrypt
+from corebase.serializer import CheckBaseBaseSerializer, CoreBaseBaseSerializer
+from institution.models import Institution, NotificationURL
 
 
 class InstitutionBaseSerializer(CoreBaseBaseSerializer):
@@ -49,9 +45,9 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
             self.institution = Institution.objects.filter(
                 code=self.data['institution']).first()
         except:
-            logger.error("Get institution: Institution not found %r" %
+            logger.error({'message':"Get institution: Institution not found", 'data':
                          (self.data['institution'] if 'institution' in
-                          self.data else "No institution in data", ))
+                          self.data else "No institution in data", ), 'location': __file__})
             self._errors['institution'] = [
                 _('Institution not found, certificate does not match')]
             self.institution = None
@@ -92,18 +88,24 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
             self._errors['data'] = [
                 _('Institution not found, certificate does not match')]
             return False
+        self.time_messages['start_check_institution_certificate'] = timezone.now()
         if not check_certificate(self.data['public_certificate']):
             self._errors['public_certificate'] = [_('Invalid Certificate')]
+        self.time_messages['end_check_institution_certificate'] = timezone.now()
+
         try:
+            self.time_messages['start_decrypt'] = timezone.now()
             self.requestdata = decrypt(self.institution.server_sign_key,
                                        self.data['data'],
                                        method=self.encrypt_method)
+            self.time_messages['end_decrypt'] = timezone.now()
             self.check_internal_data(
                 self.requestdata, fields=self.check_internal_fields)
             self.check_received_extra_data(self.requestdata)
         except Exception as e:
+            self.requestdata = None
             self._errors['data'] = [_('Data was not decrypted well')]
-            logger.error('Data was not decrypted well %r' % (e,))
+            logger.error({'message':'Data was not decrypted well', 'data':e, 'location': __file__})
             return False
 
 

@@ -46,6 +46,6 @@ def soap_dispatcher(service, **dispatcher_kwargs):
 
     def run(request, **kwargs):
         check_ip(request)
-        return djdispatcher(request, **kwargs)
-
+        response = djdispatcher(request, **kwargs)
+        return  response
     return csrf_exempt(run)

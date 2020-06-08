@@ -45,7 +45,7 @@
     {% if perms.institution.change_institution %}
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'institution_list' %}">{% trans 'My Applications' %} <span class="sr-only">{% trans 'My applications' %}</span></a>
-     	<a >
+
       </li>
     {% endif %}
       {% if perms.institution.add_institution %}
@@ -63,17 +63,26 @@
         </a>
       </li>
       {% endif %}
+      {% if request.user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'index_stats' %}" title="{% trans 'Show system stats' %}">
+        <i class="fas fa-chart-line"></i> {% trans 'Show system stats' %}
+        </a>
+      </li>
+      {% endif %}
+
+
       <li class="nav-item">
         <a class="nav-link" href="http://dfva.readthedocs.io/">
-        {% trans 'Documentation' %} 
+        {% trans 'Documentation' %}
         </a>
       </li>
 
     </ul>
-    
+
     <ul class="navbar-nav mr-2">
        <li class="nav-item">
-       
+
        {% if request.user.is_authenticated %}
         <a class="nav-link" href="{% url 'logout' %}" title="{% trans 'Logout' %}">
         <i class="fas fa-sign-out-alt"></i>
@@ -84,19 +93,19 @@
         	<i class="fas fa-sign-in-alt"></i>
         	{% trans 'Login' %}
         </a>
-        
+
         {% endif %}
       </li>
     </ul>
-    
+
   </div>
-</nav>            
-            
-             
+</nav>
+
+
         {% endblock %}
 
         {% block nav_sidebar %}
-             
+
         {% endblock %}
 
         {% block content_wrapper %}
@@ -162,7 +171,7 @@
         {% endblock content_wrapper %}
 
         {% block nav_footer %}
-       
+
   <footer class="footer">
   <div class="card-footer text-muted text-center">
    		<span > &copy; Copyleft {% now 'Y' %}</span>

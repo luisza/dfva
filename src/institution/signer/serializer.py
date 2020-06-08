@@ -20,14 +20,12 @@
 @license: GPLv3
 '''
 
-import logging
+from rest_framework import serializers
+
 from corebase.signer import Sign_RequestSerializer
 from institution.models import SignRequest, SignDataRequest
-from rest_framework import serializers
 from institution.serializer import InstitutionCheckBaseBaseSerializer
-from django.conf import settings
-
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from institution.signer.forms import SignDataForm, SignDataCheckForm
 
 
 class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer,
@@ -49,6 +47,9 @@ class Sign_Request_Serializer(InstitutionCheckBaseBaseSerializer,
 
     validate_request_class = SignRequest
     validate_data_class = SignDataRequest
+
+    form = SignDataForm
+    form_check = SignDataCheckForm
 
     def check_received_extra_data(self, data):
         if 'format' not in data:

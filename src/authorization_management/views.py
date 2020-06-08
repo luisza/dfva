@@ -29,11 +29,21 @@ from authorization_management.models import AuthorizationRequest
 from authorization_management.utils import authorize_user_to_create_institution
 from django.conf import settings
 
-
+from corebase import logger
 @login_required
 @permission_required('authorization_management.change_authorizationrequest')
 def authorize_user_request(request):
+    """
+    Permite a un usuario con permisos autorizar a otro usuario para la gestión de instituciones
+    Envía un correo electrónico al usuario que solicitó la aprobación.
 
+    :param request: POST -- Los datos a suministrar se envían desde el formulario de autorización
+
+        - authrequest: Id de petición de autenticación
+        - status:  'approve' o 'disapprove', aprobación o no del usuario
+        - observations:  Texto de observaciones, puede usarse tanto si se aprueba o no una petición.
+
+    """
     if request.method == 'POST':
         auth = get_object_or_404(AuthorizationRequest,
                                  pk=request.POST.get('authrequest', '0'))
@@ -47,6 +57,12 @@ def authorize_user_request(request):
             auth.save()
             messages.success(request,
                              _("Thanks, authorization was successfully saved"))
+            logger.info({'message': 'Autorización realizada', 'data': {
+                'authorized': auth.authorized,
+                'who_auth_user': auth.who_authorized,
+                'observations':  auth.observations,
+                'user': auth.user
+            }, 'location': __file__})
 
             if auth.authorized:
                 authorize_user_to_create_institution(auth.user)
@@ -68,6 +84,8 @@ def authorize_user_request(request):
         else:
             messages.error(request,
                            _("Sorry Unknown status"))
+            logger.error({'message': "Request con errores en el autorizado",
+                          'data': request, 'location': __file__})
     objs = AuthorizationRequest.objects.filter(
         finished=False
     )

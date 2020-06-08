@@ -29,6 +29,16 @@ from django.utils.translation import gettext as _
 
 
 class RegistationForm(forms.ModelForm):
+    """
+    Este formulario permite solicitarle al usuario datos básicos para su registro
+    se solicitan los datos:
+
+    - Nombre
+    - Apellidos
+    - Correo electrónico
+
+    Se usa una vez el usuario se autentica mediante firma digital.
+    """
     def __init__(self, *args, **kwargs):
         super(RegistationForm, self).__init__(*args, **kwargs)
 
@@ -45,6 +55,20 @@ class RegistationForm(forms.ModelForm):
 
 
 class UserConditionsAndTermsForm(forms.ModelForm):
+    """
+    Este formulario permite llenar los datos de términos de uso antes de que el usuario los firme
+    Con estos datos se guardará un registro de todos los usuarios que registran aplicaciones y se podrá dar seguimiento
+    y contactar en caso de que surgan problemas con la plataforma.
+    Este formulario se muestra despúes de solicitar los datos básicos del usuario.  Los campos solicitados son:
+
+    - organization
+    - organization_unit
+    - use_reason
+    - phone
+
+    Además estos datos sirven para que en el flujo de revisión el revisor pueda cotejar para qué se usa la aplicación.
+
+    """
     def __init__(self, *args, **kwargs):
         super(UserConditionsAndTermsForm, self).__init__(*args, **kwargs)
 

@@ -19,16 +19,17 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+from base64 import b64encode
 
 from corebase.test.institution import BaseInstitutionTest
 from django.utils import timezone
 
 import json
-from corebase.rsa import decrypt
+from corebase.rsa import decrypt, get_hash_sum
 from corebase.test.institution_utils import create_institution, create_url
 from institution.models import SignDataRequest
 from corebase.test import WRONG_CERTIFICATE
-
+from asn1crypto import pem
 
 class SignCase(BaseInstitutionTest):
     DOCUMENT = None
@@ -42,17 +43,24 @@ class SignCase(BaseInstitutionTest):
             'request_datetime', timezone.now().isoformat())
         resumen = kwargs.get('resumen', 'Documento de prueba xml')
         identificacion = kwargs.get('identificacion', self.IDENTIFICATION)
+        algorithm =  kwargs.get('algorithm', 'sha512')
+        reason = kwargs.get('reason', 'no reason')
+        place = kwargs.get('place', 'no place')
         data = {
             'institution': institution,
             'notification_url': url,
             'document': self.DOCUMENT,
             'format': self.FORMAT,
-            'algorithm_hash': 'sha512',
-            'document_hash': self.HASH,
+            'algorithm_hash': algorithm,
+            'document_hash': get_hash_sum(self.DOCUMENT, algorithm, b64=True),
             'identification': identificacion,
             'resumen': resumen,
             'request_datetime': request_datetime,
         }
+
+        if self.FORMAT == 'pdf':
+            data['reason'] = reason
+            data['place'] = place
         params = self.get_request_params(data, **kwargs)
 
         response = self.client.post('/sign/institution/',
@@ -127,6 +135,12 @@ class SignCase(BaseInstitutionTest):
         )
         self.wrong_certificate_test(response)
 
+    def test_wrong_resume_size(self):
+        if self.DOCUMENT is None:
+            return
+        response = self.sign(resumen="a"*251)
+        self.assertEqual(response['status'], 7)
+
 
 class CheckSignCase(BaseInstitutionTest):
     DOCUMENT = None
@@ -180,6 +194,8 @@ class CheckSignCase(BaseInstitutionTest):
         resumen = kwargs.get('resumen', 'Documento de prueba xml')
         identificacion = kwargs.get('identificacion', self.IDENTIFICATION)
         request_url=kwargs.get('request_url', '/sign/institution/')
+        reason = kwargs.get('reason', self.REASON)
+        place = kwargs.get('place', self.PLACE)
         data = {
             'institution': institution,
             'notification_url': url,
@@ -191,6 +207,10 @@ class CheckSignCase(BaseInstitutionTest):
             'resumen': resumen,
             'request_datetime': request_datetime,
         }
+        if reason:
+            data['reason'] = reason
+        if place:
+            data['place'] = place
         params = self.get_request_params(data, **kwargs)
 
         response = self.client.post(request_url,
@@ -209,6 +229,7 @@ class CheckSignCase(BaseInstitutionTest):
     def test_authenticate_check(self):
         if self.DOCUMENT is None:
             return
+
         response = self.sign()
         self.ok_test(response)
         self.assertIsNotNone(SignDataRequest.objects.filter(
@@ -310,7 +331,6 @@ class DeleteSignCase(BaseInstitutionTest):
         request_datetime = kwargs.get(
             'request_datetime', timezone.now().isoformat())
         request_url=kwargs.get('request_url', '/sign/institution/')
-        
         data = {
             'institution': institution,
             'notification_url': url,
@@ -334,6 +354,8 @@ class DeleteSignCase(BaseInstitutionTest):
     def sign(self, **kwargs):
         if self.DOCUMENT is None:
             return
+        reason = kwargs.get('reason', self.REASON)
+        place = kwargs.get('place', self.PLACE)
         url = kwargs.get('url', self.URL_NOTIFICATION)
         institution = kwargs.get('institution', str(self.institution.code))
         request_datetime = kwargs.get(
@@ -351,6 +373,10 @@ class DeleteSignCase(BaseInstitutionTest):
             'resumen': resumen,
             'request_datetime': request_datetime,
         }
+        if reason:
+            data['reason'] = reason
+        if place:
+            data['place'] = place
         params = self.get_request_params(data, **kwargs)
 
         response = self.client.post('/sign/institution/',
@@ -476,13 +502,16 @@ class BaseValidateInstitutionCase(BaseInstitutionTest):
     REQUEST_URL = None
     DATAREQUEST = None
     FORMAT=None
+    def extract_certificate(self, certificate):
+        type_name, headers, der_bytes = pem.unarmor(certificate.encode())
 
+        return b64encode(der_bytes).decode()
     def validate(self, **kwargs):
         url = kwargs.get('url', self.URL_NOTIFICATION)
         institution = kwargs.get('institution', str(self.institution.code))
         request_datetime = kwargs.get(
             'request_datetime', timezone.now().isoformat())
-        certificate = kwargs.get('certificate', self.DOCUMENT)
+        certificate = kwargs.get('certificate', self.extract_certificate(self.DOCUMENT))
         request_url = kwargs.get(
             'request_url', self.REQUEST_URL)
         data = {

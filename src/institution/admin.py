@@ -22,7 +22,9 @@
 
 from django.conf import settings
 from django.contrib import admin
-from institution.models import NotificationURL, Institution
+
+from corebase.admin_utils import CsvExporter
+from institution.models import NotificationURL, Institution, InstitutionStats
 from institution.models import AuthenticateDataRequest, SignDataRequest, \
     ValidateCertificateDataRequest, ValidateDocumentDataRequest
 # Register your models here.
@@ -36,9 +38,33 @@ class InstitutionAdmin(admin.ModelAdmin):
     inlines = [NotificationURLAdmin]
 
 
+class InstitutionStatsAdmin(CsvExporter, admin.ModelAdmin):
+    list_display = (
+    'institution',
+    'datetime',
+    'status',
+    'notified',
+    'transaction_id',
+    'data_type',
+    'document_type',
+    'was_successfully'
+
+    )
+    actions = ["export_as_csv"]
+    csv_field_names = ['institution',
+    'datetime',
+    'status',
+    'notified',
+    'transaction_id',
+    'data_type',
+    'document_type',
+    'was_successfully']
+
+admin.site.register(InstitutionStats, InstitutionStatsAdmin)
+
 admin.site.register(Institution, InstitutionAdmin)
 
-if settings.DEBUG:
+if settings.DEBUG_LAST_REQUESTS:
     admin.site.register([
         AuthenticateDataRequest, SignDataRequest,
         ValidateCertificateDataRequest, ValidateDocumentDataRequest])

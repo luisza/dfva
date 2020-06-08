@@ -30,6 +30,13 @@ from institution.models import Institution
 @login_required
 @permission_required('institution.change_institution')
 def get_institution_stats(request, pk):
+    """
+    Obtiene las estadísticas de la institución provista por el PK
+
+    :param request: Django request
+    :param pk: pk de la institución de la que ocupamos las estadisticas
+    :return: Una respuesta JSON con los datos necesarios para crear un gráfico con Chartjs
+    """
     institution = get_object_or_404(Institution, pk=pk)
     data = []
     was_successfully = []

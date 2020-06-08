@@ -41,7 +41,7 @@ logger_sign = logging.getLogger('dfva_sign')
 
 @app.task
 def remove_expired_authentications():
-
+    num_deleted = 0
     basetime = timezone.now() - timezone.timedelta(minutes=settings.DFVA_REMOVE_AUTHENTICATION)
     queryset = AuthenticateDataRequest.objects.filter(
         expiration_datetime__lte=basetime
@@ -50,11 +50,13 @@ def remove_expired_authentications():
         data = LogAuthenticateInstitutionRequestSerializer(queryset, many=True)
         json = JSONRenderer().render(data.data).decode('utf-8')
         logger_auth.info(json)
-        queryset.delete()
-
+        ndel  = queryset.delete()
+        num_deleted = ndel[0]
+    return num_deleted
 
 @app.task
 def remove_expired_signs():
+    num_deleted = 0
     basetime = timezone.now() - timezone.timedelta(minutes=settings.DFVA_REMOVE_SIGN)
     queryset = SignDataRequest.objects.filter(
         expiration_datetime__lte=basetime
@@ -65,7 +67,9 @@ def remove_expired_signs():
         json = JSONRenderer().render(data.data).decode('utf-8')
         logger_sign.info(json)
         queryset.delete()
-
+        ndel  = queryset.delete()
+        num_deleted = ndel[0]
+    return num_deleted
 
 def get_url():
     url = 'localhost:8000'
@@ -90,6 +94,7 @@ def is_today(date1, date2):
 
 
 def notify_certificate_expiration(now):
+    num_expired = 0
     for institution in Institution.objects.all():
         certdate = institution.get_expiration_date()
         week1 = relativedelta(weeks=1)
@@ -108,7 +113,7 @@ def notify_certificate_expiration(now):
         if ok:
             send_mail(
                 'Importante certificado a punto de vencer',
-                'Revice sus certificados en DFVA.',
+                'Revice sus certificados en la aplicación web.',
                 settings.DEFAULT_FROM_EMAIL,
                 [institution.email],
 
@@ -119,9 +124,13 @@ def notify_certificate_expiration(now):
                 ),
                 fail_silently=False
             )
+            num_expired += 1
+    return num_expired
+
 
 
 @app.task
 def notify_certs_expiration():
     now = timezone.now()
-    notify_certificate_expiration(now)
+    expired = notify_certificate_expiration(now)
+    return expired

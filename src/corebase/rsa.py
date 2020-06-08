@@ -38,7 +38,7 @@ from django.conf import settings
 import logging
 from corebase.ciphers import Available_ciphers
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 def pem_to_base64(certificate):
@@ -56,11 +56,13 @@ def get_digest(digest_name):
         return hashlib.sha512()
 
 
-def get_hash_sum(data, algorithm):
+def get_hash_sum(data, algorithm, b64=False):
     if type(data) == str:
         data = data.encode()
     digest = get_digest(algorithm)
     digest.update(data)
+    if b64:
+        return b64encode(digest.digest()).decode()
     hashsum = digest.hexdigest()
     return hashsum
 
@@ -139,7 +141,6 @@ def salt_decrypt(message):
     file_in.seek(0)
 
     nonce, tag, ciphertext = [file_in.read(x) for x in (16, 16, -1)]
-
     session_key = get_salt_session()
     cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
     decrypted = cipher_aes.decrypt_and_verify(ciphertext, tag)
@@ -174,7 +175,7 @@ def validate_sign(public_certificate, key, cipher_text):
     pub_key = RSA.importKey(public_certificate)
     verifier = PKCS1_v1_5.new(pub_key)
     result = verifier.verify(digest, cipher_text)
-    logger.debug("validate_sign %i " % (result,))
+    logger.debug({'message':"validate_sign", 'data':result, 'location': __file__})
     return result
 
 
@@ -192,7 +193,7 @@ def validate_sign_data(public_certificate, key, cipher_text):
 
     verifier = PKCS1_v1_5.new(pub_key)
     result = verifier.verify(digest, enc_session_key)
-    logger.debug("validate_sign_data %i " % (result,))
+    logger.debug({'message':"validate_sign_data ", 'data': result, 'location': __file__})
     return result
 
 

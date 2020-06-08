@@ -27,7 +27,7 @@
 <div class="card-deck">
 <div class="row">
 {% for obj in object_list %}
-<div class="{% if object_list.count > 1 %}col-sm-6{%else%}col-sm-12{%endif%}">
+<div class="{% if object_list.count > 1 %}col-xs-12 col-sm-12 col-md-12 col-lg-6{%else%}col-sm-12{%endif%}">
 	<div class="card {% if obj.active %} border-info {% else %} border-dark {% endif %} mb-3"
 	 >
 	  <div class="card-header  {% if obj.active %} bg-transparent border-success{% else %} border-dark {% endif %} ">
@@ -62,10 +62,10 @@
 	    
 	    </h5>
 	    <p class="card-text text-justify my-4" style="max-height: 400px;">
-	    
+	    <div class="chart-container" >
 	    <canvas id="chart_{{forloop.counter}}" data-href="{% url 'institution_stats' obj.pk %}?chartid=chart_{{forloop.counter}}"
-	     class="chartsobj" style="height: 300px; width: 100%;"></canvas>
-	    
+	     class="chartsobj" ></canvas>
+	  	</div>
 	    <br>
 	    {% blocktrans %}
 	    Application are how you identify your application credential, and notification urls are

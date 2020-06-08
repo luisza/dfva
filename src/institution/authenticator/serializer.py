@@ -20,14 +20,12 @@
 @license: GPLv3
 '''
 
-import logging
-from institution.models import AuthenticateRequest, AuthenticateDataRequest
-from corebase.authenticate import Authenticate_RequestSerializer
 from rest_framework import serializers
-from institution.serializer import InstitutionCheckBaseBaseSerializer
-from django.conf import settings
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase.authenticate import Authenticate_RequestSerializer
+from institution.authenticator.forms import AuthenticateForm, AuthenticateCheckForm
+from institution.models import AuthenticateRequest, AuthenticateDataRequest
+from institution.serializer import InstitutionCheckBaseBaseSerializer
 
 
 class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer,
@@ -40,6 +38,9 @@ class Authenticate_Request_Serializer(InstitutionCheckBaseBaseSerializer,
                          'notification_url',
                          # 'identification',
                          'request_datetime']
+
+    form = AuthenticateForm
+    form_check = AuthenticateCheckForm
 
     validate_request_class = AuthenticateRequest
     validate_data_class = AuthenticateDataRequest

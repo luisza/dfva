@@ -97,8 +97,8 @@ class InstitutionEditForm(forms.ModelForm):
                                Field('phone'),
                                Field('domain'),
                                Field('institution_unit'),
-                               Field('public_certificate'),
-                               # Field('public_key'),
+                               #Field('public_certificate'),
+                               #Field('public_key'),
 
                                active=True,
 
@@ -117,7 +117,6 @@ class InstitutionEditForm(forms.ModelForm):
         obj = super(InstitutionEditForm, self).save(commit=commit)
         negocio = self.cleaned_data.get('bccr_negocio', '')
         entidad = self.cleaned_data.get('bccr_entidad', '')
-        print("BINGO: ", negocio, entidad)
         if negocio:
             obj.bccr_bussiness = negocio
             changed = True
@@ -131,7 +130,7 @@ class InstitutionEditForm(forms.ModelForm):
     class Meta:
         model = Institution
         fields = ['active', 'name', 'email', 'phone', 'domain',
-                  'institution_unit', 'public_certificate', 'public_key']
+                  'institution_unit']
 
 
 class NotificationUrlsForm(forms.ModelForm):

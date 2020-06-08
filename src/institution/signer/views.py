@@ -20,7 +20,6 @@
 @license: GPLv3
 '''
 
-
 from django.utils import timezone
 from corebase.views import ViewSetBase
 from rest_framework import viewsets
@@ -35,7 +34,7 @@ import logging
 from django.conf import settings
 from rest_framework.decorators import action
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+from corebase import logger
 
 
 class SignRequestViewSet(ViewSetBase,
@@ -44,6 +43,7 @@ class SignRequestViewSet(ViewSetBase,
     serializer_class = Sign_Request_Serializer
     queryset = SignRequest.objects.all()
     response_class = Sign_Response_Serializer
+    log_sector = 'sign'
 
     @action(detail=True, methods=['post'])
     def institution(self, request, *args, **kwargs):
@@ -88,11 +88,14 @@ class SignRequestViewSet(ViewSetBase,
 
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Sign: Create Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Sign: Create Institution %s %s %s %s' %
-                    get_log_institution_information(request))
-        return self._create(request, *args, **kwargs)
+            logger.debug({'message': "Sign: Create Institution", 'data':
+                {'ip': ip, 'data': request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message': 'Sign: Create Institution ',
+                    'data': get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
+        self.time_messages['operation_type'] = "Signer"
+        response =  self._create(request, *args, **kwargs)
+        self.save_request_metrics(request)
+        return  response
 
     @action(detail=True, methods=['post'])
     def institution_show(self, request, *args, **kwargs):
@@ -131,10 +134,11 @@ class SignRequestViewSet(ViewSetBase,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Sign: Show Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Sign: Show Institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message': 'Show Institution', 'data':
+                {'ip':ip, 'data': request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message': 'Show Institution', 'data':
+                    get_log_institution_information(request), 'location': __file__},
+                    sector=self.log_sector)
         return self.show(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'])
@@ -163,18 +167,36 @@ class SignRequestViewSet(ViewSetBase,
         """
         ip = get_ip(request)
         if settings.LOGGING_ENCRYPTED_DATA:
-            logger.debug('Sign: Delete Institution %s %r' %
-                         (ip, request.data))
-        logger.info('Sign: Delete Institution %s %s %s %s' %
-                    get_log_institution_information(request))
+            logger.debug({'message':'Sign: Delete Institution', 'data':
+                {'ip':ip, 'data':request.data}, 'location': __file__}, sector=self.log_sector)
+        logger.info({'message': 'Sign: Delete Institution', 'data':
+                    get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
         return self.delete(request, *args, **kwargs)
 
     def get_error_response(self, serializer):
+        error_code = 2
+        if serializer.status_code != -1:
+            error_code = serializer.status_code
+
+        if 'data_internal' in serializer.errors :
+            for x in serializer.errors['data_internal']:
+                if 'identification' in x:
+                    error_code = 10
+                    break
+                elif 'reason' in x:
+                    error_code = 8
+                    break
+                elif 'place' in x:
+                    error_code = 11
+                    break
+                elif 'resumen' in x:
+                    error_code = 7
+                    break
         dev = {
             'code': 'N/D',
-            'status': 2,
+            'status': error_code,
             'status_text': get_text_representation(
-                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, 1),
+                pyfva.constants.ERRORES_AL_SOLICITAR_FIRMA, error_code),
             'identification': 'N/D',
             'id_transaction': 0,
             'request_datetime': timezone.now(),
@@ -183,6 +205,6 @@ class SignRequestViewSet(ViewSetBase,
             'received_notification': False,
             'error_info': serializer._errors
         }
-        logger.debug('Sign: ERROR Institution %r' %
-                     (dev, ))
+        logger.debug({'message':'Sign: ERROR Institution ', 'data':
+                     dev, 'location': __file__}, sector=self.log_sector)
         return Response(self.get_encrypted_response(dev, serializer))

@@ -40,8 +40,19 @@ BLOCK_SIZE = 16
 
 
 class AES_EAX:
+    """
+    Encripción mediante AES_EAX
+    """
     @staticmethod
     def decrypt(file_in, private_key, session_key=None):
+        '''
+        Desencripta los datos siministrados en file_in usando el método AES_EAX
+
+        :param file_in: Dato binario a desencriptar
+        :param private_key:  llave privada del servidor para la institución
+        :param session_key: None por defecto, en caso de necesitarse puede pasarse en binario
+        :return: Texto desencriptado en binario
+        '''
         if session_key is None:
             private_key = RSA.import_key(private_key)
 
@@ -56,16 +67,37 @@ class AES_EAX:
 
     @staticmethod
     def encrypt(message, session_key, file_out):
-        # Encrypt the data with the AES session key
+        """
+        Encripta el mensaje usando la llave de sesión suministrada usando AES_EAX
+        y guarda en file_out la información de encripción en el siguiente orden:
+        nonce, tag, texto encriptado
+
+        :param message:  Mensaje a encriptar  en binario
+        :param session_key: Llave de encripción en binario
+        :param file_out: Archivo de salida abierto en modo binario
+        :return:  None
+        """
         cipher_aes = AES.new(session_key, AES.MODE_EAX)
         ciphertext, tag = cipher_aes.encrypt_and_digest(message)
         [file_out.write(x) for x in (cipher_aes.nonce, tag, ciphertext)]
 
 
 class AES_256_CFB:
-
+    """
+    Encripción mediante AES_256_CFB, para ser usado con el cliente de PHP
+    """
     @staticmethod
     def encrypt(message, session_key, file_out):
+        """
+        Encripta el mensaje usando la llave de sesión suministrada usando AES_256_CFB
+        y guarda en file_out la información de encripción en el siguiente orden:
+        nonce, tag, texto encriptado
+
+        :param message:  Mensaje a encriptar  en binario
+        :param session_key: Llave de encripción en binario
+        :param file_out: Archivo de salida abierto en modo binario
+        :return:  None
+        """
         # passphrase MUST be 16, 24 or 32 bytes long, how can I do that ?
         IV = Random.new().read(BLOCK_SIZE)
         aes = AES.new(session_key, AES.MODE_CFB, IV,  segment_size=128)
@@ -74,6 +106,14 @@ class AES_256_CFB:
 
     @staticmethod
     def decrypt(file_in, private_key, session_key=None):
+        '''
+        Desencripta los datos siministrados en file_in usando el método AES_256_CFB
+
+        :param file_in: Dato binario a desencriptar
+        :param private_key:  llave privada del servidor para la institución
+        :param session_key: None por defecto, en caso de necesitarse puede pasarse en binario
+        :return: Texto desencriptado en binario
+        '''
         if session_key is None:
             private_key = RSA.import_key(private_key)
             enc_session_key, iv, ciphertext = \

@@ -25,7 +25,7 @@ from institution.signer.views import SignRequestViewSet
 from institution.validator.views import ValidateInstitutionViewSet,\
     ValidateSubscriptorInstitutionViewSet
 
-from django.conf.urls import include, url
+from django.conf.urls import  url
 from institution import views
 from institution.views.graphs import get_institution_stats
 
