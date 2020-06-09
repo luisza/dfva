@@ -43,7 +43,7 @@ urlpatterns = [
     url("get_total_stats", stats.get_total_stats, name="total_stats"),
     url("get_error_stats", stats.get_error_stats, name="error_stats"),
     url("get_size_stats", stats.get_size_stats, name="size_stats"),
-    url("total_per_minute", show_timeperminute, name="total_per_minute")
+    url("total_per_minute", show_timeperminute, name="total_per_minute"),
 
     url(developurl, dispatcher, name='ws_receptor'),
 ]

@@ -48,7 +48,7 @@ class AuthenticateRequestViewSet(ViewSetBase,
     response_class = Authenticate_Response_Serializer
     log_sector = 'authentication'
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def institution(self, request, *args, **kwargs):
         """
         ::

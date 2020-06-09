@@ -37,7 +37,7 @@ from pyfva import constants
 
 class EncrytedText(models.TextField):
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if isinstance(value, str):
             value = value.encode()
         return salt_decrypt(value)

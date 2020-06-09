@@ -250,113 +250,6 @@ RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
 UCR_FVA_SERVER_URL = 'http://localhost:8000'
-DO_LOGGIN = True
-LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR+'/logs/')
-DEFAULT_LOGGER_NAME = 'dfva'
-DEFAULT_LOGGER_LEVEL = 'INFO'
-DEFAULT_LOGGER_HANDLER = ['file_info_graylog']
-GRAY_LOG_SERVER = 'localhost'
-GRAY_LOG_PORT = 12201
-APP_SERVER_NAME = os.uname().nodename
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-
-        'file': {
-            'class': 'pygelf.GelfUdpHandler',
-            'host': GRAY_LOG_SERVER,
-            'port': GRAY_LOG_PORT,
-            '_app_name': 'dfva',
-            '_customlevel': "debug",
-            '_application': APP_SERVER_NAME
-
-        },
-
-        'file_info_graylog': {
-            'class': 'pygelf.GelfUdpHandler',
-            'host': GRAY_LOG_SERVER,
-            'port': GRAY_LOG_PORT,
-            '_app_name': 'ucrfva',
-            '_customlevel': "info",
-            '_application': APP_SERVER_NAME,
-
-        },
-        'remove_authentication': {
-            'class': 'pygelf.GelfUdpHandler',
-            'host': GRAY_LOG_SERVER,
-            'port': GRAY_LOG_PORT,
-            '_app_name': 'ucrfva',
-            '_customlevel': "remove_authentication",
-            '_application': APP_SERVER_NAME
-        },
-        'remove_sign': {
-            'class': 'pygelf.GelfUdpHandler',
-            'host': GRAY_LOG_SERVER,
-            'port': GRAY_LOG_PORT,
-            '_app_name': 'ucrfva',
-            '_customlevel': "remove_authentication",
-            '_application': APP_SERVER_NAME
-        },
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-
-    },
-    'loggers': {
-        DEFAULT_LOGGER_NAME: {
-            'handlers':  DEFAULT_LOGGER_HANDLER,  # ['file_info'],  # 'console',
-            'level': DEFAULT_LOGGER_LEVEL,
-
-        },
-        'django': {
-            'handlers': DEFAULT_LOGGER_HANDLER,
-            'level': DEFAULT_LOGGER_LEVEL,
-            'propagate': True
-        },
-        'django.request': {
-            'handlers': DEFAULT_LOGGER_HANDLER,
-            'level': DEFAULT_LOGGER_LEVEL,
-            'propagate': False,
-        },
-        'celery': {
-            'handlers': DEFAULT_LOGGER_HANDLER,
-            'level': DEFAULT_LOGGER_LEVEL,
-            'propagate': True
-        },
-        'soapfish':  {
-            'handlers': DEFAULT_LOGGER_HANDLER,
-            'level': DEFAULT_LOGGER_LEVEL,
-
-        },
-        'pyfva':  {
-            'handlers': DEFAULT_LOGGER_HANDLER,
-            'level': DEFAULT_LOGGER_LEVEL,
-        },
-        'dfva_authentication': {
-            'handlers': ['remove_authentication'],  # 'log/authentication',
-            'level': 'INFO',
-        },
-        'dfva_sign': {
-            'handlers': ['remove_sign'],  # 'log/sign',
-            'level': 'INFO',
-        }
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(name)s %(levelname)s %(asctime)s %(module)s %(funcName)s %(process)d %(processName)s %(message)s'
-        },
-        'simple': {
-            'format': '%(asctime)s %(module)s %(message)s'
-        },
-        'quiet': {
-            'format': '\n--- %(asctime)s ---\n %(message)s'
-        },
-    },
-}
 
 LOGGING_ENCRYPTED_DATA = False
 DFVA_REMOVE_AUTHENTICATION = 5  # minutes
@@ -366,6 +259,9 @@ CELERY_MODULE = "dfva.celery"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_BACKEND = 'django-db'
+
+#from .graylog import *
+from .locallog import *
 
 from celery.schedules import crontab
 
@@ -405,7 +301,3 @@ EMAIL_HOST = 'localhost'
 # - broker
 CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
 # - endbroker
-
-
-if ELK_LOGGING:
-    INSTALLED_APPS += ['django_elasticsearch_dsl', 'elk_logging']

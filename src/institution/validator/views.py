@@ -46,7 +46,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
     DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
     log_sector = 'validate'
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def institution_certificate(self, request, *args, **kwargs):
         """
         ::
@@ -94,7 +94,7 @@ class ValidateInstitutionViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.save_request_metrics(request)
         return response
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def institution_document(self, request, *args, **kwargs):
         """
         ::
@@ -152,7 +152,7 @@ class ValidateSubscriptorInstitutionViewSet(BaseSuscriptor,
     queryset = ValidateCertificateRequest.objects.all()
     log_sector = 'validate_suscriptor'
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def institution_suscriptor_connected(self, request, *args, **kwargs):
         """
         ::

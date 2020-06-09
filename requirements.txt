@@ -54,3 +54,6 @@ uritemplate==3.0.1
 urllib3==1.25.9
 vine==1.3.0
 zipp==3.1.0
+pygelf==0.3.6
+django-celery-beat==2.0.0
+django-celery-results==1.2.1

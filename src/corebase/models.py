@@ -341,7 +341,7 @@ class System_Request_Metric(models.Model):
     #: Tamaño del request
     request_size = models.FloatField(default=0)
     #: Institucion procesada
-    institution = models.ForeignKey('institution.Institution', null=True, blank=True, on_delete=models.SET_NULL)
+    institution = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return " %r "%{

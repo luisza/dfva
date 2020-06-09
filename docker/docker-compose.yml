@@ -1,0 +1,72 @@
+version: '2'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3
+    container_name: "dfva_rabbitmq"
+    networks:
+      - dfvaapps
+    ports:
+      - 5672:5672
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongo:
+    image: mongo:3
+    container_name: "dfva_mongo"
+    networks:
+      - dfvaapps
+    volumes:
+      - dfvamongo:/data/db
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    container_name: "dfva_elasticsearch"
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    networks:
+      - dfvaapps
+    volumes:
+      - dfvaelasticsearch:/usr/share/elasticsearch/data
+
+  graylog:
+    image: graylog/graylog:3.2
+    container_name: "dfva_graylog"
+    environment:
+      # CHANGE ME (must be at least 16 characters)!
+      - GRAYLOG_PASSWORD_SECRET=IANDIABIEWUIusasdaieiwAJIBAIYIQ3U
+      - GRAYLOG_ROOT_USERNAME=graylog
+      # password: root admin12345
+      - GRAYLOG_ROOT_PASSWORD_SHA2=41e5653fc7aeb894026d6bb7b2db7f65902b454945fa8fd65a6327047b5277fb
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    volumes:
+      - dfvagraylog:/usr/share/graylog/data/journal
+    networks:
+      - dfvaapps
+
+networks:
+  dfvaapps:
+volumes:
+  dfvamongo:
+  dfvagraylog:
+  dfvaelasticsearch:

@@ -51,7 +51,7 @@ def test_authentication(identificacion, url=LISTEN_URL):
     result = requests.post(
         SERVER_URL + '/authenticate/institution/', json=params)
 
-    # print(params)
+    print(result.content)
     data = result.json()
     return data
 
@@ -80,6 +80,6 @@ def test_authentication_detail(identificacion, url=LISTEN_URL):
     result = requests.post(
         SERVER_URL + "/authenticate/%s/institution_show/" % (authdata['code']), json=params)
 
-    # print(params)
+    print(params)
     data = result.json()
     return data

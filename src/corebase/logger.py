@@ -14,6 +14,8 @@ class DJLogEncoder(DjangoJSONEncoder):
             return str(obj)
         elif isinstance(obj, Exception):
             return str(obj)
+        elif isinstance(obj, bytes):
+            return obj.decode()
         return super().default(obj)
 
 

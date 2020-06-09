@@ -39,7 +39,7 @@ from corebase.rsa import (get_reponse_institution_data_encrypted,
                           get_reponse_person_data_encrypted)
 from pyfva.constants import get_text_representation
 
-logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+
 
 def check_ok(request):
     """
@@ -120,7 +120,12 @@ class ViewSetBase:
                 method=serializer.encrypt_method)
             if hasattr(serializer, 'institution') and serializer.institution:
                 self.time_messages['institution'] = serializer.institution
-
+        else:  # person
+            dev = get_reponse_person_data_encrypted(
+                data,
+                serializer.person.authenticate_certificate if hasattr(
+                    serializer, 'person') else None,
+                algorithm=serializer.data.get('algorithm', "sha512"))
         self.time_messages['end_encryption'] = timezone.now()
         return dev
 

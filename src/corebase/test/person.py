@@ -20,7 +20,8 @@
 '''
 
 from django.contrib.auth.models import User
-from asyncio.test_utils import TestCase
+from django.test import TestCase
+
 from corebase.test.institution_utils import create_institution, create_url
 from rest_framework.test import APIClient
 import json

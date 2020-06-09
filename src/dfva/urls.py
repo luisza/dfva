@@ -55,6 +55,7 @@ if not settings.ONLY_BCCR:
     from django.urls.base import reverse_lazy
 
     router = routers.DefaultRouter()
+    router.include_format_suffixes=False
     instition_get_routes_view(router)
     person_get_routes_view(router)
 
@@ -64,8 +65,7 @@ if not settings.ONLY_BCCR:
         path('', home, name="home"),
         path('accounts/login/', LoginView.as_view(),
             {'redirect_to': reverse_lazy("institution_list")}, name='login'),
-        path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')),
-            name='logout'),
+        path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')),  name='logout'),
         path('', include(router.urls)),
         path('', include('authorization_management.urls'))
     ] + institution_urls

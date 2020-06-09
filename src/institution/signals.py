@@ -47,8 +47,9 @@ def create_group(sender, **kwargs):
         name=settings.INSTITUTION_GROUP_NAME)
     if created:
         for perm in ['view_institution', 'add_institution', 'change_institution', 'delete_institution']:
-            add_thing = Permission.objects.get(codename=perm)
-            group.permissions.add(add_thing)
+            add_thing = Permission.objects.filter(codename=perm).first()
+            if add_thing:
+                group.permissions.add(add_thing)
         group.save()
 
 

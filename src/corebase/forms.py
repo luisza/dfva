@@ -2,11 +2,14 @@
 from django import forms
 from institution.models import Institution
 
+def get_institutions_names():
+    return [('None', '------')]+list(Institution.objects.all().values_list('code', 'name'))
+
 class StatForm(forms.Form):
     start_date = forms.DateTimeField()
     end_date = forms.DateTimeField()
     institution = forms.ChoiceField(
-        choices=[('None', '------')]+list(Institution.objects.all().values_list('code', 'name')), required=False)
+        choices=get_institutions_names, required=False)
     #transaction_success = forms.NullBooleanField()
 
 

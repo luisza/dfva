@@ -43,7 +43,7 @@ class AuthenticatePersonRequestViewSet(ViewSetBase,
     queryset = AuthenticatePersonRequest.objects.all()
     response_class = Authenticate_Person_Response_Serializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def person(self, request, *args, **kwargs):
         """
         ::

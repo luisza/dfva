@@ -45,7 +45,7 @@ class SignRequestViewSet(ViewSetBase,
     response_class = Sign_Response_Serializer
     log_sector = 'sign'
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def institution(self, request, *args, **kwargs):
         """
         ::
@@ -93,7 +93,7 @@ class SignRequestViewSet(ViewSetBase,
         logger.info({'message': 'Sign: Create Institution ',
                     'data': get_log_institution_information(request), 'location': __file__}, sector=self.log_sector)
         self.time_messages['operation_type'] = "Signer"
-        response =  self._create(request, *args, **kwargs)
+        response = self._create(request, *args, **kwargs)
         self.save_request_metrics(request)
         return  response
 

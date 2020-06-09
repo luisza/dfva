@@ -44,7 +44,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
     queryset = ValidatePersonCertificateRequest.objects.all()
     response_class = ValidatePersonCertificateRequest_Response_Serializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def person_certificate(self, request, *args, **kwargs):
         """
         ::
@@ -85,7 +85,7 @@ class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
         return self._create(request, *args, **kwargs)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def person_document(self, request, *args, **kwargs):
         """
         ::
@@ -135,7 +135,7 @@ class ValidateSubscriptorPersonViewSet(BaseSuscriptor, viewsets.GenericViewSet):
     serializer_class = SuscriptorPerson_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def person_suscriptor_connected(self, request, *args, **kwargs):
         """
         ::

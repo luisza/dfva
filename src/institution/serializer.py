@@ -44,12 +44,12 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
         try:
             self.institution = Institution.objects.filter(
                 code=self.data['institution']).first()
-        except:
-            logger.error({'message':"Get institution: Institution not found", 'data':
+        except Exception as e:
+            logger.error({'message':"Get institution: Institution not found " + str(e), 'data':
                          (self.data['institution'] if 'institution' in
                           self.data else "No institution in data", ), 'location': __file__})
             self._errors['institution'] = [
-                _('Institution not found, certificate does not match')]
+                _('Institution not found')]
             self.institution = None
 
     def _get_decrypt_key(self):
