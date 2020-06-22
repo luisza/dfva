@@ -18,7 +18,7 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
-
+from person.authenticator.forms import AuthenticateForm
 from person.models import AuthenticatePersonRequest,\
     AuthenticatePersonDataRequest
 from rest_framework import serializers
@@ -42,6 +42,9 @@ class Authenticate_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
     validate_request_class = AuthenticatePersonRequest
     validate_data_class = AuthenticatePersonDataRequest
 
+    form = AuthenticateForm
+    form_check = AuthenticateForm
+
     def save_subject(self):
         self.adr.person = self.person
         self.adr.identification = self.requestdata['identification']
@@ -60,3 +63,12 @@ class Authenticate_Person_Response_Serializer(serializers.ModelSerializer):
             'code', 'status', 'identification', 'id_transaction',
             'request_datetime', 'sign_document', 'expiration_datetime',
             'received_notification', 'duration', 'status_text')
+
+class LogAuthenticateInstitutionRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthenticatePersonDataRequest
+        fields = ('person', 'identification',
+                  'request_datetime', 'code', 'status', 'status_text',
+                  'response_datetime', 'expiration_datetime', 'id_transaction',
+                  'duration', 'received_notification', 'resume'
+                  )

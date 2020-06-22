@@ -22,15 +22,13 @@
 
 import requests
 from rest_framework.renderers import JSONRenderer
-from corebase.rsa import encrypt, get_hash_sum
-import logging
-from institution.models import AuthenticateDataRequest, SignDataRequest
-from institution.authenticator.serializer import \
-    Authenticate_Response_Serializer
-from institution.signer.serializer import Sign_Response_Serializer
-from django.conf import settings
 
 from corebase import logger
+from corebase.rsa import encrypt, get_hash_sum
+from institution.authenticator.serializer import \
+    Authenticate_Response_Serializer
+from institution.models import AuthenticateDataRequest, SignDataRequest
+from institution.signer.serializer import Sign_Response_Serializer
 
 
 def get_datarequest_serializer(data):

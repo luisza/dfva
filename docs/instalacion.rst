@@ -67,7 +67,10 @@ Asegurese de configurar la base de datos, y el motor de base de datos
 ::
 
    python manage.py migrate
+   python manage.py createsuperuser
+   python manage.py create_admin_institution
 
+Importante create_admin_institution requiere de tener al menos un usuario superadminsitrador.
 
 Corra el programa
 --------------------

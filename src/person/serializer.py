@@ -207,7 +207,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
         random_token = get_random_token()
         person.cipher_token = encrypt(self.get_public_key(),
                                       random_token
-                                      )
+                                      ).decode()
         logger.debug("Token: "+person.identification+" => " +
                      b64encode(random_token).decode('utf-8'))
         person.token = rsa_encrypt(

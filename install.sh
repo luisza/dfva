@@ -44,7 +44,7 @@ touch /home/dfva/logs/gunicorn_supervisor.log
 
 python manage.py migrate --settings=dfva.settings_prod
 python manage.py collectstatic --settings=dfva.settings_prod
-
+python manage.py create_admin_institution --settings=dfva.settings_prod
 EOF
 
 chmod u+x /home/dfva/dfva/deploy/gunicorn_start

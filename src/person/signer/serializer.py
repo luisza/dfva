@@ -29,6 +29,8 @@ from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
+from person.signer.forms import SignDataCheckForm, SignDataForm
+
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
@@ -47,6 +49,11 @@ class Sign_Person_Request_Serializer(PersonCheckBaseBaseSerializer,
     check_show_fields = ['person',
                          'identification',
                          'request_datetime']
+
+
+    form = SignDataForm
+    form_check = SignDataCheckForm
+
 
     validate_request_class = SignPersonRequest
     validate_data_class = SignPersonDataRequest
