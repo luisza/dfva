@@ -1,0 +1,83 @@
+version: '2'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3
+    container_name: "dfva_rabbitmq"
+    domainname: 'rabbit'
+    hostname: 'cola'
+    networks:
+      - dfvaapps
+    ports:
+      - 5672:5672
+    volumes:
+    - vol-rabbitmq:/var/lib/rabbitmq/
+
+  postgresdb:
+    image: postgres
+    volumes:
+      - dfvadb:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+    networks:
+      - dfvaapps
+
+  fvabccr:
+    image: dfva/fva_bccr
+    container_name: "dfva_bccr"
+    networks:
+      - dfvaapps
+    environment:
+      - BROKER_URL=amqp://fvabccr:fvabccrpassword@rabbitmq:5672/fvabccrvhost
+      - DBENGINE=postgresql
+      - DBHOST=postgresdb
+      - DBUSER=fvabccr
+      - DBNAME=fvabccr
+      - DBPASSWORD=fvabccrpassword
+      - RECEPTOR_HOST_NOTIFY=dfva:8000
+      - ALLOWED_HOSTS=*
+    ports:
+      - 8001:8001
+
+  dfva:
+    image: dfva/dfva
+    container_name: "dfva"
+    networks:
+      - dfvaapps
+    environment:
+      - CELERY_BROKER_URL=amqp://dfva:dfvapassword@rabbitmq:5672/dfvavhost
+      - DBENGINE=postgresql
+      - DBHOST=postgresdb
+      - DBUSER=dfva
+      - DBPASSWORD=dfvapassword
+      - STUB_HOST=fvabccr:8001
+      - ALLOWED_HOSTS=*
+    volumes:
+    - vol-ca:/internal_ca/
+    ports:
+      - 8000:8000
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    restart: on-failure
+    container_name: "pgadmin"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=contact@visualcon.net
+      - PGADMIN_DEFAULT_PASSWORD=eedmypass
+    networks:
+      - dfvaapps
+    volumes:
+      - db-pgadmin:/var/lib/docker/volumes/
+    ports:
+      - 8431:80
+
+
+networks:
+  dfvaapps:
+volumes:
+  dfvadb:
+  vol-rabbitmq:
+  db-pgadmin:
+  vol-ca:

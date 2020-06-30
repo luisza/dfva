@@ -5,15 +5,13 @@ touch /logs/gunicorn.log
 touch /logs/gunicorn-access.log
 tail -n 0 -f /logs/gunicorn*.log &
 
-#python manage.py migrate --settings=dfva.settings_docker
+echo "Esperando base de datos"
+sleep 10
+python manage.py migrate --settings=dfva.settings
 
-if [ ! -f /dfva/internal_ca/ca_key.pem ]; then
-    python manage.py crea_ca --settings=dfva.settings_docker
-fi
+export DJANGO_SETTINGS_MODULE=dfva.settings
 
-export DJANGO_SETTINGS_MODULE=dfva.settings_docker
-
-exec gunicorn dfva.wsgi_docker:application \
+gunicorn dfva.wsgi:application \
     --name dfva \
     --bind 0.0.0.0:8000 \
     --workers 3 \

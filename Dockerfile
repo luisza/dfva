@@ -29,11 +29,13 @@ RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev && \
     apt-get -y clean
 
 ADD src /dfva_app 
-RUN python manage.py collectstatic --settings=dfva.settings_docker
+RUN python manage.py collectstatic --settings=dfva.settings
 COPY deploy/docker_gunicorn.sh /entrypoint.sh
 # EXPOSE port 8000 to allow communication to/from server
 EXPOSE 8000
 
+RUN mkdir -p /internal_ca
+VOLUME /internal_ca
 ENTRYPOINT ["/entrypoint.sh"]
 
 

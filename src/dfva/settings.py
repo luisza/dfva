@@ -54,7 +54,7 @@ ELK_LOGGING = False
 # - onlybccr
 ONLY_BCCR = os.getenv('ONLY_BCCR', '') == 'True'
 # - endonlybccr
-DOCKER = False  # Is running in docker container
+
 if os.getenv('ALLOWED_HOSTS', ''):
     ALLOWED_HOSTS = [c for c in os.getenv('ALLOWED_HOSTS', '').split(',')]
 else:
@@ -118,13 +118,25 @@ WSGI_APPLICATION = 'dfva.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 # - database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+DB = os.getenv('DBENGINE', 'sqlite')
+if DB == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.getenv('DB_SQLITE_PATH', os.path.join(BASE_DIR, 'db.sqlite3')),
+        }
     }
-}
-
+elif DB == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DBNAME', 'dfva'),
+            'USER': os.getenv('DBUSER', 'dfva_user'),
+            'PASSWORD': os.getenv('DBPASSWORD', 'dfva_pass'),
+            'HOST': os.getenv('DBHOST', '127.0.0.1'),
+            'PORT': os.getenv('DBPORT', '5432'),
+        }
+    }
 # - enddatabase
 
 # Password validation
@@ -167,8 +179,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-STATIC_MEDIA = os.path.join(BASE_DIR, 'media/')
+STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(BASE_DIR, 'static/'))
+STATIC_MEDIA = os.getenv('STATIC_MEDIA', os.path.join(BASE_DIR, 'media/'))
 
 # Mutual Authentication (remove if not need it on development)
 if MUTUAL_AUTH:
@@ -235,10 +247,10 @@ LOGIN_REDIRECT_URL = '/'
 
 # - fvabccr
 #FVA_HOST = "http://localhost:8001/"
-FVA_HOST = 'http://bccr.fva.cr/'
-STUB_SCHEME = 'http'
-STUB_HOST = "localhost:8001"
-RECEPTOR_HOST = "http://localhost:8000/"
+FVA_HOST = os.getenv('FVA_HOST', 'http://bccr.fva.cr/')
+STUB_SCHEME = os.getenv('STUB_SCHEME', 'http')
+STUB_HOST = os.getenv('STUB_HOST', "localhost:8001")
+RECEPTOR_HOST = os.getenv('RECEPTOR_HOST', "http://localhost:8000/")
 #RECEPTOR_HOST = 'http://bccr.fva.cr/'
 #DEFAULT_NOTIFICATION_URL = r'^wcfv2\/Bccr\.Sinpe\.Fva\.EntidadDePruebas\.Notificador\/ResultadoDeSolicitud\.asmx$'
 DEFAULT_NOTIFICATION_URL = r'^notifica$'
@@ -249,7 +261,7 @@ DEFAULT_ENTITY = 1
 RECEPTOR_CLIENT = 'receptor.client'
 
 # Remove on production
-UCR_FVA_SERVER_URL = 'http://localhost:8000'
+UCR_FVA_SERVER_URL = os.getenv('UCR_FVA_SERVER_URL', 'http://localhost:8000')
 
 LOGGING_ENCRYPTED_DATA = False
 DFVA_REMOVE_AUTHENTICATION = 5  # minutes
@@ -299,5 +311,5 @@ EMAIL_PORT = 1025
 EMAIL_HOST = 'localhost'
 
 # - broker
-CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'amqp://guest:guest@127.0.0.1:5672//')
 # - endbroker
