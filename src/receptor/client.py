@@ -40,9 +40,9 @@ except:
     pass
 
 try:
-    from person.models import AuthenticatePersonDataRequest,\
-        SignPersonDataRequest
-    DATAREQUEST += [AuthenticatePersonDataRequest, SignPersonDataRequest]
+    from person.models import AuthenticatePersonRequest,\
+        SignPersonRequest
+    DATAREQUEST += [AuthenticatePersonRequest, SignPersonRequest]
 except:
     pass
 def get_encrypt_method(datarequest):
@@ -92,7 +92,7 @@ def reciba_notificacion(data):
         * **fue_exitosa:** si fue exitosa la firma
         * **codigo_error:** código de error
         * **hash_docfirmado:** Hash del documento ya firmado
-	* **hash_id:**  id del hash con que se genero el hash_docfirmado puede ser 1. Sha256, 2. Sha384  3. Sha512      
+        * **hash_id:**  id del hash con que se genero el hash_docfirmado puede ser 1. Sha256, 2. Sha384  3. Sha512
 
     No requiere retornar nada
 
@@ -119,7 +119,10 @@ def reciba_notificacion(data):
     request.status_text = get_text_representation(
         ERRORES_AL_NOTIFICAR_FIRMA,  data['codigo_error'])
     request.received_notification = True
-    request.sign_document = get_document(data['documento'])
+    if hasattr(request, 'signed_document'):
+        request.signed_document = get_document(data['documento'])
+    else:
+        request.sign_document = get_document(data['documento'])
     request.hash_docsigned = get_hashsum_b64(data['hash_docfirmado'])
     request.hash_id_docsigned = data['hash_id']
     request.save()

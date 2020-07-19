@@ -211,19 +211,3 @@ def get_reponse_institution_data_encrypted(data, institution,
 
     }
     return dev
-
-
-def get_reponse_person_data_encrypted(data, public_certificate, algorithm='sha512'):
-    sdata = json.dumps(data, cls=DjangoJSONEncoder)
-
-    if public_certificate:
-        edata = encrypt(public_certificate, sdata)
-    else:
-        edata = sdata
-    dev = {
-        'data': edata,
-        'data_hash': get_hash_sum(sdata, algorithm),
-        'algorithm': algorithm
-
-    }
-    return dev

@@ -22,6 +22,16 @@ Documentación
 Por supuesto la documentación está en [aquí](http://dfva.readthedocs.io)
 
 
+Configuración de inicio
+==========================
+
+.. code:: bash
+
+    python manage.py migrate
+    python manage.py createsuperuser
+    python manage.py create_admin_institution
+
+
 Proyectos complementarios
 ==============================
 

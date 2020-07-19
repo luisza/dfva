@@ -34,81 +34,43 @@ from base64 import b64encode
 
 import logging
 from institution.models import Institution
+from rest_framework.authtoken.models import Token
+
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
 
     def validate_digest(self):
-        super(PersonBaseSerializer, self).validate_digest()
-        try:
-            plain_text = self._get_decrypt_key()
-        except Exception as enc:
-            self._errors['data'] = [_('Sign, wrong encryption')]
-            logger.debug("Sign, wrong encryption %r " % (enc,))
-            return
-        if not validate_sign_data(self.data['public_certificate'],
-                                  plain_text, self.data['data']):
-            self._errors['data_hash'] = [
-                _('Sign key check fail,  are you signing with your \
-                private key pair?')]
+        self.requestdata = self.data['data']
 
     def validate_certificate(self):
-        self.get_institution()
         client = ClienteValidador(
             negocio=settings.DEFAULT_BUSSINESS,
             entidad=settings.DEFAULT_ENTITY,
         )
         if client.validar_servicio('certificado'):
-
-            data = client.validar_certificado_autenticacion(
-                pem_to_base64(self.data['public_certificate']))
-
+            data = client.validar_certificado_autenticacion(pem_to_base64(self.data['public_certificate']))
         else:
             logger.warning("Certificate BCCR not available")
             data = client.DEFAULT_CERTIFICATE_ERROR
-            self._errors['public_certificate'] = [
-                _("Wrong certificate or communication error")]
+            self._errors['public_certificate'] = [_("Wrong certificate or communication error")]
 
         if data['codigo_error'] != 0 or not data['exitosa']:
             self._errors['public_certificate'] = [_('Invalid certificate')]
 
         if self.check_subject():
-
-            try:
-                key = self._get_decrypt_key()
-                self.requestdata = decrypt_person(
-                    self.data['public_certificate'], key,
-                    self.data['data'])
-                self.check_internal_data(self.requestdata)
-            except Exception as e:
-                self._errors['data'] = [
-                    _('Data was not decrypted well %r') % (e,)]
-                return False
+            self.check_internal_data(self.requestdata)
 
     def get_person(self):
-        self.person = Person.objects.filter(
-            identification=self.data['person']).first()
+        self.person = Person.objects.filter(identification=self.data['person']).first()
         if self.person is None:
             self._errors['data'] = [
                 _('User not registered in the system')]
 
     def check_subject(self):
         return True
-    # Fixme: Revisar que pesona exista
-
-    def get_private_key(self):
-        keyenc = None
-        with open(settings.DFVA_KEY_PATH, 'rb') as arch:
-            keyenc = arch.read()
-        return keyenc
-
-    def _get_decrypt_key(self):
-
-        self.get_person()
-        key = decrypt(self.get_private_key(),
-                      self.person.cipher_token, as_str=False)
-        return key
+    # Fixme: Revisar que persona exista
 
     def _check_internal_data(self, data, fields=[]):
         self.get_person()
@@ -195,23 +157,14 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
             raise ValidationError(self.errors)
         return not bool(self._errors)
 
-    def get_public_key(self):
-        public_key = None
-        with open(settings.DFVA_CERT_PATH, 'r') as arch:
-            public_key = arch.read()
 
-        return public_key
 
     def save(self):
         person = self.get_person()
-        random_token = get_random_token()
-        person.cipher_token = encrypt(self.get_public_key(),
-                                      random_token
-                                      ).decode()
-        logger.debug("Token: "+person.identification+" => " +
-                     b64encode(random_token).decode('utf-8'))
-        person.token = rsa_encrypt(
-            self.data['public_certificate'], message=random_token).decode()
+
+        token, created = Token.objects.get_or_create(user=self.person.user)
+        logger.debug("Token: "+token.key)
+        person.token = token.key
         person.authenticate_certificate = self.data['public_certificate']
         person.expiration_datetime_token = timezone.now(
         ) + timezone.timedelta(minutes=settings.DFVA_PERSON_SESSION)
@@ -229,6 +182,8 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PersonLoginResponseSerializer(serializers.HyperlinkedModelSerializer):
+    token = serializers.CharField()
+
     class Meta:
         model = Person
         fields = (

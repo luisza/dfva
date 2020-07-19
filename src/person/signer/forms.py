@@ -21,7 +21,7 @@
 '''
 
 from django import forms
-
+"""
 from corebase.models import SUPPORTED_DOC_FORMAT
 from institution.models import SignDataRequest
 from django.utils.translation import ugettext_lazy as _
@@ -64,3 +64,4 @@ class SignDataCheckForm(forms.ModelForm):
     class Meta:
         model=SignPersonDataRequest
         fields = ['request_datetime']
+"""

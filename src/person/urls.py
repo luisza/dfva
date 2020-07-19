@@ -19,16 +19,16 @@
 @license: GPLv3
 '''
 
-from person.authenticator.views import AuthenticatePersonRequestViewSet
-from person.signer.views import SignPersonRequestViewSet
-from person.validator.views import ValidatePersonViewSet,\
-    ValidateSubscriptorPersonViewSet
+from person.authenticator.views import AuthenticatePersonView
+from person.signer.views import SignPersonView
+from person.validator import views as validate_view
 from person.views import PersonLoginView
 
 
 def get_routes_view(router):
-    router.register(r'authenticate', AuthenticatePersonRequestViewSet)
-    router.register(r'sign', SignPersonRequestViewSet)
-    router.register(r'validate', ValidatePersonViewSet)
-    router.register(r'validate', ValidateSubscriptorPersonViewSet)
+    router.register(r'person/authenticate', AuthenticatePersonView)
+    router.register(r'person/sign', SignPersonView)
+    router.register(r'person/validate_document', validate_view.ValidateDocumentPersonViewSet)
+    router.register(r'person/validate_certificate', validate_view.ValidateCertificatePersonViewSet)
+    router.register(r'person/validate_suscriptor', validate_view.ValidateSubscriptorPersonViewSet)
     router.register(r'login', PersonLoginView)

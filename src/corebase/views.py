@@ -35,10 +35,8 @@ from authorization_management.models import UserConditionsAndTerms
 from corebase import logger
 from corebase.models import System_Request_Metric
 
-from corebase.rsa import (get_reponse_institution_data_encrypted,
-                          get_reponse_person_data_encrypted)
+from corebase.rsa import get_reponse_institution_data_encrypted
 from pyfva.constants import get_text_representation
-
 
 
 def check_ok(request):
@@ -121,11 +119,7 @@ class ViewSetBase:
             if hasattr(serializer, 'institution') and serializer.institution:
                 self.time_messages['institution'] = serializer.institution
         else:  # person
-            dev = get_reponse_person_data_encrypted(
-                data,
-                serializer.person.authenticate_certificate if hasattr(
-                    serializer, 'person') else None,
-                algorithm=serializer.data.get('algorithm', "sha512"))
+            dev = data
         self.time_messages['end_encryption'] = timezone.now()
         return dev
 

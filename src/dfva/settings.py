@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'person',
     'receptor',
     'rest_framework',
+    'rest_framework.authtoken',
     'authorization_management',
     'django_celery_beat',
     'django_celery_results',
@@ -157,6 +158,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ]
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
