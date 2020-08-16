@@ -30,7 +30,7 @@ from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 import io
 
-from Crypto.Hash import SHA512
+from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from django.core.serializers.json import DjangoJSONEncoder
@@ -169,7 +169,7 @@ def validate_sign(public_certificate, key, cipher_text):
     if hasattr(key, 'encode'):
         key = key.encode()
 
-    digest = SHA512.new()
+    digest = SHA256.new()
     digest.update(key)
 
     pub_key = RSA.importKey(public_certificate)
