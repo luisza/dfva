@@ -29,6 +29,7 @@ Configuración de inicio
 
     python manage.py migrate
     python manage.py createsuperuser
+    python manage.py crea_ca
     python manage.py create_admin_institution
 
 

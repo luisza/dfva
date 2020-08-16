@@ -15,4 +15,5 @@ EOSQL"
 
 docker-compose -f docker-compose-dev.yml exec  dfva bash -c 'python manage.py migrate; python manage.py createsuperuser'
 docker-compose -f docker-compose-dev.yml exec  dfva bash -c 'python manage.py crea_ca'
+docker-compose -f docker-compose-dev.yml exec  dfva bash -c 'python manage.py create_admin_institution'
 docker-compose -f docker-compose-dev.yml exec  fvabccr bash -c 'python fva_bccr/manage.py migrate; python fva_bccr/manage.py createsuperuser'
