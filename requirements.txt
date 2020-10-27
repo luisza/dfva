@@ -8,7 +8,7 @@ csrbuilder==0.10.1
 certvalidator==0.11.1
 cffi==1.14.0
 coreapi==2.3.3
-cryptography==2.9.2
+cryptography==3.2
 dateutils==0.6.8
 Django==3.0.7
 django-appconf==1.0.4
