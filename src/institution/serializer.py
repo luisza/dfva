@@ -49,7 +49,7 @@ class InstitutionBaseSerializer(CoreBaseBaseSerializer):
                          (self.data['institution'] if 'institution' in
                           self.data else "No institution in data", ), 'location': __file__})
             self._errors['institution'] = [
-                _('Institution not found')]
+                _('Institution not found, certificate does not match')]
             self.institution = None
 
     def _get_decrypt_key(self):

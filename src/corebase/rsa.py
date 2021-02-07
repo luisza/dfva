@@ -30,16 +30,21 @@ from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 import io
 
-from Crypto.Hash import SHA256
+from Crypto.Hash import SHA256, SHA512
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 import logging
 from corebase.ciphers import Available_ciphers
-
+from django.conf import settings
 from corebase import logger
 
+
+def get_digest_algorith():
+    if settings.DEFAULT_DIGEST_ALGORITHM == 'sha256':
+        return SHA256.new()
+    return SHA512.new()
 
 def pem_to_base64(certificate):
     return certificate.replace("-----BEGIN CERTIFICATE-----\n", '').replace(
@@ -169,7 +174,7 @@ def validate_sign(public_certificate, key, cipher_text):
     if hasattr(key, 'encode'):
         key = key.encode()
 
-    digest = SHA256.new()
+    digest = get_digest_algorith()
     digest.update(key)
 
     pub_key = RSA.importKey(public_certificate)

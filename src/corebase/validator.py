@@ -186,6 +186,98 @@ class ValidateDocument_RequestSerializer(
             dev = ERRORES_VALIDAR_PDF
         return dev
 
+    def call_BCCR(self):
+        """
+        Llama al Validador de documentos del BCCR
+
+        :return:  Nada
+        """
+        client = ClienteValidador(
+            negocio=self.institution.bccr_bussiness,
+            entidad=self.institution.bccr_entity,
+        )
+        self.time_messages['start_bccr_call'] = timezone.now()
+        if client.validar_servicio('documento'):
+            data = client.validar_documento(
+                self.requestdata['document'], self.requestdata['format'])
+
+        else:
+            logger.warning({'message': "Validate document BCCR not available", 'location': __file__},
+                           sector=self.log_sector)
+            data = client.DEFAULT_DOCUMENT_ERROR(self.get_default_error())
+        self.time_messages['end_bccr_call'] = timezone.now()
+        logger.debug({'message': "Validator BCCR:  document", 'data': data, 'location': __file__},
+                     sector=self.log_sector)
+        self.save_subject()
+        self.adr.request_datetime = parse_datetime(
+            self.requestdata['request_datetime'])
+        self.adr.code = get_code_from_uuid(self.document_request.code)
+        self.adr.status = data['codigo_error']
+        if 'texto_codigo_error' in data:
+            self.adr.status_text = data['texto_codigo_error']
+        else:
+            self.adr.status_text = get_text_representation(
+                self.get_default_error(),  data['codigo_error'])
+        self.adr.was_successfully = data['exitosa']
+
+        self.time_messages['transaction_status'] = self.adr.status
+        self.time_messages['transaction_status_text'] = self.adr.status_text
+        self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == self.adr.status
+
+        self.time_messages['start_save_database'] = timezone.now()
+        self.adr.save()
+        self.get_warnings(data['advertencias'])
+        self.get_found_errors(data['errores_encontrados'])
+        self.get_signers(data['firmantes'])
+
+    def get_signers(self, signers):
+        """
+        Extrae la información de los firmantes del documento
+
+        :param signers:  Lista de firmantes del documento recibido del BCCR
+        :return: Nada
+        """
+        if signers is None:
+            return
+        for signer in signers:
+            signerobj = Signer.objects.create(
+                identification_number=signer['identificacion'],
+                signature_date=signer['fecha_firma'],
+                full_name=signer['nombre']
+            )
+            self.adr.signers.add(signerobj)
+
+    def get_found_errors(self, errors):
+        """
+        Retorna la lista de errores encontrados en el documento
+
+        :param errors: Lista datos de error del BCCR
+        :return: Nada
+        """
+        if errors is None:
+            return
+        for error in errors:
+            error, _ = ErrorFound.objects.get_or_create(
+                code=error[0],
+                detail=error[1]
+            )
+            self.adr.errors.add(error)
+
+    def get_warnings(self, warnings):
+        """
+        Extrae las advertencias del documento de la información obtenida del BCCR
+
+        :param warnings: Lista de advertencias del BCCR
+        :return: Nada
+        """
+        if warnings is None:
+            return
+        for warning in warnings:
+            if warning:
+                adv, _ = WarningReceived.objects.get_or_create(
+                    description=warning
+                )
+                self.adr.warnings.add(adv)
 
     def save(self, **kwargs):
         """
