@@ -1,0 +1,28 @@
+{% load humanize %}
+
+<h2>Este es el resumen mensual</h2>
+<br>
+Año: {{sumary.year}} <br>
+Mes: {{sumary.month}} <br>
+
+<h2>Totales de peticiones </h2>
+Total de registros: {{sumary.total_number_of_records}} <br>
+Total de peticiones de autenticación: {{sumary.authentication_total}} <br>
+Total de peticiones de firmas: {{sumary.signer_total}} <br>
+Total de peticiones de validación de certificados: {{sumary.validatecertificate_total}} <br>
+Total de peticiones de validación de documentos: {{sumary.validatedocument_total}} <br>
+<h2>Promedio de duración de la petición </h2>
+Duración de autenticación: {{sumary.authentication_total_spend_time|seconds_to_time}} <br>
+Duración de firma de documento: {{sumary.signer_total_spend_time|seconds_to_time}} <br>
+Duración de validación de certificados: {{sumary.validatecertificate_total_spend_time|seconds_to_time}} <br>
+Duración de validación de documento: {{sumary.validatedocument_total_spend_time|seconds_to_time}} <br>
+<h2>Promedio de tamaño de petición </h2>
+
+Tamaño de autenticación: {{sumary.authentication_request_size|filesizeformat}} <br>
+Tamaño de firma de documentos: {{sumary.signer_request_size|filesizeformat}} <br>
+Tamaño de validación de certificados: {{sumary.validatecertificate_request_size|filesizeformat}} <br>
+Tamaño de validación de documentos: {{sumary.validatedocument_request_size|filesizeformat}} <br>
+
+<hr>
+
+Adjunto encontrará un archivo Zip con todas las estadísticas del mes en formato csv.

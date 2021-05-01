@@ -27,7 +27,7 @@
 			 
 			 var url_css=btn.data('urlcss');
 			 if(url_css==undefined){
-				 url_css=dominio + "/static/css/Bccr.Fva.ClienteInterno.Firmador-1.0.2.css";
+				 url_css=dominio + "/static/css/Bccr.Fva.ClienteInterno.Firmador-1.0.5.css";
 			 }
 			 
 			 var laConfiguracion = {

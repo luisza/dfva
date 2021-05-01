@@ -24,8 +24,7 @@
 from django.contrib import admin
 
 from corebase.admin_utils import CsvExporter
-from corebase.models import System_Request_Metric, BCCR_Monitor
-
+from corebase.models import System_Request_Metric, BCCR_Monitor, DataSummary
 
 
 class AdminMetrics(CsvExporter, admin.ModelAdmin):
@@ -73,3 +72,5 @@ class AdminBccrMonitor(CsvExporter, admin.ModelAdmin):
 
 admin.site.register(BCCR_Monitor, AdminBccrMonitor)
 admin.site.register(System_Request_Metric, AdminMetrics)
+admin.site.register(DataSummary)
+

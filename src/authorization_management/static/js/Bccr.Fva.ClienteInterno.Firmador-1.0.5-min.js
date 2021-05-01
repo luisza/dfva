@@ -1,5 +1,9 @@
 "use strict";
-
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function (a, b) {
+        return this.substr(b || 0, a.length) === a;
+    };
+}
 var FvaClienteInterno = function (laConfiguracion) {
     this.AsigneElTextoALaVentana = AsigneElTextoALaVentana;
     this.MuestreLaVentanaModal = MuestreLaVentanaModal;
@@ -11,62 +15,48 @@ var FvaClienteInterno = function (laConfiguracion) {
     this.MuestreElBordeDeError = MuestreElBordeDeError;
     this.RemuevaElBordeDeError = RemuevaElBordeDeError;
     this.EnvieLaSolicitud = EnvieLaSolicitud;
-
-    var elBotonDeAceptar = $("<div>", { "class": "fvaBoton" }).html("Aceptar");
-    var elFondoOscuro = $("<div>", { "class": "fvaFondoOscuro" });
-    var laVentanaModal = $("<div>", { "class": "fvaVentanaModal" }).css({ display: "none" });
-    var elContenidoDelCuerpo = $("<div>", { "class": "fvaContenidoVentanaModal" });
-    var elContenidoDeTexto = $("<div>", { "class": "fvaMargenDeContenido" });
-    var elContenidoDeCopieCodigo = $("<div>", { "class": "fvaContenidoDeCopieCodigo" });
-    var elAcordeon = $("<div>", { "class": "fvaAcordeon" });
-    var elPanelAcordeon = $("<div>", { "class": "fvaPanelAcordeon" });
-    var elToolTipText = $("<span>", { "class": "fvaToolTipText" });
-    var elCodigoConBotonCopiar = $("<div>", { "class": "fvaCodigoConBotonCopiar" });
-    var laAnimacionDeEspera = $("<div>", { "class": "fvaLoader" }).append($("<div>"), $("<div>"), $("<div>"));
-    var elCampoParaAccesibilidad = $("<div>", { "class": "fvaElementoOculto" });
-    var elCampoParaCopiar = $("<input/>", { "class": "fvaElementoOculto" });
-    var elMensajeDeCopiado = $('<div>', { "class": "fvaMensajeDeCopiado" }).css({ display: "none" });
+    var elBotonDeAceptar = $("<div>", { class: "fvaBoton" }).html("Aceptar");
+    var elFondoOscuro = $("<div>", { class: "fvaFondoOscuro" });
+    var laVentanaModal = $("<div>", { class: "fvaVentanaModal" }).css({ display: "none" });
+    var elContenidoDelCuerpo = $("<div>", { class: "fvaContenidoVentanaModal" });
+    var elContenidoDeTexto = $("<div>", { class: "fvaMargenDeContenido" });
+    var elContenidoDeCopieCodigo = $("<div>", { class: "fvaContenidoDeCopieCodigo" });
+    var elAcordeon = $("<div>", { class: "fvaAcordeon" });
+    var elPanelAcordeon = $("<div>", { class: "fvaPanelAcordeon" });
+    var elToolTipText = $("<span>", { class: "fvaToolTipText" });
+    var elCodigoConBotonCopiar = $("<div>", { class: "fvaCodigoConBotonCopiar" });
+    var laAnimacionDeEspera = $("<div>", { class: "fvaLoader" }).append($("<div>"), $("<div>"), $("<div>"));
+    var elCampoParaAccesibilidad = $("<div>", { class: "fvaElementoOculto" });
+    var elCampoParaCopiar = $("<input/>", { class: "fvaElementoOculto" });
+    var elMensajeDeCopiado = $("<div>", { class: "fvaMensajeDeCopiado" }).css({ display: "none" });
     var elTextoDeCopieElCodigo = "Para confirmar la transacci&oacute;n, copie el siguiente c&oacute;digo de verificaci&oacute;n en el Firmador BCCR";
     var elTextoDeAyudaQueEsFirmadorBccr = "&iquest;Qu&eacute; es el Firmador BCCR?";
     var laDescripcionDelFormato = '<div class="fvaDescripcionDelFormato"><span class="fvaCodLetra">Letra</span><span class="fvaDescripcionDelFormatoSeparador"> | </span><span>N&uacute;mero</span></div>';
-
     var elTituloDelResumen = '<div class="fvaTituloDelResumen">Resumen de la transacci&oacute;n:</div>';
     var laAdvertenciaAlUsuario = '<div class="fvaAdvertencia">El c&oacute;digo de verificaci&oacute;n es para su uso exclusivo y personal. No lo facilite por tel&eacute;fono o correo electr&oacute;nico a ninguna persona.</div>';
-    var elResumenDelDocumento = $("<div>", { "class": "fvaResumen" });
-
+    var elResumenDelDocumento = $("<div>", { class: "fvaResumen" });
     var elIconoDeAyuda = $("<img>", { src: laConfiguracion.Imagenes.Ayuda, alt: "Ayuda", height: "21", width: "21" });
-    var elContenidoDeTextoCopieElCodigo = $("<div>", { "class": "fvaContenidoDeTextoCopieElCodigo" });
+    var elContenidoDeTextoCopieElCodigo = $("<div>", { class: "fvaContenidoDeTextoCopieElCodigo" });
     var laUrlParaConsultarLaSolicitud = laConfiguracion.UrlConsultaFirma;
-    var elBotonDeCopiar = $("<input/>", { "class": "fvaElBotonDeCopiar", value: "Copiar", type: "button" });
-
-    if(laConfiguracion.UsoAutenticacion){ 
-        elTextoDeCopieElCodigo = "Para confirmar su solicitud de ingreso, copie el siguiente c&oacute;digo de verificaci&oacute;n en el Firmador BCCR";    
-        elTituloDelResumen = '<div class="fvaTituloDelResumen">Resumen de la solicitud de ingreso:</div>';
-    }
-
+    var elBotonDeCopiar = $("<input/>", { class: "fvaElBotonDeCopiar", value: "Copiar", type: "button" });
     ConfigureElSitioParaRealizarSolicitudes();
 
     function ConfigureElSitioParaRealizarSolicitudes() {
         elBotonDeAceptar.bind("click", InvoqueASolicitudNoRealizada);
-
         $("body").append(laVentanaModal);
         $("body").append(elFondoOscuro);
         $("body").append(elCampoParaAccesibilidad);
         $("body").append(elCampoParaCopiar);
         $("body").append(elMensajeDeCopiado);
-        
         CreeLaVentanaModal();
-
         function CreeLaVentanaModal() {
             AgregueElEstilo();
             elContenidoDelCuerpo.append(elContenidoDeTexto, laAnimacionDeEspera, elBotonDeAceptar);
             laVentanaModal.append(elContenidoDelCuerpo);
-
             function AgregueElEstilo() {
                 $("head").append('<link rel="stylesheet" href="' + laConfiguracion.UrlCSS+'" type="text/css" />');
             }
         }
-
         function InvoqueASolicitudNoRealizada() {
             OculteLaVentanaModal();
             laConfiguracion.SolicitudNoRealizada();
@@ -83,7 +73,6 @@ var FvaClienteInterno = function (laConfiguracion) {
 
         function RealiceLaSolicitud() {
             var losDatosParaSolicitar = laConfiguracion.DatosParaSolicitar();
-
             $.ajax({
                 url: laConfiguracion.UrlParaSolicitar,
                 type: "POST",
@@ -106,18 +95,15 @@ var FvaClienteInterno = function (laConfiguracion) {
             var elIdDeLaSolicitud = laRespuesta.IdDeLaSolicitud;
             var elResumenDocumento = laRespuesta.ResumenDelDocumento;
             var seTerminoElTiempoDeFirma = false;
-
             if (fueExitosaLaSolicitud) {
                 var elCodigoDeVerificacionFormateado = FormateeElCodigoDeVerificacion(elCodigoDeVerificacion);
                 elCodigoConBotonCopiar.html("").append(elCodigoDeVerificacionFormateado, elBotonDeCopiar);
-
                 if (elResumenDocumento === undefined || elResumenDocumento === null) {
                     elResumenDelDocumento.html("");
                     elTituloDelResumen = "";
                 } else {
                     elResumenDelDocumento.html(elResumenDocumento);
                 }
-
                 NotifiqueCuandoSeTermineElTiempoMaximoDeFirma();
                 var elContenido = ObtengaElContenidoConCodigoDeVerificacion();
                 AsigneElTextoALaVentana(elContenido);
@@ -125,7 +111,6 @@ var FvaClienteInterno = function (laConfiguracion) {
             } else {
                 MuestreElMensajeDeErrorDeLaRespuesta(laRespuesta);
             }
-
             function ObtengaElContenidoConCodigoDeVerificacion() {
                 elContenidoDeTextoCopieElCodigo.html(elTextoDeCopieElCodigo);
                 elAcordeon.append(elIconoDeAyuda, elToolTipText);
@@ -134,33 +119,26 @@ var FvaClienteInterno = function (laConfiguracion) {
                 elPanelAcordeon.css({ "max-height": "0px" });
                 elAcordeon.removeClass("active");
                 elToolTipText.html(elTextoDeAyudaQueEsFirmadorBccr);
-
                 elAcordeon.click(function () {
                     this.classList.toggle("active");
-
-                    if (elPanelAcordeon[0].style.maxHeight != '0px') {
-                        elPanelAcordeon[0].style.maxHeight = '0px';
+                    if (elPanelAcordeon[0].style.maxHeight != "0px") {
+                        elPanelAcordeon[0].style.maxHeight = "0px";
                         elToolTipText.html(elTextoDeAyudaQueEsFirmadorBccr);
                     } else {
                         elPanelAcordeon[0].style.maxHeight = elPanelAcordeon[0].scrollHeight + "px";
                         elToolTipText.html("Ocultar");
                     }
                 });
-
                 elBotonDeCopiar.click(CopieElCodigoDeVerificacionAlPortapapeles);
-
                 var elContenido = $("<div>").append(elContenidoDeCopieCodigo, elCodigoConBotonCopiar, laDescripcionDelFormato, elTituloDelResumen, elResumenDelDocumento, laAdvertenciaAlUsuario, elPanelAcordeon);
                 return elContenido;
             }
-
             function CopieElCodigoDeVerificacionAlPortapapeles() {
                 elCampoParaCopiar.val(elCodigoDeVerificacion);
                 elCampoParaCopiar.select();
                 var elMensaje = "";
-
                 try {
-                    var siPudoCopiar = document.execCommand('copy');
-
+                    var siPudoCopiar = document.execCommand("copy");
                     if (siPudoCopiar) {
                         elMensaje = "C&oacute;digo de verificaci&oacute;n copiado";
                     } else {
@@ -169,11 +147,10 @@ var FvaClienteInterno = function (laConfiguracion) {
                 } catch (elError) {
                     elMensaje = "No se ha podido copiar el c&oacute;digo de verificaci&oacute;n";
                 }
-
                 elMensajeDeCopiado.html(elMensaje);
                 if (elMensajeDeCopiado[0].style.display !== "block") {
-                    elMensajeDeCopiado.fadeIn('slow', function () {
-                        $(this).delay(1500).fadeOut('slow');
+                    elMensajeDeCopiado.fadeIn("slow", function () {
+                        $(this).delay(1500).fadeOut("slow");
                     });
                 }
             }
@@ -195,19 +172,15 @@ var FvaClienteInterno = function (laConfiguracion) {
                 var elCaracterFormateado;
                 var elCaracter;
                 var laCantidadDeCaracteres = elCodigoDeVerificacion.length;
-
                 for (var elIndiceActual = 0; elIndiceActual < laCantidadDeCaracteres; elIndiceActual++) {
                     elCaracter = elCodigoDeVerificacion[elIndiceActual];
-
                     if (EsUnNumero(elCaracter)) {
-                        elCaracterFormateado = '<span>' + elCaracter + '</span>';
+                        elCaracterFormateado = "<span>" + elCaracter + "</span>";
                     } else {
-                        elCaracterFormateado = '<span class="fvaCodLetra">' + elCaracter + '</span>';
+                        elCaracterFormateado = '<span class="fvaCodLetra">' + elCaracter + "</span>";
                     }
-
                     elCodigoFormateado = elCodigoFormateado + elCaracterFormateado;
                 }
-
                 return elCodigoFormateado + "</div>";
             }
 
@@ -217,7 +190,6 @@ var FvaClienteInterno = function (laConfiguracion) {
 
             function ConsulteLaSolicitud() {
                 var losDatosParaConsultar = { IdDeLaSolicitud: elIdDeLaSolicitud };
-
                 $.ajax({
                     url: laUrlParaConsultarLaSolicitud,
                     jsonp: "callback",
@@ -236,10 +208,12 @@ var FvaClienteInterno = function (laConfiguracion) {
             function VerifiqueQueSeCompletoLaSolicitud(laRespuesta) {
                 if (laRespuesta.SeRealizo == true) {
                     NotifiqueQueSeCompletoLaSolicitud(laRespuesta);
-                } else if (seTerminoElTiempoDeFirma == true) {
-                    MuestreElMensajeDeErrorAlSolicitar();
                 } else {
-                    ConsulteLaSolicitudConEspera();
+                    if (seTerminoElTiempoDeFirma == true) {
+                        MuestreElMensajeDeErrorAlSolicitar();
+                    } else {
+                        ConsulteLaSolicitudConEspera();
+                    }
                 }
             }
         }
@@ -254,10 +228,9 @@ var FvaClienteInterno = function (laConfiguracion) {
 
         function MuestreElMensajeDeErrorDeLaRespuesta(laRespuesta) {
             if (laRespuesta.DebeMostrarElError == true) {
-                var elMensaje = laConfiguracion.MensajeDeError + '<div class="fvaMargenDeContenido fvaColorMensajeSecundario">' + laRespuesta.DescripcionDelError + '</div>';
-                NotifiqueQueSeCompletoLaSolicitudConError(elMensaje);
+                NotifiqueQueSeCompletoLaSolicitudConError(laRespuesta.DescripcionDelError);
             } else {
-                NotifiqueQueSeCompletoLaSolicitudConError(laConfiguracion.MensajeDeError);
+                NotifiqueQueSeCompletoLaSolicitudConErrorInesperado();
             }
         }
 
@@ -267,12 +240,24 @@ var FvaClienteInterno = function (laConfiguracion) {
         }
 
         function MuestreElMensajeDeErrorAlSolicitar() {
-            NotifiqueQueSeCompletoLaSolicitudConError(laConfiguracion.MensajeDeError);
+            NotifiqueQueSeCompletoLaSolicitudConErrorInesperado();
         }
 
         function NotifiqueQueSeCompletoLaSolicitudConError(elTextoAMostrar) {
+            var elTextoAMostrar = laConfiguracion.TituloMensaje + '<div class="fvaMargenDeContenido fvaColorMensajeSecundario">' + elTextoAMostrar + "</div>";
             MuestreElBordeDeError();
             AsigneElTextoALaVentana(elTextoAMostrar);
+            OculteLaAnimacionDeEspera();
+            MuestreElBotonDeAceptar();
+        }
+
+        function NotifiqueQueSeCompletoLaSolicitudConErrorInesperado() {
+            var T = "<p>Estimado suscriptor, se presentó un problema a la hora de realizar este proceso.</p>";
+            var V = '<p class="fvaColorMensajeSecundario">Pasos a seguir:</p><ol><li>Verificar si el Firmador BCCR se encuentra en estado conectado.<div class="fvaIconoFirmadorConectado"></div></li><li>Intentar nuevamente.</li>';
+            var S = '<p class="fvaContenidoParaErrorGeneralMensajeFinal">En caso de no corregirse, favor contactar al centro de soporte.</p>';
+            var U = T + '<div class="fvaMargenDeContenido fvaColorMensajeSecundario fvaContenidoParaErrorGeneral">' + V + "</div>" + S;
+            MuestreElBordeDeError();
+            AsigneElTextoALaVentana(U);
             OculteLaAnimacionDeEspera();
             MuestreElBotonDeAceptar();
         }
@@ -283,7 +268,7 @@ var FvaClienteInterno = function (laConfiguracion) {
         EjecuteLaAccesibilidad(elTexto);
 
         function EjecuteLaAccesibilidad(elTexto) {
-            var elInputParaAccesibilidad = $("<input/>", { "type": "text" });
+            var elInputParaAccesibilidad = $("<input/>", { type: "text" });
             elInputParaAccesibilidad.val(elTexto);
             elCampoParaAccesibilidad.empty();
             elCampoParaAccesibilidad.append(elInputParaAccesibilidad);
@@ -292,29 +277,29 @@ var FvaClienteInterno = function (laConfiguracion) {
     }
 
     function MuestreLaVentanaModal() {
-        elFondoOscuro.css({ "display": "block" });
-        laVentanaModal.css({ "display": "block" });
+        elFondoOscuro.css({ display: "block" });
+        laVentanaModal.css({ display: "block" });
     }
 
-    function OculteElBotonDeAceptar() {
-        elBotonDeAceptar.css({ "display": "none" });
+    function OculteElBotonDeAceptar(){
+        elBotonDeAceptar.css({ display: "none" });
     }
 
     function MuestreLaAnimacionDeEspera() {
-        laAnimacionDeEspera.css({ "display": "block" });
+        laAnimacionDeEspera.css({ display: "block" });
     }
 
     function OculteLaVentanaModal() {
-        elFondoOscuro.css({ "display": "none" });
-        laVentanaModal.css({ "display": "none" });
+        elFondoOscuro.css({ display: "none" });
+        laVentanaModal.css({ display: "none" });
     }
 
     function OculteLaAnimacionDeEspera() {
-        laAnimacionDeEspera.css({ "display": "none" });
+        laAnimacionDeEspera.css({ display: "none" });
     }
 
     function MuestreElBotonDeAceptar() {
-        elBotonDeAceptar.css({ "display": "inline-block" });
+        elBotonDeAceptar.css({ display: "inline-block" });
     }
 
     function RemuevaElBordeDeError() {
@@ -331,9 +316,7 @@ var FvaAutenticador = function (laConfiguracion) {
         ParaAutenticarse: "",
         IdDelBotonDeAutenticar: "BotonDeAutenticar",
         UrlParaSolicitarLaAutenticacion: "",
-        DominioDelSitio: "",
-        MensajeDeError: "Ocurri&oacute; un error al realizar la autenticaci&oacute;n."
-    }, laConfiguracion);
+        DominioDelSitio: "" }, laConfiguracion);
 
     var elBotonDeAutenticar = $("#" + laConfiguracion.IdDelBotonDeAutenticar);
     var laImagenDelFirmador = $("<img>", { src: laConfiguracion.Imagenes.Autenticador, alt: "Imagen de ayuda del Autenticador" });
@@ -343,36 +326,39 @@ var FvaAutenticador = function (laConfiguracion) {
         DominioDelSitio: laConfiguracion.DominioDelSitio,
         MensajeDeError: laConfiguracion.MensajeDeError,
         ImagenDelFirmador: laImagenDelFirmador,
-        ObtengaLosDatosParaSolicitarLaAutenticacion: laConfiguracion.ObtengaLosDatosParaSolicitarLaAutenticacion,
         DatosParaSolicitar: ObtengaLosDatosParaSolicitar,
         SolicitudRealizada: laConfiguracion.AutenticacionRealizada,
         SolicitudNoRealizada: laConfiguracion.AutenticacionNoRealizada,
         UrlParaSolicitar: laConfiguracion.UrlParaSolicitarLaAutenticacion,
+        TituloMensaje: "No se logró realizar la autenticación por el siguiente motivo.",
         Imagenes: laConfiguracion.Imagenes,
         UrlConsultaFirma: laConfiguracion.UrlConsultaFirma,
         UrlCSS: laConfiguracion.UrlCSS,
         UsoAutenticacion: true
-    }
+    };
 
     var elTextoTooltipParaIdentificacion = "<div class='fvaToolTipIdentificacionTitulo'>Formato de la identificaci&oacute;n</div><ul><li><span>Nacional:</span><span>00-0000-0000</span></li><li><span>DIDI:</span><span>500000000000</span></li><li><span>DIMEX:</span><span>100000000000</span></li></li>";
     var elTextoInformativo = "Para autenticarse " + laConfiguracion.ParaAutenticarse + ", primero debe ingresar su n&uacute;mero de identificaci&oacute;n:";
     var laEntradaDeLaIdentificacion = $("<input>", { type: "text" });
-    var elContenidoParaMensajesDeError = $("<div>", { "class": "fvaMensajeErrorIdentificacion fvaMargenDeContenido" });
-    var elBotonParaSolicitarLaAutenticacion = $("<div>", { "class": "fvaBoton" });
-    var elBotonCancelar = $("<div>", { "class": "fvaBoton" });
-    var elContenidoParaLosBotones = $("<div>", { "class": "fvaMargenDeContenido" });
-    var elContenidoParaIdentificacion = $("<div>", { "class": "fvaContenidoParaIdentificacion" });
-    var laPosicionDelToolTipIdentificacion = $("<div>", { "class": "fvaPosicionDelToolTipIdentificacion" });
-    var elToolTipIdentificacion = $("<div>", { "class": "fvaToolTipIdentificacion" });
-    var elContenidoParaElMensaje = $("<div>", { "class": "fvaMargenDeContenido" });
-    var elContenidoParaDelTipoDeIdentificacion = $("<div>", { "class": "fvaContenidoParaTipoIdentificacion" });
-    var elRadioBotonNacional = $("<div>", { "class": "fvaRadioBoton" });
-    var elRadioBotonExtranjero = $("<div>", { "class": "fvaRadioBoton" }); 
+    var elContenidoParaMensajesDeError = $("<div>", { class: "fvaMensajeErrorIdentificacion fvaMargenDeContenido" });
+    var elBotonParaSolicitarLaAutenticacion = $("<div>", { class: "fvaBoton" });
+    var elBotonCancelar = $("<div>", { class: "fvaBoton" });
+    var elContenidoParaLosBotones = $("<div>", { class: "fvaMargenDeContenido" });
+    var elContenidoParaIdentificacion = $("<div>", { class: "fvaContenidoParaIdentificacion" });
+    var laPosicionDelToolTipIdentificacion = $("<div>", { class: "fvaPosicionDelToolTipIdentificacion" });
+    var elToolTipIdentificacion = $("<div>", { class: "fvaToolTipIdentificacion" });
+    var elContenidoParaElMensaje = $("<div>", { class: "fvaMargenDeContenido" });
+    var i = "https://ayudaenlinea.bccr.fi.cr/ucontent/6294cf05198d40b6aaaddca4447b4016_es-ES/sim/html/sim_auto_playback.htm";
+    var elContenidoParaDelTipoDeIdentificacion = $("<div>", { class: "fvaContenidoParaTipoIdentificacion" });
+    var m = '<div class="fvaContenidoParaInformacionDeConectado"><div>Recuerde que para poder realizarla deber&aacute;:</div><ul><li>Insertar la tarjeta de firma digital en el lector o computadora.</li><li>El Firmador BCCR debe estar instalado y en estado conectado. <div class="fvaIconoFirmadorConectado"></div></li></ul><div>Cualquier consulta sobre el uso del Firmador BCCR, puede utilizar la gu&iacute;a <a href="' +
+        i +
+        '" target="_blank">Uso del Firmador BCCR</a>.</div></div>';
+    var elRadioBotonNacional = $("<div>", { class: "fvaRadioBoton" });
+    var elRadioBotonExtranjero = $("<div>", { class: "fvaRadioBoton" });
     var elClienteInterno = new FvaClienteInterno(laConfiguracionParaElClienteInterno);
 
     elBotonDeAutenticar.click(function () {
         var elContenido = ObtengaLaVistaDeSolicitudDeIdentificacion();
-
         elClienteInterno.RemuevaElBordeDeError();
         elClienteInterno.AsigneElTextoALaVentana(elContenido);
         elClienteInterno.OculteElBotonDeAceptar();
@@ -410,51 +396,44 @@ var FvaAutenticador = function (laConfiguracion) {
             if (event.keyCode === 13) {
                 ProceseLaAutenticacion();
             }
-            if ((laEntradaDeLaIdentificacion.val().length > 1) && (laEntradaDeLaIdentificacion.val().startsWith("0") == false) && ($('#laOpcionNacional').is(':checked'))) {
+            if (laEntradaDeLaIdentificacion.val().length > 1 && laEntradaDeLaIdentificacion.val().startsWith("0") == false && $("#laOpcionNacional").is(":checked")) {
                 laEntradaDeLaIdentificacion.val("");
             }
-            if ((laEntradaDeLaIdentificacion.val().length > 1) && (laEntradaDeLaIdentificacion.val().startsWith("5") == false) && (laEntradaDeLaIdentificacion.val().startsWith("1") == false) && ($('#laOpcionExtranjero').is(':checked'))) {
+            if (laEntradaDeLaIdentificacion.val().length > 1 && laEntradaDeLaIdentificacion.val().startsWith("5") == false && laEntradaDeLaIdentificacion.val().startsWith("1") == false && $("#laOpcionExtranjero").is(":checked")) {
                 laEntradaDeLaIdentificacion.val("");
             }
-            if ((laEntradaDeLaIdentificacion.val().length == 1) && (laEntradaDeLaIdentificacion.val()!="0") && ($('#laOpcionNacional').is(':checked'))) {
-
+            if (laEntradaDeLaIdentificacion.val().length == 1 && laEntradaDeLaIdentificacion.val() != "0" && $("#laOpcionNacional").is(":checked")) {
                 laEntradaDeLaIdentificacion.val("0" + laEntradaDeLaIdentificacion.val());
             }
-            if ((laEntradaDeLaIdentificacion.val().length == 1) && (laEntradaDeLaIdentificacion.val() != "5") && (laEntradaDeLaIdentificacion.val() != "1") && ($('#laOpcionExtranjero').is(':checked'))) {
-
+            if (laEntradaDeLaIdentificacion.val().length == 1 && laEntradaDeLaIdentificacion.val() != "5" && laEntradaDeLaIdentificacion.val() != "1" && $("#laOpcionExtranjero").is(":checked")) {
                 laEntradaDeLaIdentificacion.val("");
             }
         });
 
         elBotonCancelar.click(function () {
             elClienteInterno.OculteLaVentanaModal();
-
         });
 
         elRadioBotonNacional.click(function () {
-            $('#laOpcionNacional').prop('checked', true);           
-            laEntradaDeLaIdentificacion.maskCI('00-0000-0000', { reverse: true, placeholder: "00-0000-0000" });
+            $("#laOpcionNacional").prop("checked", true);
+            laEntradaDeLaIdentificacion.maskCI("00-0000-0000", { reverse: true, placeholder: "00-0000-0000" });
             laEntradaDeLaIdentificacion.val("");
-            $('#laOpcionExtranjero').prop('checked', false);
-          
+            $("#laOpcionExtranjero").prop("checked", false);
         });
 
         elRadioBotonExtranjero.click(function () {
-            $('#laOpcionExtranjero').prop('checked', true);                
-            laEntradaDeLaIdentificacion.maskCI('000000000000', { reverse: true, placeholder: "000000000000" });
+            $("#laOpcionExtranjero").prop("checked", true);
+            laEntradaDeLaIdentificacion.maskCI("000000000000", { reverse: true, placeholder: "000000000000" });
             laEntradaDeLaIdentificacion.val("");
-            $('#laOpcionNacional').prop('checked', false);
-          
+            $("#laOpcionNacional").prop("checked", false);
         });
-        elContenido.append(elContenidoParaElMensaje, elContenidoParaIdentificacion,elContenidoParaDelTipoDeIdentificacion, elContenidoParaMensajesDeError, elContenidoParaLosBotones);
-    
-        laEntradaDeLaIdentificacion.maskCI('00-0000-0000', { reverse: true, placeholder: "00-0000-0000" });
+        elContenido.append(elContenidoParaElMensaje, elContenidoParaIdentificacion, elContenidoParaDelTipoDeIdentificacion, m, elContenidoParaMensajesDeError, elContenidoParaLosBotones);
+        laEntradaDeLaIdentificacion.maskCI("00-0000-0000", { reverse: true, placeholder: "00-0000-0000" });
         return elContenido;
     }
 
     function ProceseLaAutenticacion() {
         var esValido = ValideElFormatoDeLaIdentificacion();
-
         if (esValido) {
             elClienteInterno.EnvieLaSolicitud();
         } else {
@@ -471,12 +450,10 @@ var FvaAutenticador = function (laConfiguracion) {
     function ObtengaLosDatosParaSolicitar() {
         var losDatos = laConfiguracion.ObtengaLosDatosParaSolicitarLaAutenticacion();
         var laIdentificacion = laEntradaDeLaIdentificacion.val();
-
         if (losDatos === undefined) {
             losDatos = new FormData();
         }
         losDatos.append("Identificacion", laIdentificacion);
-        
         return losDatos;
     }
 };
@@ -485,13 +462,9 @@ var FvaFirmador = function (laConfiguracion) {
     laConfiguracion = $.extend({
         IdDelBotonDeFirmar: "BotonDeFirmar",
       //  UrlParaSolicitarLaFirma: "",
-        DominioDelSitio: "",
-        MensajeDeError: "Ocurri&oacute; un error al realizar la firma."
-    }, laConfiguracion);
-
+        DominioDelSitio: "" }, laConfiguracion);
     var elBotonDeFirmar = $("#" + laConfiguracion.IdDelBotonDeFirmar);
     var laImagenDelFirmador = $("<img>", { src: laConfiguracion.Imagenes.Firma, alt: "Imagen de ayuda del Firmador" });
-
     var laConfiguracionParaElClienteInterno = {
         TextoSolicitando: "Procesando su solicitud de firma...",
         DominioDelSitio: laConfiguracion.DominioDelSitio,
@@ -501,11 +474,12 @@ var FvaFirmador = function (laConfiguracion) {
         SolicitudRealizada: laConfiguracion.FirmaRealizada,
         SolicitudNoRealizada: laConfiguracion.FirmaNoRealizada,
         UrlParaSolicitar: laConfiguracion.UrlParaSolicitarLaFirma,
+        TituloMensaje: "No se logró realizar la firma por el siguiente motivo.",
         Imagenes: laConfiguracion.Imagenes,
         UrlConsultaFirma: laConfiguracion.UrlConsultaFirma,
         UrlCSS: laConfiguracion.UrlCSS,
         UsoAutenticacion: false
-    }
+    };
 
     var elClienteInterno = new FvaClienteInterno(laConfiguracionParaElClienteInterno);
 
@@ -532,7 +506,6 @@ var FvaValidador = {
         } else {
             esValido = false;
         }
-
         return esValido;
     }
 };
@@ -540,19 +513,18 @@ var FvaValidador = {
 /*-------------  Metodos Mask ---------------*/
 (function (factory, jQuery, Zepto) {
 
-    if (typeof define === 'function' && define.amd) {
-        define(['jquery'], factory);
-    } else if (typeof exports === 'object') {
-        module.exports = factory(require('jquery'));
+    if (typeof define === "function" && define.amd) {
+        define(["jquery"], factory);
     } else {
-        factory(jQuery || Zepto);
+        if (typeof exports === "object") {
+            module.exports = factory(require("jquery"));
+        } else {
+            factory(jQuery || Zepto);
+        }
     }
-
-}
+})
 (function ($) {
-
     var Mask = function (el, maskCI, options) {
-
         var p = {
             invalid: [],
             getCaret: function () {
@@ -564,22 +536,23 @@ var FvaValidador = {
                         cSelStart = ctrl.selectionStart;
 
                     // IE Support
-                    if (dSel && navigator.appVersion.indexOf('MSIE 10') === -1) {
+                    if (dSel && navigator.appVersion.indexOf("MSIE 10") === -1) {
                         sel = dSel.createRange();
-                        sel.moveStart('character', -p.val().length);
+                        sel.moveStart("character", -k.val().length);
                         pos = sel.text.length;
                     }
                         // Firefox support
-                    else if (cSelStart || cSelStart === '0') {
-                        pos = cSelStart;
-                    }
-
+                    else {
+                        if (cSelStart || cSelStart === "0") {
+                           pos = cSelStart;
+                        }
+                   }
                     return pos;
                 } catch (e) { }
             },
             setCaret: function (pos) {
                 try {
-                    if (el.is(':focus')) {
+                    if (el.is(":focus")) {
                         var range, ctrl = el.get(0);
 
                         // Firefox, WebKit, etc..
@@ -588,93 +561,87 @@ var FvaValidador = {
                         } else { // IE
                             range = ctrl.createTextRange();
                             range.collapse(true);
-                            range.moveEnd('character', pos);
-                            range.moveStart('character', pos);
+                            range.moveEnd("character", pos);
+                            range.moveStart("character", pos);
                             range.select();
+                            }
                         }
-                    }
-                } catch (e) { }
+                    } catch (e) {}
             },
             events: function () {
-                el
-                .on('keydown.maskCI', function (e) {
-                    el.data('maskCI-keycode', e.keyCode || e.which);
-                    el.data('maskCI-previus-value', el.val());
-                    el.data('maskCI-previus-caret-pos', p.getCaret());
+                el.on("keydown.maskCI", function (e) {
+                    el.data("maskCI-keycode", e.keyCode || e.which);
+                    el.data("maskCI-previus-value", el.val());
+                    el.data("maskCI-previus-caret-pos", p.getCaret());
                     p.maskDigitPosMapOld = p.maskCIDigitPosMap;
                 })
-                .on($.jMaskGlobals.useInput ? 'input.maskCI' : 'keyup.maskCI', p.behaviour)
-                .on('paste.maskCI drop.maskCI', function () {
+                .on($.jMaskGlobals.useInput ? "input.maskCI" : "keyup.maskCI", p.behaviour)
+                .on("paste.maskCI drop.maskCI", function () {
                     setTimeout(function () {
                         el.keydown().keyup();
                     }, 100);
                 })
-                .on('change.maskCI', function () {
-                    el.data('changed', true);
+                .on("change.maskCI", function () {
+                    el.data("changed", true);
                 })
-                .on('blur.maskCI', function () {
-                    if (oldValue !== p.val() && !el.data('changed')) {
-                        el.trigger('change');
+                .on("blur.maskCI", function () {
+                    if (oldValue !== p.val() && !el.data("changed")) {
+                        el.trigger("change");
                     }
-                    el.data('changed', false);
+                    el.data("changed", false);
                 })
                 // it's very important that this callback remains in this position
                 // otherwhise oldValue it's going to work buggy
-                .on('blur.maskCI', function () {
+                .on("blur.maskCI", function () {
                     oldValue = p.val();
                 })
                 // select all text on focus
-                .on('focus.maskCI', function (e) {
+                .on("focus.maskCI", function (e) {
                     if (options.selectOnFocus === true) {
                         $(e.target).select();
                     }
                 })
                 // clear the value if it not complete the mask
-                .on('focusout.maskCI', function () {
+               .on("focusout.maskCI", function () {
                     if (options.clearIfNotMatch && !regexMask.test(p.val())) {
-                        p.val('');
+                        p.val("");
                     }
                 });
             },
             getRegexMask: function () {
                 var maskCIChunks = [], translation, pattern, optional, recursive, oRecursive, r;
-
                 for (var i = 0; i < maskCI.length; i++) {
                     translation = jMask.translation[maskCI.charAt(i)];
-
                     if (translation) {
-
-                        pattern = translation.pattern.toString().replace(/.{1}$|^.{1}/g, '');
+                        pattern = translation.pattern.toString().replace(/.{1}$|^.{1}/g, "");
                         optional = translation.optional;
                         recursive = translation.recursive;
-
                         if (recursive) {
                             maskCIChunks.push(maskCI.charAt(i));
                             oRecursive = { digit: maskCI.charAt(i), pattern: pattern };
                         } else {
-                            maskCIChunks.push(!optional && !recursive ? pattern : (pattern + '?'));
+                            maskCIChunks.push(!optional && !recursive ? pattern : pattern + "?");
                         }
-
-                    } else {
-                        maskCIChunks.push(maskCI.charAt(i).replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+                   } else {
+                        maskCIChunks.push(maskCI.charAt(i).replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"));
                     }
                 }
 
-                r = maskCIChunks.join('');
+                r = maskCIChunks.join("");
 
                 if (oRecursive) {
-                    r = r.replace(new RegExp('(' + oRecursive.digit + '(.*' + oRecursive.digit + ')?)'), '($1)?')
-                         .replace(new RegExp(oRecursive.digit, 'g'), oRecursive.pattern);
+                    r = r.replace(new RegExp("(" + oRecursive.digit + "(.*" + oRecursive.digit + ")?)"), "($1)?")
+                         .replace(new RegExp(oRecursive.digit, "g"), oRecursive.pattern);
                 }
 
                 return new RegExp(r);
             },
             destroyEvents: function () {
-                el.off(['input', 'keydown', 'keyup', 'paste', 'drop', 'blur', 'focusout', ''].join('.maskCI '));
+                el.off(["input", "keydown", "keyup", "paste", "drop", "blur", "focusout", ""].join(".maskCI "));
             },
             val: function (v) {
-                var isInput = el.is('input'),
-                    method = isInput ? 'val' : 'text',
+                var isInput = el.is("input"),
+                    method = isInput ? "val" : "text",
                     r;
 
                 if (arguments.length > 0) {
@@ -689,11 +656,11 @@ var FvaValidador = {
                 return r;
             },
             calculateCaretPosition: function () {
-                var oldVal = el.data('maskCI-previus-value') || '',
+                var oldVal = el.data("maskCI-previus-value") || "",
                     newVal = p.getMasked(),
                     caretPosNew = p.getCaret();
                 if (oldVal !== newVal) {
-                    var caretPosOld = el.data('maskCI-previus-caret-pos') || 0,
+                    var caretPosOld = el.data("maskCI-previus-caret-pos") || 0,
                         newValL = newVal.length,
                         oldValL = oldVal.length,
                         maskCIDigitsBeforeCaret = 0,
@@ -701,21 +668,18 @@ var FvaValidador = {
                         maskCIDigitsBeforeCaretAll = 0,
                         maskCIDigitsBeforeCaretAllOld = 0,
                         i = 0;
-
                     for (i = caretPosNew; i < newValL; i++) {
                         if (!p.maskCIDigitPosMap[i]) {
                             break;
                         }
                         maskCIDigitsAfterCaret++;
                     }
-
                     for (i = caretPosNew - 1; i >= 0; i--) {
                         if (!p.maskCIDigitPosMap[i]) {
                             break;
                         }
                         maskCIDigitsBeforeCaret++;
                     }
-
                     for (i = caretPosNew - 1; i >= 0; i--) {
                         if (p.maskCIDigitPosMap[i]) {
                             maskCIDigitsBeforeCaretAll++;
@@ -727,42 +691,39 @@ var FvaValidador = {
                             maskCIDigitsBeforeCaretAllOld++;
                         }
                     }
-
                     if (caretPosNew > oldValL) {
                         // if the cursor is at the end keep it there
                         caretPosNew = newValL;
-                    }
-                    else if (caretPosOld >= caretPosNew && caretPosOld !== oldValL) {
+                    } else {
+                     if (caretPosOld >= caretPosNew && caretPosOld !== oldValL) {
                         if (!p.maskDigitPosMapOld[caretPosNew]) {
                             var caretPos = caretPosNew;
                             caretPosNew -= maskCIDigitsBeforeCaretAllOld - maskCIDigitsBeforeCaretAll;
                             caretPosNew -= maskCIDigitsBeforeCaret;
                             if (p.maskCIDigitPosMap[caretPosNew]) {
                                 caretPosNew = caretPos;
+                        }
+                       }
+                            } else {
+                                if (caretPosNew > caretPosOld) {
+                                    caretPosNew += maskCIDigitsBeforeCaretAll - maskCIDigitsBeforeCaretAllOld;
+                                    caretPosNew += maskCIDigitsAfterCaret;
+                                }
                             }
                         }
                     }
-                    else if (caretPosNew > caretPosOld) {
-                        caretPosNew += maskCIDigitsBeforeCaretAll - maskCIDigitsBeforeCaretAllOld;
-                        caretPosNew += maskCIDigitsAfterCaret;
-                    }
-                }
-                return caretPosNew;
+                   return caretPosNew;
             },
             behaviour: function (e) {
                 e = e || window.event;
                 p.invalid = [];
-
-                var keyCode = el.data('maskCI-keycode');
-
+                var keyCode = el.data("maskCI-keycode");
                 if ($.inArray(keyCode, jMask.byPassKeys) === -1) {
                     var newVal = p.getMasked(),
                         caretPos = p.getCaret();
-
                     setTimeout(function () {
                         p.setCaret(p.calculateCaretPosition());
                     }, 10);
-
                     p.val(newVal);
                     p.setCaret(caretPos);
                     return p.callbacks(e);
@@ -770,7 +731,7 @@ var FvaValidador = {
             },
             getMasked: function (skipMaskChars, val) {
                 var buf = [],
-                    value = val === undefined ? p.val() : val + '',
+                    value = val === undefined ? p.val() : val + "",
                     m = 0, maskLen = maskCI.length,
                     v = 0, valLen = value.length,
                     offset = 1, addMethod = 'push',
@@ -779,9 +740,8 @@ var FvaValidador = {
                     maskDigitPosArr = [],
                     lastMaskChar,
                     check;
-
                 if (options.reverse) {
-                    addMethod = 'unshift';
+                    addMethod = "unshift";
                     offset = -1;
                     lastMaskChar = 0;
                     m = maskLen - 1;
@@ -801,7 +761,6 @@ var FvaValidador = {
                     var maskDigit = maskCI.charAt(m),
                         valDigit = value.charAt(v),
                         translation = jMask.translation[maskDigit];
-
                     if (translation) {
                         if (valDigit.match(translation.pattern)) {
                             buf[addMethod](valDigit);
@@ -816,6 +775,7 @@ var FvaValidador = {
                                     m -= offset;
                                 }
                             }
+
                             m += offset;
                         } else if (valDigit === lastUntranslatedMaskChar) {
                             // matched the last untranslated (raw) mask character that we encountered
@@ -833,6 +793,7 @@ var FvaValidador = {
                         } else {
                             p.invalid.push({ p: v, v: valDigit, e: translation.pattern });
                         }
+
                         v += offset;
                     } else {
                         if (!skipMaskChars) {
@@ -847,17 +808,15 @@ var FvaValidador = {
                             maskDigitPosArr.push(v + maskDigitCount);
                             maskDigitCount++;
                         }
-
                         m += offset;
-                    }
+                    } 
                 }
-
                 var lastMaskCharDigit = maskCI.charAt(lastMaskChar);
                 if (maskLen === valLen + 1 && !jMask.translation[lastMaskCharDigit]) {
                     buf.push(lastMaskCharDigit);
                 }
 
-                var newVal = buf.join('');
+                var newVal = buf.join("");
                 p.mapMaskdigitPositions(newVal, maskDigitPosArr, valLen);
                 return newVal;
             },
@@ -877,18 +836,17 @@ var FvaValidador = {
                             options[name].apply(this, args);
                         }
                     };
-
-                callback('onChange', changed === true, defaultArgs);
-                callback('onKeyPress', changed === true, defaultArgs);
-                callback('onComplete', val.length === maskCI.length, defaultArgs);
-                callback('onInvalid', p.invalid.length > 0, [val, e, el, p.invalid, options]);
-            }
+                callback("onChange", changed === true, defaultArgs);
+                callback("onKeyPress", changed === true, defaultArgs);
+                callback("onComplete", val.length === maskCI.length, defaultArgs);
+                callback("onInvalid", p.invalid.length > 0, [val, e, el, p.invalid, options]);
+            },
         };
 
         el = $(el);
         var jMask = this, oldValue = p.val(), regexMask;
 
-        maskCI = typeof maskCI === 'function' ? maskCI(p.val(), undefined, el, options) : maskCI;
+        maskCI = typeof maskCI === "function" ? maskCI(p.val(), undefined, el, options) : maskCI;
 
         // public methods
         jMask.maskCI = maskCI;
@@ -905,7 +863,6 @@ var FvaValidador = {
         jMask.getCleanVal = function () {
             return p.getMasked(true);
         };
-
         // get masked value without the value being in the input or element
         jMask.getMaskedVal = function (val) {
             return p.getMasked(false, val);
@@ -918,24 +875,20 @@ var FvaValidador = {
             jMask.clearIfNotMatch = $.jMaskGlobals.clearIfNotMatch;
             jMask.byPassKeys = $.jMaskGlobals.byPassKeys;
             jMask.translation = $.extend({}, $.jMaskGlobals.translation, options.translation);
-
             jMask = $.extend(true, {}, jMask, options);
-
             regexMask = p.getRegexMask();
-
             if (onlyMask) {
                 p.events();
                 p.val(p.getMasked());
             } else {
                 if (options.placeholder) {
-                    el.attr('placeholder', options.placeholder);
+                    el.attr("placeholder", options.placeholder);
                 }
-
                 // this is necessary, otherwise if the user submit the form
                 // and then press the "back" button, the autocomplete will erase
                 // the data. Works fine on IE9+, FF, Opera, Safari.
-                if (el.data('maskCI')) {
-                    el.attr('autocomplete', 'off');
+                if (el.data("maskCI")) {
+                    el.attr("autocomplete", "off");
                 }
 
                 // detect if is necessary let the user type freely.
@@ -949,7 +902,7 @@ var FvaValidador = {
                 }
 
                 if (maxlength) {
-                    el.attr('maxlength', maskCI.length);
+                    el.attr("maxlength", maskCI.length);
                 }
 
                 p.destroyEvents();
@@ -961,59 +914,54 @@ var FvaValidador = {
             }
         };
 
-        jMask.init(!el.is('input'));
+        jMask.init(!el.is("input"));
     };
 
     $.maskWatchers = {};
     var HTMLAttributes = function () {
         var input = $(this),
             options = {},
-            prefix = 'data-maskCI-',
-            maskCI = input.attr('data-maskCI');
-
-        if (input.attr(prefix + 'reverse')) {
+            prefix = "data-maskCI-",
+            maskCI = input.attr("data-maskCI");
+        if (input.attr(prefix + "reverse")) {
             options.reverse = true;
         }
-
-        if (input.attr(prefix + 'clearifnotmatch')) {
+        if (input.attr(prefix + "clearifnotmatch")) {
             options.clearIfNotMatch = true;
         }
 
-        if (input.attr(prefix + 'selectonfocus') === 'true') {
+        if (input.attr(prefix + "selectonfocus") === "true") {
             options.selectOnFocus = true;
         }
-
         if (notSameMaskObject(input, maskCI, options)) {
-            return input.data('maskCI', new Mask(this, maskCI, options));
+            return input.data("maskCI", new Mask(this, maskCI, options));
         }
     },
     notSameMaskObject = function (field, maskCI, options) {
         options = options || {};
-        var maskObject = $(field).data('maskCI'),
+        var maskObject = $(field).data("maskCI"),
             stringify = JSON.stringify,
             value = $(field).val() || $(field).text();
         try {
-            if (typeof maskCI === 'function') {
+            if (typeof maskCI === "function") {
                 maskCI = maskCI(value);
             }
-            return typeof maskObject !== 'object' || stringify(maskObject.options) !== stringify(options) || maskObject.maskCI !== maskCI;
+            return typeof maskObject !== "object" || stringify(maskObject.options) !== stringify(options) || maskObject.maskCI !== maskCI;
         } catch (e) { }
     },
+
     eventSupported = function (eventName) {
         var el = document.createElement('div'), isSupported;
-
-        eventName = 'on' + eventName;
-        isSupported = (eventName in el);
-
+        eventName = "on" + eventName;
+        isSupported = eventName in el;
         if (!isSupported) {
-            el.setAttribute(eventName, 'return;');
-            isSupported = typeof el[eventName] === 'function';
+            el.setAttribute(eventName, "return;");
+            isSupported = typeof el[eventName] === "function";
         }
         el = null;
 
         return isSupported;
     };
-
     $.fn.maskCI = function (maskCI, options) {
         options = options || {};
         var selector = this.selector,
@@ -1022,13 +970,12 @@ var FvaValidador = {
             watchInputs = options.watchInputs || globals.watchInputs,
             maskFunction = function () {
                 if (notSameMaskObject(this, maskCI, options)) {
-                    return $(this).data('maskCI', new Mask(this, maskCI, options));
+                    return $(this).data("maskCI", new Mask(this, maskCI, options));
                 }
             };
 
         $(this).each(maskFunction);
-
-        if (selector && selector !== '' && watchInputs) {
+        if (selector && selector !== "" && watchInputs) {
             clearInterval($.maskWatchers[selector]);
             $.maskWatchers[selector] = setInterval(function () {
                 $(document).find(selector).each(maskFunction);
@@ -1038,46 +985,43 @@ var FvaValidador = {
     };
 
     $.fn.masked = function (val) {
-        return this.data('maskCI').getMaskedVal(val);
+        return this.data("maskCI").getMaskedVal(val);
     };
 
     $.fn.unmask = function () {
         clearInterval($.maskWatchers[this.selector]);
         delete $.maskWatchers[this.selector];
         return this.each(function () {
-            var dataMask = $(this).data('maskCI');
+            var dataMask = $(this).data("maskCI");
             if (dataMask) {
-                dataMask.remove().removeData('maskCI');
+                dataMask.remove().removeData("maskCI");
             }
         });
     };
-
     $.fn.cleanVal = function () {
-        return this.data('maskCI').getCleanVal();
+        return this.data("maskCI").getCleanVal();
     };
-
     $.applyDataMask = function (selector) {
         selector = selector || $.jMaskGlobals.maskElements;
-        var $selector = (selector instanceof $) ? selector : $(selector);
+        var $selector = selector instanceof $ ? selector : $(selector);
         $selector.filter($.jMaskGlobals.dataMaskAttr).each(HTMLAttributes);
     };
-
     var globals = {
-        maskElements: 'input,td,span,div',
-        dataMaskAttr: '*[data-maskCI]',
+        maskElements: "input,td,span,div",
+        dataMaskAttr: "*[data-maskCI]",
         dataMask: true,
         watchInterval: 300,
         watchInputs: true,
         // old versions of chrome dont work great with input event
-        useInput: !/Chrome\/[2-4][0-9]|SamsungBrowser/.test(window.navigator.userAgent) && eventSupported('input'),
+        useInput: !/Chrome\/[2-4][0-9]|SamsungBrowser/.test(window.navigator.userAgent) && eventSupported("input"),
         watchDataMask: false,
         byPassKeys: [9, 16, 17, 18, 36, 37, 38, 39, 40, 91],
         translation: {
-            '0': { pattern: /\d/ },
-            '9': { pattern: /\d/, optional: true },
-            '#': { pattern: /\d/, recursive: true },
-            'A': { pattern: /[a-zA-Z0-9]/ },
-            'S': { pattern: /[a-zA-Z]/ }
+            "0": { pattern: /\d/ },
+            "9": { pattern: /\d/, optional: true },
+            "#": { pattern: /\d/, recursive: true },
+            A: { pattern: /[a-zA-Z0-9]/ },
+            S: { pattern: /[a-zA-Z]/ }
         }
     };
 
@@ -1088,10 +1032,9 @@ var FvaValidador = {
     if (globals.dataMask) {
         $.applyDataMask();
     }
-
     setInterval(function () {
         if ($.jMaskGlobals.watchDataMask) {
             $.applyDataMask();
         }
     }, globals.watchInterval);
-}, window.jQuery, window.Zepto));
+}, window.jQuery, window.Zepto);

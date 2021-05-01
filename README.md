@@ -33,6 +33,16 @@ Configuración de inicio
     python manage.py create_admin_institution
 
 
+Ejecutar la aplicación
+===============================
+
+.. code:: bash
+
+    python manage.py runserver
+    celery worker -A dfva -l info -B
+
+
+
 Proyectos complementarios
 ==============================
 

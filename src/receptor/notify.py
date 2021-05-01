@@ -22,14 +22,13 @@
 
 import requests
 from rest_framework.renderers import JSONRenderer
+from corebase import logger
 from corebase.rsa import encrypt, get_hash_sum
 from institution.authenticator.serializer import \
     Authenticate_Response_Serializer
 from institution.models import AuthenticateDataRequest, SignDataRequest
 from institution.signer.serializer import Sign_Response_Serializer
 from django.conf import settings
-
-from corebase import logger
 
 
 def get_datarequest_serializer(data):
@@ -54,7 +53,7 @@ def send_notification(data, serializer=None, request=None,
         * **identification:** Identificador del suscriptor
         * **id_transaction:** Id de trasnacción en el FVA del BCCR
         * **request_datetime:** Hora de recepción de la solicitud
-        * **sign_document:** Almacena el documento, pero no se garantiza que venga el documento firmado, puede ser None
+        * **signed_document:** Almacena el documento, pero no se garantiza que venga el documento firmado, puede ser None
         * **expiration_datetime:** Hora de recepción de la solicitud
         * **received_notification:** True si la autenticación ha sido procesada, False si está esperando al usuario
         * **duration:**  tiempo que duró entre que fue enviada y fue recibida
@@ -74,7 +73,8 @@ def send_notification(data, serializer=None, request=None,
 
     if serializer is None:
         serializer, req = get_datarequest_serializer(data)
-
+    else:
+        req = data.stamprequest
     ars = serializer(data)
     datajson = JSONRenderer().render(ars.data)
     edata = encrypt(data.institution.public_key,

@@ -61,7 +61,7 @@ class Sign_RequestSerializer(serializers.HyperlinkedModelSerializer):
         self.time_messages['start_bccr_call'] = timezone.now()
         if signclient.validar_servicio():
             data = signclient.firme(
-                self.requestdata['identification'],
+                str(self.requestdata['identification']),
                 self.requestdata['document'],
                 self.requestdata['format'],
                 algoritmo_hash=self.requestdata['algorithm_hash'].title(),

@@ -1,0 +1,47 @@
+{% extends 'adminlte/base.html'%}
+{% load static %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2 class="text-center"> Estado de la comunicación con el BCCR</h2>
+<ul class="list-group">
+  <li class="list-group-item">Autenticación
+      {% if auth %}
+      <span class="badge badge-success float-right"> <i class="fas fa-check"></i> </span>
+      {% else %}
+      <span class="badge badge-secondary float-right"> <i class="fas fa-exclamation-circle"></i></span>
+      {% endif %}
+  </li>
+  <li class="list-group-item">Firma
+      {% if sign %}
+      <span class="badge badge-success float-right"> <i class="fas fa-check"></i> </span>
+      {% else %}
+      <span class="badge badge-secondary float-right"> <i class="fas fa-exclamation-circle"></i></span>
+      {% endif %}
+  </li>
+
+  <li class="list-group-item">Sello Electrónico
+      {% if stamp %}
+      <span class="badge badge-success float-right"> <i class="fas fa-check"></i> </span>
+      {% else %}
+     <span class="badge badge-secondary float-right"> <i class="fas fa-exclamation-circle"></i></span>
+      {% endif %}
+  </li>
+  <li class="list-group-item">Validación de Certificados
+      {% if cert %}
+      <span class="badge badge-success float-right"> <i class="fas fa-check"></i> </span>
+      {% else %}
+      <span class="badge badge-secondary float-right"> <i class="fas fa-exclamation-circle"></i></span>
+      {% endif %}
+  </li>
+  <li class="list-group-item">Validación de Documentos
+      {% if doc %}
+     <span class="badge badge-success float-right"> <i class="fas fa-check"></i> </span>
+      {% else %}
+      <span class="badge badge-secondary float-right"> <i class="fas fa-exclamation-circle"></i></span>
+      {% endif %}
+  </li>
+
+</ul>
+</div>
+{% endblock %}

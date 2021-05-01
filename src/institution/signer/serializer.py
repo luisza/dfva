@@ -75,7 +75,7 @@ class Sign_Response_Serializer(serializers.ModelSerializer):
         model = SignDataRequest
         fields = (
             'code', 'status', 'identification', 'id_transaction',
-            'sign_document', 'duration', 'status_text',
+            'signed_document', 'duration', 'status_text',
             'request_datetime', 'expiration_datetime',
             'received_notification', 'resume', 'hash_docsigned',
             'hash_id_docsigned'

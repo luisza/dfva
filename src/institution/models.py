@@ -24,7 +24,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import timezone
 from corebase.models import identification_validator, BaseDocument, \
-    BaseRequestModel, BaseAuthenticate, BaseSign, BaseValidateCertificate
+    BaseRequestModel, BaseAuthenticate, BaseSign, BaseValidateCertificate, BaseStamp
 from institution.presentation import PEMpresentation
 from django.contrib.auth.models import User
 import uuid
@@ -57,25 +57,26 @@ class EncrytedText(models.TextField):
 
 class Institution(models.Model, PEMpresentation):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, verbose_name="Nombre de la aplicación")
     code = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    active = models.BooleanField(default=True)
-    bccr_bussiness = models.IntegerField(default=settings.DEFAULT_BUSSINESS)
-    bccr_entity = models.IntegerField(default=settings.DEFAULT_ENTITY)
+        primary_key=True, default=uuid.uuid4, editable=False, verbose_name="Código")
+    active = models.BooleanField(default=True, verbose_name="Está activo")
+    bccr_bussiness = models.IntegerField(default=settings.DEFAULT_BUSSINESS, verbose_name="Negocio para BCCR")
+    bccr_entity = models.IntegerField(default=settings.DEFAULT_ENTITY, verbose_name="Entidad para BCCR")
 
-    domain = models.CharField(max_length=250)  # Certificate domain
+    domain = models.CharField(max_length=250, verbose_name="Dominio para el certificado ej. servicio.ucr.ac.cr")  # Certificate domain
     institution_unit = models.CharField(
-        max_length=250, default="ND")  # UO in cert
+        max_length=250, default="ND", verbose_name="Unidad en el certificado")  # UO in cert
     private_key = models.TextField()
     public_key = EncrytedText()
     public_certificate = EncrytedText()
     server_sign_key = EncrytedText()
     server_public_key = EncrytedText()
 
-    email = models.EmailField()
-    phone = models.CharField(max_length=25, null=True, blank=False)
+    email = models.EmailField(verbose_name="Correo electrónico")
+    phone = models.CharField(max_length=25, null=True, blank=False, verbose_name="Teléfono de contacto")
     administrative_institution = models.BooleanField(default=False)
+    can_stamp = models.BooleanField(default=False, verbose_name="Puede sellar electrónicamente")
 
     def __str__(self):
         return self.name
@@ -95,11 +96,11 @@ class Institution(models.Model, PEMpresentation):
 
 
 class NotificationURL(models.Model):
-    description = models.CharField(max_length=250)
+    description = models.CharField(max_length=250, verbose_name="Descripción")
     url = models.URLField(null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
-    not_webapp = models.BooleanField(default=False)
-    is_demo = models.BooleanField(default=False)
+    not_webapp = models.BooleanField(default=False, verbose_name="Sin URL de notificiación")
+    is_demo = models.BooleanField(default=False, verbose_name="Es demo")
 
     def __str__(self):
         return "%s %s" % (
@@ -114,8 +115,8 @@ class NotificationURL(models.Model):
 class InstitutionStats(models.Model):
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
-    status = models.SmallIntegerField(default=1)
-    notified = models.BooleanField(default=False)
+    status = models.SmallIntegerField(default=1, verbose_name="Estado")
+    notified = models.BooleanField(default=False, verbose_name="Notificado")
     transaction_id = models.IntegerField()
     data_type = models.SmallIntegerField(choices=(
         (0, 'Autenticación'),
@@ -211,6 +212,46 @@ class SignDataRequest(BaseSign):
 class SignRequest(BaseInstitutionRequestModel):
     data_request = models.OneToOneField(
         SignDataRequest,
+        on_delete=models.CASCADE,
+        null=True, blank=True)
+
+    class Meta:
+        ordering = ('arrived_time',)
+
+
+class StampDataRequest(BaseStamp):
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
+    notification_url = models.URLField()
+    eta = models.DateTimeField(null=True, blank=True)
+    document = models.TextField(default=' ')
+    document_hash = models.TextField(default=' ')
+    algorithm_hash = models.CharField(max_length=500, default='Sha256')
+    rety_call_bccr = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "StampDataRequest(%d)  %d %s -- %s" % (
+            self.pk,
+            self.status,
+            self.document_format,
+            self.id_functionality
+        )
+
+    @property
+    def left_time(self):
+        now = timezone.now()
+        ttime = relativedelta(self.expiration_datetime, now)
+        return "%d:%d:%d" % (ttime.hours, ttime.minutes, ttime.seconds)
+
+    class Meta:
+        ordering = ('request_datetime',)
+
+
+class StampRequest(BaseInstitutionRequestModel):
+    data_request = models.OneToOneField(
+        StampDataRequest,
         on_delete=models.CASCADE,
         null=True, blank=True)
 

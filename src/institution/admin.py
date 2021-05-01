@@ -24,7 +24,7 @@ from django.conf import settings
 from django.contrib import admin
 
 from corebase.admin_utils import CsvExporter
-from institution.models import NotificationURL, Institution, InstitutionStats
+from institution.models import NotificationURL, Institution, InstitutionStats, StampDataRequest
 from institution.models import AuthenticateDataRequest, SignDataRequest, \
     ValidateCertificateDataRequest, ValidateDocumentDataRequest
 # Register your models here.
@@ -66,5 +66,5 @@ admin.site.register(Institution, InstitutionAdmin)
 
 if settings.DEBUG_LAST_REQUESTS:
     admin.site.register([
-        AuthenticateDataRequest, SignDataRequest,
+        AuthenticateDataRequest, SignDataRequest, StampDataRequest,
         ValidateCertificateDataRequest, ValidateDocumentDataRequest])

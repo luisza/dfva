@@ -23,6 +23,7 @@
 import uuid
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Index
 from django.utils.translation import gettext as _
 
 from corebase import utils
@@ -94,7 +95,7 @@ class BaseAuthenticate(models.Model):
     #: Traduce el código del status para ser leido por personas
     status_text = models.CharField(max_length=256, default='n/d')
     #: Cuando se notifica almacena el documento en base64
-    sign_document = models.TextField(null=True, blank=True)
+    signed_document = models.TextField(null=True, blank=True)
     #: Hora en la que se recibe la notificación
     response_datetime = models.DateTimeField(auto_now=True)
     #: Hora en la que la transacción se invalida
@@ -129,6 +130,53 @@ class BaseSign(BaseAuthenticate):
     place = models.CharField(max_length=150, null=True, blank=True)
     #: Razón de firma de PDF (solo obligatorio en PDF)
     reason = models.CharField(max_length=125, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class BaseStamp(models.Model):
+    """
+    Sirve de base para construir la petición de firma con sello electrónico
+    """
+    #: hora donde se crea la solicitud
+    arrived_time = models.DateTimeField(auto_now_add=True)
+    #: ultima actualización de la solicitud
+    update_time = models.DateTimeField(auto_now=True)
+    #: El formato usado para decomprimir '%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'
+    request_datetime = models.DateTimeField(
+        help_text=_("""'%Y-%m-%d %H:%M:%S',   es decir  '2006-10-25 14:30:59'"""))
+    #: Estado de la transacción una transacción se compone de dos partes donde se modifica el status
+    #: Al principio el status representa el proceso de conexión con el BCCR y la respuesta de ejecución de la transacción
+    #: durante este tiempo received_notification es False , cuando se recibe la notificación de firma, se actualiza el
+    #: y se coloca received_notification como True
+    status = models.IntegerField(
+        default=0, choices=constants.ERRORES_AL_SOLICITAR_SELLO)
+    #: Los mensajes se actualizan igual que status, y son una fuente fiable del estado de la transacción
+    #: Traduce el código del status para ser leido por personas
+    status_text = models.CharField(max_length=256, default='n/d')
+    #: Cuando se notifica almacena el documento en base64
+    signed_document = models.TextField(null=True, blank=True)
+    #: Hora en la que se recibe la notificación
+    response_datetime = models.DateTimeField(auto_now=True)
+    #: Hora en la que la transacción se invalida
+    expiration_datetime = models.DateTimeField()
+    #: Cantidad de segundos que dura la transacción usado en DFVA_HTML
+    duration = models.SmallIntegerField(default=360)
+    #: Se ha recibido respuesta del BCCR con el documento firmado o un error
+    received_notification = models.BooleanField(default=False)
+    #: Suma Hash del documento firmado
+    hash_docsigned = models.TextField(null=True, blank=True)
+    #: Formato del documento a firmar  xml_cofirma, xml_contrafirma, odf, msoffice, pdf
+    document_format = models.CharField(max_length=25, default='n/d')
+    #: Lugar donde se firmó el documento PDF  (solo obligatorio en PDF)
+    place = models.CharField(max_length=150, null=True, blank=True)
+    #: Razón de firma de PDF (solo obligatorio en PDF)
+    reason = models.CharField(max_length=125, null=True, blank=True)
+    was_successfully = models.BooleanField(default=False)
+    id_functionality = models.IntegerField(default=-1)
+    system_metrics = models.ForeignKey('corebase.System_Request_Metric', null=True, blank=True, on_delete=models.SET_NULL)
+
 
     class Meta:
         abstract = True
@@ -341,7 +389,7 @@ class System_Request_Metric(models.Model):
     #: Tamaño del request
     request_size = models.FloatField(default=0)
     #: Institucion procesada
-    institution = models.CharField(max_length=500, null=True, blank=True)
+    institution = models.ForeignKey('institution.Institution', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return " %r "%{
@@ -372,9 +420,52 @@ class System_Request_Metric(models.Model):
     def serialize_dictionary(self):
         dev = {}
         for data in self._meta.get_fields():
-            dev[data.name] = getattr(self, data.name)
+            if hasattr(self, data.name):
+                dev[data.name] = getattr(self, data.name)
         return dev
 
     class Meta:
         verbose_name = "Métrica del sistema"
         verbose_name_plural = "Métricas del sistema"
+        indexes = [
+            Index(fields=['operation_type']),
+            Index(fields=['transaction_status']),
+            Index(fields=['start_decrypt'])
+        ]
+        ordering = ['operation_type','transaction_status','start_decrypt']
+
+
+class DataSummary(models.Model):
+    creation_date = models.DateTimeField(auto_now=True)
+    month = models.CharField(max_length=20)
+    year = models.CharField(max_length=20)
+    total_number_of_records = models.IntegerField()
+    # Promedio de duraciones de acuerdo al mes y al año
+    authentication_total = models.FloatField(default=0)
+    signer_total = models.FloatField(default=0)
+    validatecertificate_total = models.FloatField(default=0)
+    validatedocument_total = models.FloatField(default=0)
+    authentication_total_spend_time = models.FloatField(default=0)
+    signer_total_spend_time = models.FloatField(default=0)
+    validatecertificate_total_spend_time = models.FloatField(default=0)
+    validatedocument_total_spend_time = models.FloatField(default=0)
+
+    authentication_request_size = models.FloatField(default=0)
+    signer_request_size = models.FloatField(default=0)
+    validatecertificate_request_size = models.FloatField(default=0)
+    validatedocument_request_size = models.FloatField(default=0)
+
+    def __str__(self):
+        return """%s de %s  total %d"""%(
+            self.month, self.year, self.total_number_of_records
+        )
+
+    class Meta:
+        verbose_name = "Resumen de estadística"
+        verbose_name_plural = "Resumen de estadísticas"
+        indexes = [
+            Index(fields=['year']),
+            Index(fields=['month']),
+        ]
+
+        ordering = ['-year','-month']

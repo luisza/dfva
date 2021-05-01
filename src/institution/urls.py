@@ -22,6 +22,7 @@
 
 from institution.authenticator.views import AuthenticateRequestViewSet
 from institution.signer.views import SignRequestViewSet
+from institution.stamp.views import StampRequestViewSet
 from institution.validator.views import ValidateInstitutionViewSet,\
     ValidateSubscriptorInstitutionViewSet
 
@@ -35,6 +36,7 @@ def get_routes_view(router):
     router.register(r'sign', SignRequestViewSet)
     router.register(r'validate', ValidateInstitutionViewSet)
     router.register(r'validate', ValidateSubscriptorInstitutionViewSet)
+    router.register(r'stamp', StampRequestViewSet)
 
 
 urlpatterns = [

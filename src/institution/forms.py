@@ -45,6 +45,7 @@ class InstitutionCreateForm(forms.ModelForm):
                                Field('email'),
                                Field('phone'),
                                Field('domain'),
+                               Field('can_stamp'),
                                Field('institution_unit'),
                                active=True,
 
@@ -75,7 +76,7 @@ class InstitutionCreateForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['name', 'email', 'phone', 'domain', 'institution_unit']
+        fields = ['name', 'email', 'phone', 'domain', 'institution_unit', 'can_stamp']
 
 
 class InstitutionEditForm(forms.ModelForm):
@@ -93,6 +94,7 @@ class InstitutionEditForm(forms.ModelForm):
                 AccordionGroup('General',
                                Field('name'),
                                Field('active'),
+                               Field('can_stamp'),
                                Field('email'),
                                Field('phone'),
                                Field('domain'),
@@ -130,7 +132,7 @@ class InstitutionEditForm(forms.ModelForm):
     class Meta:
         model = Institution
         fields = ['active', 'name', 'email', 'phone', 'domain',
-                  'institution_unit']
+                  'institution_unit', 'can_stamp']
 
 
 class NotificationUrlsForm(forms.ModelForm):

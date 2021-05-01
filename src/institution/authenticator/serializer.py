@@ -61,7 +61,7 @@ class Authenticate_Response_Serializer(serializers.ModelSerializer):
         model = AuthenticateDataRequest
         fields = (
             'code', 'status', 'identification', 'id_transaction',
-            'request_datetime', 'sign_document', 'expiration_datetime',
+            'request_datetime', 'signed_document', 'expiration_datetime',
             'received_notification', 'duration', 'status_text', 'resume',
             'hash_docsigned',  'hash_id_docsigned'
         )

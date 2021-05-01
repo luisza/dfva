@@ -139,6 +139,7 @@ class CoreBaseBaseSerializer(object):
 
 
 class CheckBaseBaseSerializer:
+    code_id_name = 'id_transaction'
 
     def check_code(self, code, raise_exception=False):
         dev = False
@@ -147,9 +148,7 @@ class CheckBaseBaseSerializer:
 
         if self.is_valid(raise_exception=raise_exception):
             fields = {
-
-                'id_transaction': code,
-                # 'identification': self.requestdata['identification'],
+                self.code_id_name: code,
                 'expiration_datetime__gte': timezone.now()
             }
 

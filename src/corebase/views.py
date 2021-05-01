@@ -21,10 +21,13 @@
 '''
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils import timezone
+from pyfva import ClienteAutenticador, ClienteFirmador, ClienteValidador
+from pyfva.clientes.sellador import ClienteSellador
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -141,6 +144,7 @@ class ViewSetBase:
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=False):
             serializer.save()
+            self.serializer = serializer
             headers = self.get_success_headers(serializer.data)
             adr = self.response_class(serializer.adr)
             logger.debug({'message':'Data create Response: ', 'data': serializer.adr,
@@ -148,7 +152,7 @@ class ViewSetBase:
             # adr.is_valid(raise_exception=False)
             logdata = adr.data
             if not settings.LOGGING_ENCRYPTED_DATA:
-                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'sign_document']}
+                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'signed_document']}
 
             logger.info({'message': 'Response create OK', 'data':
                         {'data_hash': serializer.data['data_hash'], 'data':logdata},
@@ -178,7 +182,7 @@ class ViewSetBase:
                           'location': __file__}, sector=self.log_sector)
             logdata = adr.data
             if not settings.LOGGING_ENCRYPTED_DATA:
-                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'sign_document']}
+                logdata = {k: v for k, v in adr.data.items() if k not in ['documento', 'signed_document']}
             logger.info({'message': 'Response show OK', 'data':
                 {'data_hash': serializer.data['data_hash'], 'data': logdata}, 'location': __file__},
                         sector=self.log_sector)
@@ -273,3 +277,29 @@ class BaseSuscriptor(ViewSetBase):
             'is_connected':  False,
             'info_error': serializer._errors
         }, status=status.HTTP_200_OK)
+
+
+@login_required
+def check_bccr_connection(request):
+    authclient = ClienteAutenticador(settings.DEFAULT_BUSSINESS, settings.DEFAULT_ENTITY)
+
+    signclient = ClienteFirmador(
+        negocio=settings.DEFAULT_BUSSINESS,
+        entidad=settings.DEFAULT_ENTITY,
+    )
+    clientvalid = ClienteValidador(
+        negocio=settings.DEFAULT_BUSSINESS,
+        entidad=settings.DEFAULT_ENTITY,
+    )
+    stampclient = ClienteSellador(
+        negocio=settings.DEFAULT_BUSSINESS,
+        entidad=settings.DEFAULT_ENTITY,
+    )
+    context = {
+        'auth': authclient.validar_servicio(),
+        'sign': signclient.validar_servicio(),
+        'stamp': stampclient.validar_servicio(),
+        'cert': clientvalid.validar_servicio('certificado'),
+        'doc': clientvalid.validar_servicio('documento'),
+    }
+    return render(request, 'base_checks.html', context=context)

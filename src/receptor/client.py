@@ -122,7 +122,7 @@ def reciba_notificacion(data):
     if hasattr(request, 'signed_document'):
         request.signed_document = get_document(data['documento'])
     else:
-        request.sign_document = get_document(data['documento'])
+        request.signed_document = get_document(data['documento'])
     request.hash_docsigned = get_hashsum_b64(data['hash_docfirmado'])
     request.hash_id_docsigned = data['hash_id']
     request.save()
