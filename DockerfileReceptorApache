@@ -11,14 +11,17 @@ RUN mkdir -p /certs/
 WORKDIR /dfva_app
 
 RUN apt-get update && \
-    apt-get install -y  build-essential libssl1.1 libnss3 libssl-dev libffi-dev libnss3-dev
+    apt-get install -y  build-essential libssl1.1 libnss3 libssl-dev libffi-dev libnss3-dev apache2 nano
+RUN apt-get --no-install-recommends install cron
 RUN pip install --trusted-host pypi.python.org --no-cache-dir  --upgrade pip && \
-    pip install soapfish2==0.7.1
+    pip install soapfish2==0.7.0
 # Copy the current directory contents into the container at /app
 
 COPY requirements.txt /dfva_app
 COPY dogtag_requirements.txt  /dfva_app
 
+RUN mkdir -p /etc/nginx/certs/
+RUN openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
 
 # Install any needed packages specified in requirements.txt
 
@@ -31,12 +34,21 @@ RUN apt-get remove -y  build-essential libssl-dev libffi-dev  libnss3-dev && \
 
 ADD src /dfva_app 
 RUN python manage.py collectstatic --settings=dfva.settings
-COPY deploy/docker_gunicorn.sh /entrypoint.sh
-# EXPOSE port 8000 to allow communication to/from server
-EXPOSE 8000
+COPY deploy/receptor_entrypoint.sh /entrypoint.sh
+COPY deploy/apache.conf /etc/apache2/sites-enabled/dfva.conf
+COPY deploy/update_crl.sh /usr/bin/update_crl.sh
 
+RUN rm  /etc/apache2/sites-enabled/000-default.conf
+RUN chmod +x /usr/bin/update_crl.sh
+RUN sed -i 's/nginx/apache2/g' /usr/bin/update_crl.sh
+RUN cp /usr/bin/update_crl.sh /etc/cron.daily/update_crl
+RUN sed -i 's/nginx/apache2/g' /entrypoint.sh
 RUN mkdir -p /internal_ca
+RUN a2enmod ssl &&  a2enmod proxy && a2enmod proxy_http
+RUN sed -i 's/Listen 443/Listen 8443/g' /etc/apache2/ports.conf
+
 VOLUME /internal_ca
+STOPSIGNAL SIGQUIT
+EXPOSE 8443
+
 ENTRYPOINT ["/entrypoint.sh"]
-
-

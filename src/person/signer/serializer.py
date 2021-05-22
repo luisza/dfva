@@ -105,8 +105,8 @@ class Sign_Person_Request_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = SignPersonRequest
-        fields = ('person', 'identification', 'request_datetime', 'document', 'format',
-                  'algorithm_hash', 'document_hash', 'resume', 'public_certificate')
+        fields = ('person', 'identification', 'request_datetime', 'document', 'format', 'place',
+                    'reason', 'algorithm_hash', 'document_hash', 'resume', 'public_certificate')
 
 
 class Sign_Person_Response_Serializer(serializers.ModelSerializer):

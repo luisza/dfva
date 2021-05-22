@@ -21,7 +21,7 @@
 '''
 from django.utils import timezone
 from rest_framework import serializers
-from pyfva.clientes.validador import ClienteValidador
+from pyfva.clientes.validadorv2 import ClienteValidador
 from corebase.time import parse_datetime
 from pyfva.constants import get_text_representation, \
     ERRORES_VALIDA_CERTIFICADO,\
@@ -225,59 +225,10 @@ class ValidateDocument_RequestSerializer(
         self.time_messages['transaction_success'] = settings.DEFAULT_SUCCESS_BCCR == self.adr.status
 
         self.time_messages['start_save_database'] = timezone.now()
+        self.adr.validation_data = data
         self.adr.save()
-        self.get_warnings(data['advertencias'])
-        self.get_found_errors(data['errores_encontrados'])
-        self.get_signers(data['firmantes'])
 
-    def get_signers(self, signers):
-        """
-        Extrae la información de los firmantes del documento
 
-        :param signers:  Lista de firmantes del documento recibido del BCCR
-        :return: Nada
-        """
-        if signers is None:
-            return
-        for signer in signers:
-            signerobj = Signer.objects.create(
-                identification_number=signer['identificacion'],
-                signature_date=signer['fecha_firma'],
-                full_name=signer['nombre']
-            )
-            self.adr.signers.add(signerobj)
-
-    def get_found_errors(self, errors):
-        """
-        Retorna la lista de errores encontrados en el documento
-
-        :param errors: Lista datos de error del BCCR
-        :return: Nada
-        """
-        if errors is None:
-            return
-        for error in errors:
-            error, _ = ErrorFound.objects.get_or_create(
-                code=error[0],
-                detail=error[1]
-            )
-            self.adr.errors.add(error)
-
-    def get_warnings(self, warnings):
-        """
-        Extrae las advertencias del documento de la información obtenida del BCCR
-
-        :param warnings: Lista de advertencias del BCCR
-        :return: Nada
-        """
-        if warnings is None:
-            return
-        for warning in warnings:
-            if warning:
-                adv, _ = WarningReceived.objects.get_or_create(
-                    description=warning
-                )
-                self.adr.warnings.add(adv)
 
     def save(self, **kwargs):
         """

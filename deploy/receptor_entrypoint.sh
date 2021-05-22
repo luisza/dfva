@@ -18,7 +18,7 @@ service cron start
 
 gunicorn dfva.wsgi:application \
     --name dfva --capture-output \
-    --bind 127.0.0.1:8000 \
+    --bind 127.0.0.1:8000 --timeout 180 \
     --workers 3 \
     --log-level=info \
     --log-file=/logs/gunicorn.log \

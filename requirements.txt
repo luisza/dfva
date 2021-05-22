@@ -26,7 +26,7 @@ oscrypto==1.2.1
 Pillow==7.2.0
 psycopg2-binary==2.8.6
 pycryptodome==3.9.8
-pyfva==0.0.38
+pyfva==0.0.40
 pygelf==0.3.6
 Pygments==2.7.1
 requests==2.24.0

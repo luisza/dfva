@@ -74,9 +74,7 @@ class ValidateDocumentRequest_Response_Serializer(
         ValidateDocument_ResponseSerializer):
     class Meta:
         model = ValidateDocumentDataRequest
-        fields = ('request_datetime',
-                  'code', 'status', 'status_text',
-                  'warnings', 'errors', 'signers',
+        fields = ('request_datetime', 'status', 'status_text', 'validation_data',
                   'was_successfully')
 
 

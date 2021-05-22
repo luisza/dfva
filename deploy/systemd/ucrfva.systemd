@@ -1,0 +1,21 @@
+# Copy in /lib/systemd/system
+[Unit]
+Description=UCR FVA unicorn Servers
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+
+[Service]
+User=spark
+Type=forking
+# change in production and set full path
+ExecStart=deploy/gunicorn_start
+ExecStop=deploy/gunicorn_stop
+TimeoutSec=360
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=350
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target

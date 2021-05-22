@@ -21,6 +21,7 @@
 '''
 
 from dateutil.relativedelta import relativedelta
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
 from corebase.models import identification_validator, BaseDocument, \
@@ -296,9 +297,31 @@ class ValidateCertificateRequest(BaseInstitutionRequestModel):
     class Meta:
         ordering = ('arrived_time',)
 
-class ValidateDocumentDataRequest(BaseDocument):
+class ValidateDocumentDataRequest(models.Model):
+    FORMATS = (
+        ('cofirma', 'CoFirma'),
+        ('contrafirma', 'ContraFirma'),
+        ('msoffice', 'MS Office'),
+        ('odf', 'Open Document Format'),
+        ('pdf', 'PDF')
+    )
+
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     notification_url = models.URLField()
+    validation_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
+    #: Formato del documento a validar
+    format = models.CharField(max_length=15, default='n/d', choices=FORMATS)
+    #: Hora en la que se recibió la petición por parte del usuario
+    request_datetime = models.DateTimeField()
+    status = models.IntegerField(default=0)
+    #: Traduce el código del status para ser leido por personas
+    status_text = models.CharField(max_length=256, default='n/d')
+    #: El documento es válido
+    was_successfully = models.BooleanField(default=True)
+    #: Hora en la que se recibe la solicitud de validación (metricas)
+    arrived_time = models.DateTimeField(auto_now_add=True)
+    #: Hora en la que se recibe la respuesta de la validación por parte del BCCR
+    update_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return repr(self)
