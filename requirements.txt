@@ -28,7 +28,7 @@ psycopg2-binary==2.8.6
 pycryptodome==3.9.8
 pyfva==0.0.40
 pygelf==0.3.6
-Pygments==2.7.1
+Pygments==2.7.4
 requests==2.24.0
 six==1.15.0
 
