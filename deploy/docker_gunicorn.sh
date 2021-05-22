@@ -13,7 +13,7 @@ export DJANGO_SETTINGS_MODULE=dfva.settings
 
 gunicorn dfva.wsgi:application \
     --name dfva \
-    --bind 0.0.0.0:8000 \
+    --bind 0.0.0.0:8000  --timeout 180 \
     --workers 3 \
     --log-level=info \
     --log-file=/logs/gunicorn.log \
