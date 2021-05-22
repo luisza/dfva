@@ -34,8 +34,39 @@ from corebase.rsa import pem_to_base64, validate_sign
 from corebase.serializer import CoreBaseBaseSerializer, CheckBaseBaseSerializer
 from institution.models import Institution
 from person.models import Person, PersonLogin
+import random
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
+
+
+class OperandLogin:
+    operands = ['+', '-', '*', '/', '%', '//', '**']
+
+    @classmethod
+    def operate(cls, oper1, oper2, oper):
+        dev = 0
+        if oper not in cls.operands:
+            return
+
+        if oper == '+':
+            dev = oper1+oper2
+        elif oper == '-':
+            dev = oper1-oper2
+        elif oper == '*':
+            dev = oper1*oper2
+        elif oper == '/':
+            dev = oper1/oper2
+        elif oper == '%':
+            dev = oper1%oper2
+        elif oper == '//':
+            dev = oper1//oper2
+        elif oper == '**':
+            dev = oper1**oper2
+        return dev
+    @classmethod
+    def get_operand(cls):
+        num = random.randint(0, len(cls.operands)-1)
+        return cls.operands[num]
 
 
 class PersonBaseSerializer(CoreBaseBaseSerializer):
@@ -88,27 +119,27 @@ class PersonCheckBaseBaseSerializer(PersonBaseSerializer,
 
 class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
     person = None
+    transaction_id = serializers.IntegerField(required=True)
 
-    def get_person(self):
+    def get_transaction(self):
+        self.transaction = PersonLogin.objects.filter(pk=self.data['transaction_id'], person=self.data['person']).first()
+        if self.transaction is None:
+            self._errors['transaction_id'] = 'Transaction ID not found'
+
+    def get_person(self, cert_data):
         if self.person is not None:
             return self.person
 
         if 'person' in self.data:
-            self.person = Person.objects.filter(
-                identification=self.data['person']).first()
+            self.person = Person.objects.filter(identification=self.data['person']).first()
             if self.person is None:
-                ok, data = self.validate_certificate()
-                if ok:
-                    user = User.objects.filter(
-                        username=self.data['person']).first()
-                    if user is None:
-                        user = User.objects.create_user(self.data['person'])
-                    user.first_name = data['certificado']['nombre']
-                    user.save()
-                    # Fixme: mejor forma de captar el nombre
-                    self.person = Person.objects.create(
-                        user=user,
-                        identification=self.data['person'])
+                user = User.objects.filter(username=self.data['person']).first()
+                if user is None:
+                    user = User.objects.create_user(self.data['person'])
+                user.first_name = cert_data['certificado']['nombre']
+                user.save()
+                # Fixme: mejor forma de captar el nombre
+                self.person = Person.objects.create(user=user, identification=self.data['person'])
         return self.person
 
     def validate_certificate(self):
@@ -137,21 +168,27 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
         return dev, data
 
     def validate_digest(self):
-        # Fixme: Solo funciona para register
-        plain_text = self.data['person']
+
+        plain_text = str(OperandLogin.operate(
+            self.transaction.operatorA, self.transaction.operatorB, self.transaction.operand ))
         if not validate_sign(self.data['public_certificate'],
                              plain_text, self.data['code']):
             self._errors['data_hash'] = [
                 _('Data hash invalid, are you signing with your private key \
                 pair?')]
+            return False
+        return True
 
     def is_valid(self, raise_exception=False):
         serializers.HyperlinkedModelSerializer.is_valid(
             self, raise_exception=raise_exception)
 
-        self.get_person()
-        self.validate_certificate()
-        self.validate_digest()
+        self.get_transaction()
+        if self.transaction:
+            if self.validate_digest():
+                ok, data = self.validate_certificate()
+                if ok:
+                    self.get_person(data)
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
         return not bool(self._errors)
@@ -159,7 +196,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
 
 
     def save(self):
-        person = self.get_person()
+        person = self.person
 
         token, created = Token.objects.get_or_create(user=self.person.user)
         logger.debug("Token: "+token.key)
@@ -176,7 +213,7 @@ class PersonLoginSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PersonLogin
         fields = (
-            'public_certificate', 'code', 'person', 'data_hash', 'algorithm'
+            'public_certificate', 'code', 'person', 'data_hash', 'algorithm', 'transaction_id'
         )
 
 

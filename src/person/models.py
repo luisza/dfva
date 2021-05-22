@@ -47,16 +47,19 @@ class Person(models.Model):
 
 class PersonLogin(models.Model):
     arrived_time = models.DateTimeField(auto_now_add=True)
-    public_certificate = models.TextField(
-        help_text="""Certificado público  de firma, para firma digital avanzada""")
-    code = models.TextField()
-    person = models.CharField(
-        max_length=50, help_text="Identificación de la persona solicitante")
+    public_certificate = models.TextField(help_text="""Certificado público  de firma, para firma digital avanzada""",
+                                          null=True)
+    code = models.TextField(null=True)
+    person = models.CharField(max_length=50, help_text="Identificación de la persona solicitante")
+    serial = models.CharField(max_length=64, help_text="Serial con el cual se autentica")
     data_hash = models.CharField(max_length=130,
                                  help_text="""Suma hash de datos de tamaño máximo 130 caracteres, usando el
-                                 algoritmo especificado """)
+                                 algoritmo especificado """, null=True)
     algorithm = models.CharField(max_length=7, choices=ALGORITHM,
-                                 help_text=""" Debe ser alguno de los siguientes: sha256, sha384, sha512""")
+                                 help_text="""Debe ser alguno de los siguientes: sha256, sha384, sha512""")
+    operatorA = models.IntegerField(default=1)
+    operatorB = models.IntegerField(default=1)
+    operand = models.CharField(max_length=15, default='*')
 
     def __str__(self):
         return self.person

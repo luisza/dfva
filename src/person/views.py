@@ -18,20 +18,27 @@
 @contact: luis.zarate@solvosoft.com
 @license: GPLv3
 '''
+import random
 
+from django import forms
 from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
 import logging
 from person.models import PersonLogin
-from person.serializer import PersonLoginSerializer,\
-    PersonLoginResponseSerializer
+from person.serializer import PersonLoginSerializer, \
+    PersonLoginResponseSerializer, OperandLogin
 from django.conf import settings
 
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
-class PersonLoginView(mixins.CreateModelMixin,
+class AutenticationLoginForm(forms.Form):
+    serial = forms.CharField(required=True, max_length=64)
+    identification = forms.CharField(required=True, max_length=17)
+
+
+class PersonLoginView(mixins.CreateModelMixin, mixins.ListModelMixin,
                       viewsets.GenericViewSet):
 
     queryset = PersonLogin.objects.all()
@@ -40,8 +47,7 @@ class PersonLoginView(mixins.CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
-        .. note:: Esta vista no está encriptada.
-
+        Autentica el usuario usando una prueba de verdad.
         ::
 
           POST /login/
@@ -56,6 +62,7 @@ class PersonLoginView(mixins.CreateModelMixin,
         * **public_certificate:** Certificado de autenticación del dispositivo pkcs11
         * **person:** Identificación de la persona,
         * **code**: Identificación de la persona firmada con la llave privada del certificado de autenticación.
+        * **transaction_id**: Id de transacción usado para determinar la operación.
 
         Los valores devueltos son: 
 
@@ -85,3 +92,41 @@ class PersonLoginView(mixins.CreateModelMixin,
         logger.info('Response login ERROR %r' % (serializer._errors, ))
         logger.debug('Data login Response error: %r' % (dev,))
         return Response(dev, status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        """
+         GET /login/     
+         
+         Parámetros GET
+            
+            * **serial:** Serial de la tarjeta con la cual autenticarse.
+            * **person:** Identificación de la persona
+         
+         Response:
+         
+            * **transaction_id:** ID del objeto de autenticación.
+            * **operatorA:** Operadorador izquierdo
+            * **operand:** Operadorador 
+            * **operatorB:** Operadorador derecho
+            
+        """
+
+        form = AutenticationLoginForm(request.data or request.GET)
+        if form.is_valid():
+
+            instance, created = PersonLogin.objects.get_or_create(person=form.cleaned_data['identification'],
+                                                                  serial=form.cleaned_data)
+            instance.operatorA = random.randint(1000, 2**30)
+            instance.operatorB = random.randint(1000, 2**30)
+            instance.operand = OperandLogin.get_operand()
+            instance.algorithm = 'sha256'
+            instance.save()
+            dev = {
+                'transaction_id': instance.pk,
+                'operatorA': instance.operatorA,
+                'operatorB': instance.operatorB,
+                'operand': instance.operand,
+                'algorithm': instance.algorithm
+            }
+            return Response(dev, status=status.HTTP_200_OK)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
