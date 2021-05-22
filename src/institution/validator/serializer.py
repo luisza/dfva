@@ -26,7 +26,6 @@ from institution.models import ValidateCertificateRequest,\
     ValidateCertificateDataRequest, ValidateDocumentDataRequest,\
     ValidateDocumentRequest
 from rest_framework import serializers
-from corebase.validator import SignerSerializer, ErrorFoundSerializer
 from institution.serializer import InstitutionBaseSerializer
 from institution.validator.forms import ValidateCertificateForm, ValidateDocumentForm
 
@@ -66,9 +65,6 @@ class ValidateCertificateRequest_Response_Serializer(
 
 class ValidateDocument_ResponseSerializer(serializers.ModelSerializer):
     warnings = serializers.StringRelatedField(many=True)
-    signers = SignerSerializer(many=True)
-    errors = ErrorFoundSerializer(many=True)
-
 
 class ValidateDocumentRequest_Response_Serializer(
         ValidateDocument_ResponseSerializer):

@@ -221,46 +221,6 @@ class BaseValidateCertificate(models.Model):
         abstract = True
 
 
-class WarningReceived(models.Model):
-    """
-    Cuando se validan certificados y documentos se puede tener advertencias que no son consideradas como
-    un error pero deben tomarse en consideración en el futuro
-    """
-    #: Mensaje de advertencia proporcionados por el BCCR
-    description = models.CharField(max_length=512)
-
-    def __str__(self):
-        return self.description
-
-
-class ErrorFound(models.Model):
-    """
-    Se usa para almacenar posibles errores al validar documentos
-    """
-    #: Código del error encontrado
-    code = models.CharField(max_length=250)
-    #: Texto de descripción del error
-    detail = models.TextField()
-
-    def __str__(self):
-        return self.code
-
-
-class Signer(models.Model):
-    """
-    Describe la información de las personas firmantes
-    """
-    #: Número de identificación de persona física o DIMEX
-    identification_number = models.CharField(max_length=25)
-    #: Hora de la firma del documento
-    signature_date = models.DateField()
-    #: Nombre completo de la persona firmante
-    full_name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return self.full_name
-
-
 class BaseDocument(models.Model):
     """
     Sirve de base para almacenar peticiones de validación de documentos
@@ -272,12 +232,6 @@ class BaseDocument(models.Model):
         ('odf', 'Open Document Format'),
         ('pdf', 'PDF')
     )
-    #: Advertencias durante la validación
-    warnings = models.ManyToManyField(WarningReceived)
-    #: Errores encontrados en el documento
-    errors = models.ManyToManyField(ErrorFound)
-    #: Personas firmantes
-    signers = models.ManyToManyField(Signer)
     #: Hora en la que se recibió la petición por parte del usuario
     request_datetime = models.DateTimeField()
     #: Código de identificación de la transacción (No se muestra al usuario)

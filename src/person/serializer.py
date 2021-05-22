@@ -19,22 +19,21 @@
 @license: GPLv3
 '''
 
-from corebase.serializer import CoreBaseBaseSerializer, CheckBaseBaseSerializer
-from corebase.rsa import validate_sign_data, pem_to_base64, decrypt_person,\
-    rsa_encrypt, get_random_token, validate_sign, decrypt, encrypt
-from pyfva.clientes.validador import ClienteValidador
-from rest_framework import serializers
-from django.utils.translation import ugettext_lazy as _
-from person.models import Person, PersonLogin
-from django.utils import timezone
-from django.core.exceptions import ValidationError
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import User
-from base64 import b64encode
-
-import logging
-from institution.models import Institution
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
+from pyfva.clientes.validadorv2 import ClienteValidador
+from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+
+from corebase.rsa import pem_to_base64, validate_sign
+from corebase.serializer import CoreBaseBaseSerializer, CheckBaseBaseSerializer
+from institution.models import Institution
+from person.models import Person, PersonLogin
 
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 

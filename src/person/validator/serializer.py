@@ -20,30 +20,23 @@
 '''
 import uuid
 
+from django.conf import settings
 from django.utils import timezone
-
-from corebase.models import Signer, ErrorFound, WarningReceived
-from corebase.time import parse_datetime
-from institution.models import Institution
-from person.models import ValidatePersonDocumentRequest,\
-    ValidatePersonCertificateRequest
-from institution.validator.serializer import \
-    ValidateDocument_ResponseSerializer
-
-from rest_framework import serializers
-from corebase.validator import ValidateDocument_RequestSerializer,\
-    ValidateCertificate_RequestSerializer, Suscriptor_Serializer
-from person.serializer import PersonBaseSerializer
-from pyfva.constants import get_text_representation, \
-    ERRORES_VALIDA_CERTIFICADO,\
-    ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF,\
-    ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE,\
-    ERRORES_VALIDAR_PDF
-from pyfva.clientes.validador import ClienteValidador
 from pyfva.clientes.firmador import ClienteFirmador
+from pyfva.clientes.validadorv2 import ClienteValidador
+from pyfva.constants import get_text_representation, \
+    ERRORES_VALIDA_CERTIFICADO, \
+    ERRORES_VALIDAR_XMLCOFIRMA, ERRORES_VALIDAR_ODF, \
+    ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE, \
+    ERRORES_VALIDAR_PDF
+from rest_framework import serializers
 
 from corebase import logger
-from django.conf import settings
+from institution.models import Institution
+from institution.validator.serializer import \
+    ValidateDocument_ResponseSerializer
+from person.models import ValidatePersonDocumentRequest, \
+    ValidatePersonCertificateRequest
 
 RESPONSE_CERTIFICATE_FIELDS = ('status', 'status_text', 'was_successfully', 'identification', 'full_name', 'start_validity', 'end_validity' )
 
@@ -126,34 +119,11 @@ class ValidatePersonCertificate_Request_Serializer(serializers.ModelSerializer):
         fields = ('person', 'document', 'request_datetime', 'format')
 
 
-class WarningsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WarningReceived
-        fields = ['description']
-
-
-class ErrorFoundSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ErrorFound
-        fields = ['code', 'detail']
-
-
-class SignerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Signer
-        fields = ('identification_number', 'signature_date', 'full_name')
-
-
 class DocumentSeralizer(serializers.ModelSerializer):
-    warnings = WarningsSerializer(many=True)
-    errors = ErrorFoundSerializer(many=True)
-    signers = SignerSerializer(many=True)
-
     class Meta:
         model = ValidatePersonDocumentRequest
-        fields = ['warnings', 'errors', 'signers', 'request_datetime', 'format', 'status', 'status_text',
-                  'was_successfully', 'arrived_time'
-]
+        fields = ['request_datetime', 'format', 'status', 'status_text',
+                  'was_successfully', 'arrived_time', 'validation_data']
 
 
 class ValidatePersonDocument_Request_Serializer(serializers.ModelSerializer):
@@ -220,63 +190,12 @@ class ValidatePersonDocument_Request_Serializer(serializers.ModelSerializer):
 
         return data, bccrdata
 
-    def get_signers(self, signers):
-        """
-        Extrae la información de los firmantes del documento
-
-        :param signers:  Lista de firmantes del documento recibido del BCCR
-        :return: Nada
-        """
-        if signers is None:
-            return
-        for signer in signers:
-            signerobj = Signer.objects.create(
-                identification_number=signer['identificacion'],
-                signature_date=signer['fecha_firma'],
-                full_name=signer['nombre']
-            )
-            self.instance.signers.add(signerobj)
-
-    def get_found_errors(self, errors):
-        """
-        Retorna la lista de errores encontrados en el documento
-
-        :param errors: Lista datos de error del BCCR
-        :return: Nada
-        """
-        if errors is None:
-            return
-        for error in errors:
-            error, _ = ErrorFound.objects.get_or_create(
-                code=error[0],
-                detail=error[1]
-            )
-            self.instance.errors.add(error)
-
-    def get_warnings(self, warnings):
-        """
-        Extrae las advertencias del documento de la información obtenida del BCCR
-
-        :param warnings: Lista de advertencias del BCCR
-        :return: Nada
-        """
-        if warnings is None:
-            return
-        for warning in warnings:
-            if warning:
-                adv, _ = WarningReceived.objects.get_or_create(
-                    description=warning
-                )
-                self.instance.warnings.add(adv)
-
     def create(self, validated_data):
         validated_data, bccrdata = self.call_BCCR(validated_data)
         self.time_messages['start_save_database'] = timezone.now()
         self.instance = super().create(validated_data=validated_data)
-        self.get_warnings(bccrdata['advertencias'])
-        self.get_found_errors(bccrdata['errores_encontrados'])
-        self.get_signers(bccrdata['firmantes'])
         self.time_messages['end_save_database'] = timezone.now()
+        self.instance.validation_data = bccrdata
         response_serializer = DocumentSeralizer(self.instance)
         self._data = response_serializer.data
         return self.instance

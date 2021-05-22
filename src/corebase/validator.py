@@ -29,7 +29,6 @@ from pyfva.constants import get_text_representation, \
     ERRORES_VALIDAR_XMLCONTRAFIRMA, ERRORES_VALIDAR_MSOFFICE,\
     ERRORES_VALIDAR_PDF
 
-from corebase.models import Signer, ErrorFound, WarningReceived
 from django.core.exceptions import ValidationError
 from pyfva.clientes.firmador import ClienteFirmador
 from django.conf import settings
@@ -308,20 +307,3 @@ class Suscriptor_Serializer(serializers.ModelSerializer):
         return self.call_BCCR()
 
 
-class ErrorFoundSerializer(serializers.ModelSerializer):
-    """
-    Serializa los mensaje de error, para retornarse las respuestas
-    """
-    class Meta:
-        model = ErrorFound
-        fields = ('code', 'detail')
-
-
-class SignerSerializer(serializers.ModelSerializer):
-    """
-    Serializa los usuarios firmantes.
-    """
-    class Meta:
-        model = Signer
-        fields = ('identification_number',
-                  'signature_date', 'full_name')
