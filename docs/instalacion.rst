@@ -178,4 +178,13 @@ Agregue en settings.py
 
         echo "codigo base64" | base64 -d > ca-agent.p12 
         openssl pkcs12 -in ca-agent.p12 -out admin_cert.pem -nodes
+
     La contraseña es la misma que ds-password osea en este caso LDAPPASSWORD
+
+Una vez instalado puede ejecutar
+
+.. code:: bash
+
+    python manage.py runserver
+
+Y acceder a http://localhost:8000 y a partir de ahí iniciar las configuraciones necesarias.

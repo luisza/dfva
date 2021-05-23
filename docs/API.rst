@@ -56,25 +56,24 @@ Personas
 Autenticación
 ~~~~~~~~~~~~~~
 
-.. automethod::  person.authenticator.views.AuthenticatePersonRequestViewSet.person
-.. automethod::  person.authenticator.views.AuthenticatePersonRequestViewSet.person_show
+.. autoclass::  person.authenticator.views.AuthenticatePersonView
 
 Firma
 ~~~~~~~~~~~~~~~
 
-.. automethod::  person.signer.views.SignPersonRequestViewSet.person
-.. automethod::  person.signer.views.SignPersonRequestViewSet.person_show
+.. autoclass::  person.signer.views.SignPersonView
 
 Validación
 ~~~~~~~~~~~~~~~
 
-.. automethod::  person.validator.views.ValidatePersonViewSet.person_certificate
-.. automethod::  person.validator.views.ValidatePersonViewSet.person_document
-.. automethod::  person.validator.views.ValidateSubscriptorPersonViewSet.person_suscriptor_connected
+.. autoclass::  person.validator.views.ValidateCertificatePersonViewSet
+.. autoclass::  person.validator.views.ValidateDocumentPersonViewSet
+.. autoclass::  person.validator.views.ValidateSubscriptorPersonViewSet
 
 Login
 ~~~~~~~~
 
+.. automethod::  person.views.PersonLoginView.list
 .. automethod::  person.views.PersonLoginView.create
 
 

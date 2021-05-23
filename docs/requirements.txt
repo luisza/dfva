@@ -32,3 +32,5 @@ Pygments==2.9.0
 pygraphviz==1.5
 requests==2.24.0
 six==1.15.0
+Sphinx==4.0.2
+sphinx-rtd-theme==0.5.2

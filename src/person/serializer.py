@@ -40,7 +40,7 @@ logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
 class OperandLogin:
-    operands = ['+', '-', '*', '/', '%', '//', '**']
+    operands = ['+', '-', '*', '/', '%', '//']
 
     @classmethod
     def operate(cls, oper1, oper2, oper):
@@ -60,8 +60,6 @@ class OperandLogin:
             dev = oper1%oper2
         elif oper == '//':
             dev = oper1//oper2
-        elif oper == '**':
-            dev = oper1**oper2
         return dev
     @classmethod
     def get_operand(cls):

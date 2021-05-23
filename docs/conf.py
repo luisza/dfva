@@ -55,8 +55,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'DFVA'
-copyright = '2017, Luis Zárate y Marta Solano'
+project = 'SIFVA'
+copyright = '2021, Luis Zárate y Marta Solano'
 author = 'Luis Zárate y Marta Solano'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -125,7 +125,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'DFVAdoc'
+htmlhelp_basename = 'SIFVAdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -152,7 +152,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'DFVA.tex', 'DFVA Documentation',
+    (master_doc, 'DFVA.tex', 'SIFVA Documentation',
      'Luis Zárate y Marta Solano', 'manual'),
 ]
 
@@ -162,7 +162,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'dfva', 'DFVA Documentation',
+    (master_doc, 'dfva', 'SIFVA Documentation',
      [author], 1)
 ]
 
@@ -173,8 +173,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'DFVA', 'DFVA Documentation',
-     author, 'DFVA', 'One line description of project.',
+    (master_doc, 'SIFVA', 'SIFVA Documentation',
+     author, 'SIFVA', 'One line description of project.',
      'Miscellaneous'),
 ]
 
