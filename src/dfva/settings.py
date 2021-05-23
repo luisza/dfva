@@ -278,8 +278,11 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_BACKEND = 'django-db'
 
-#from .graylog import *
-from .locallog import *
+NOLOGGING = os.getenv('NOLOGGING', 'False') == 'True'
+
+if not NOLOGGING:
+    #from .graylog import *
+    from .locallog import *
 
 from celery.schedules import crontab
 
