@@ -1,7 +1,7 @@
 Como hacer un deploy completo para desarrollo de la infraestructura
 ========================================================================
 
-Esta documentación es para la construcción de DFVA y los diferentes servicios requeridos.
+Esta documentación es para la construcción de SIFVA y los diferentes servicios requeridos.
 Se construye a partir de docker, la instalación del mismo está fuera del alcance de esta bitácora, ver
 https://docs.docker.com/engine/install/debian/.
 

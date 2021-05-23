@@ -4,7 +4,7 @@
 Entorno de desarrollo
 -------------------------
 
-Para poder desarrollar DFVA core necesita tener:
+Para poder desarrollar SIFVA core necesita tener:
 
 * Lector PKCS11 
 * Firma digital de Costa Rica
@@ -21,7 +21,7 @@ Debe crear las siguientes variables de entorno antes de correr una prueba.
 .. code:: bash
 
     export PKCS11_PIN=<PIN de desbloqueo de la tarjeta digital>
-    export PYTHONPATH=:$PYTHONPATH:<ruta del cliente DFVA de personas>/dfva_client
+    export PYTHONPATH=:$PYTHONPATH:<ruta del cliente SIFVA de personas>/dfva_client
 
 Ejecute las pruebas 
 
@@ -45,11 +45,11 @@ También puede hacer pruebas individuales ejecutando por ejemplo.
 Reportar Issues
 -----------------
 
-Utilize los issues_ de github para reportar cualquier problema encontrado en DFVA.
+Utilize los issues_ de github para reportar cualquier problema encontrado en SIFVA.
 
 .. _issues: https://github.com/luisza/dfva/issues
 
-Por favor usar la sección de issues de cada cliente si el problema es del cliente y no del core de DFVA.
+Por favor usar la sección de issues de cada cliente si el problema es del cliente y no del core de SIFVA.
 
 
 Pull Request

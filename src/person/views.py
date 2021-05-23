@@ -48,6 +48,7 @@ class PersonLoginView(mixins.CreateModelMixin, mixins.ListModelMixin,
     def create(self, request, *args, **kwargs):
         """
         Autentica el usuario usando una prueba de verdad.
+
         ::
 
           POST /login/
@@ -95,19 +96,26 @@ class PersonLoginView(mixins.CreateModelMixin, mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         """
+        Gestiona la operación de verdad, para la generación de token a firmar.
+        En el flujo se solicita a esta vista 2 operadores y una función de operación, luego el cliente calcula el
+        resultado y lo envía firmado a la vísta vía POST, SIFVA valida el resultado y lo compara con lo enviado, si
+        ambos son iguales entonces autentica al usuario.
+
+        ::
+
          GET /login/     
          
-         Parámetros GET
-            
-            * **serial:** Serial de la tarjeta con la cual autenticarse.
-            * **person:** Identificación de la persona
-         
-         Response:
-         
-            * **transaction_id:** ID del objeto de autenticación.
-            * **operatorA:** Operadorador izquierdo
-            * **operand:** Operadorador 
-            * **operatorB:** Operadorador derecho
+        Parámetros GET
+
+        * **serial:** Serial de la tarjeta con la cual autenticarse.
+        * **person:** Identificación de la persona
+
+        Response:
+
+        * **transaction_id:** ID del objeto de autenticación.
+        * **operatorA:** Operadorador izquierdo
+        * **operand:** Operadorador
+        * **operatorB:** Operadorador derecho
             
         """
 

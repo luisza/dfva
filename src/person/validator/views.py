@@ -45,8 +45,41 @@ from rest_framework.viewsets import GenericViewSet
 logger = logging.getLogger(settings.DEFAULT_LOGGER_NAME)
 
 
-class ValidateCertificatePersonViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                                       GenericViewSet):
+class ValidateCertificatePersonViewSet(mixins.CreateModelMixin, GenericViewSet):
+    """
+    Valida si un certificado de la jerarquía nacional es válido.
+
+    ::
+
+      POST /person/validate_certificate
+
+    Solicita una de un certificado de autenticación para un usuario
+
+    Los valores a suministrar en el parámetro data son:
+
+    * **person:** Identificación de la persona validante,
+    * **document:** Archivo en base64 del certificado,
+    * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+    * **format** Debe ser siempre "certificate"
+
+    Data es un diccionario, osea un objeto de tipo clave -> valor
+
+    Los valores devueltos son:
+
+    * **identification:**  Identificación del suscriptor
+    * **request_datetime:**  Hora de recepción de la solicitud
+    * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
+    * **status:** Estado de la solicitud
+    * **codigo_de_error:**  Códigos de error del certificado, si existen
+    * **full_name:**  Nombre completo del suscriptor
+    * **start_validity:**  Inicio de la vigencia del certificado
+    * **end_validity:**  Fin de la vigencia del certificado
+    * **was_successfully:**  Si la verificación del certificado fue exitosa
+
+    **Nota:**  Si la validación del certificado no fue exitosa, entonces los campos de identificación, nombre_completo, inicio_vigencia,
+    fin_vigencia deben ignorase o son nulos.
+
+    """
     serializer_class = ValidatePersonCertificate_Request_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
     response_class = ValidatePersonCertificateRequest_Response_Serializer
@@ -54,8 +87,64 @@ class ValidateCertificatePersonViewSet(mixins.RetrieveModelMixin, mixins.CreateM
     authentication_classes = [TokenAuthentication]
 
 
-class ValidateDocumentPersonViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                                       GenericViewSet):
+class ValidateDocumentPersonViewSet(mixins.CreateModelMixin, GenericViewSet):
+    """
+    Solicita una verificación de firma  de un documento
+
+    ::
+
+      POST /person/validate_document/
+
+
+
+    Los valores a suministrar en el parámetro data son:
+
+    * **person:** Identificación de la persona validante,
+    * **document:** Archivo en base64 del certificado,
+    * **format:** Formato del documento a validar disponibles (cofirma, contrafirma, msoffice, odf)
+    * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+    Data es un diccionario, osea un objeto de tipo clave -> valor
+
+    Los valores devueltos son:
+
+    * **identification:**  Identificación del suscriptor
+    * **request_datetime:**  Hora de recepción de la solicitud
+    * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
+    * **status:** Estado de la solicitud
+    * **status_text:**  Descripción en texto del estado
+    * **was_successfully:**  Si la verificación del certificado fue exitosa
+    * **validation_data**  Contiene la información de la validación en un diccionario con los siguientes campos
+
+    **firmas:** Lista de firmas presentes en el documento, una firma de ejemplo podría ser algo así
+
+    ::
+
+         {'es_valida': True, 'es_avanzada': True, 'error': False, 'detalle_de_error': '',
+        'garantia_de_integridad_y_autenticidad': True,
+        'garantia_de_validez_tiempo': [0, 'Tiene Garantía'],
+        'detalle': {'integridad': {'estado': False, 'se_evalua': True, 'respuesta': 'ok', 'codigo': 1},
+        'jerarquia_de_confianza': {'estado': 0, 'se_evalua': True, 'respuesta': 'ok', 'codigo': 1},
+        'vigencia': {'estado': False, 'se_evalua': True, 'respuesta': 'ok', 'codigo': 1},
+        'tipo_de_certificado': {'estado': 0, 'se_evalua': True, 'respuesta': 'ok', 'codigo': 1},
+        'revocacion': {'estado': 0, 'se_evalua': True, 'respuesta': 'ok', 'codigo': 1},
+        'fecha_de_firma': {'estado': False, 'se_evalua': True, 'respuesta': 'ok',
+                            'codigo': 1, 'fecha_de_estama': '2021-05-20T00:00:00Z'}},
+         'autoria_del_firmante': {'nombre': 'Joan Lucas Arce', 'identificacion': '0408880888',
+                                   'tiene_autoria': True}}
+
+    **resumen:** Resumen de las firmas (una versión con menos campos de las firmas)
+
+    ::
+
+        {'firmante': 'Luis Madrigal Viquez', 'identificacion': '0208880888',
+        'garantia_de_integridad_y_autenticidad': True, 'garantia_validez_en_el_tiempo': True,
+        'resultado': 0, 'fecha_estampa_de_tiempo': '2021-05-20T23:30:16Z',
+        'tipo_identificacion': 0, 'tiene_fecha_estampa_de_tiempo': True}
+
+    **errores:** Cadena de texto con mensajes de error presentes en las firmas del documento
+
+    """
     serializer_class = ValidatePersonDocument_Request_Serializer
     queryset = ValidatePersonDocumentRequest.objects.all()
     response_class = ValidatePersonDocumentRequest_Response_Serializer
@@ -64,6 +153,25 @@ class ValidateDocumentPersonViewSet(mixins.RetrieveModelMixin, mixins.CreateMode
 
 
 class ValidateSubscriptorPersonViewSet(mixins.RetrieveModelMixin,  GenericViewSet):
+    """
+    Verifica si una persona está conectada (es contactable por el BCCR).
+
+    ::
+
+      POST /person/validate_suscriptor/
+
+    Los valores a suministrar en el parámetro data son:
+
+    * **person:** Identificación de la persona validante,
+    * **identification:** Identificación de la persona a buscar,
+    * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
+
+    Data es un diccionario, osea un objeto de tipo clave -> valor
+
+    **Retorna:**
+        **is_connected:** True si la persona está conectada, false si no lo está
+    """
+
     serializer_class = SuscriptorPerson_Serializer
     queryset = ValidatePersonCertificateRequest.objects.all()
 
@@ -74,130 +182,3 @@ class ValidateSubscriptorPersonViewSet(mixins.RetrieveModelMixin,  GenericViewSe
         serializer = self.get_serializer()
         dev = serializer.call_BCCR({'identification': kwargs['pk']})
         return Response({'is_connected': dev})
-
-# class ValidatePersonViewSet(ViewSetBase, viewsets.GenericViewSet):
-#     serializer_class = ValidatePersonCertificate_Request_Serializer
-#     queryset = ValidatePersonCertificateRequest.objects.all()
-#     response_class = ValidatePersonCertificateRequest_Response_Serializer
-#
-#     @authentication_classes([TokenAuthentication])
-#     @permission_classes([IsAuthenticated])
-#     @action(detail=False, methods=['post'])
-#     def person_certificate(self, request, *args, **kwargs):
-#         """
-#         ::
-#
-#           POST /validate/person_certificate/
-#
-#         Solicita una de un certificado de autenticación para un usuario
-#
-#         Los valores a suministrar en el parámetro data son:
-#
-#         * **person:** Identificación de la persona validante,
-#         * **document:** Archivo en base64 del certificado,
-#         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-#
-#         Data es un diccionario, osea un objeto de tipo clave -> valor
-#
-#         Los valores devueltos son:
-#
-#         * **identification:**  Identificación del suscriptor
-#         * **request_datetime:**  Hora de recepción de la solicitud
-#         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
-#         * **status:** Estado de la solicitud
-#         * **codigo_de_error:**  Códigos de error del certificado, si existen
-#         * **full_name:**  Nombre completo del suscriptor
-#         * **start_validity:**  Inicio de la vigencia del certificado
-#         * **end_validity:**  Fin de la vigencia del certificado
-#         * **was_successfully:**  Si la verificación del certificado fue exitosa
-#
-#         **Nota:**  Si la validación del certificado no fue exitosa, entonces los campos de identificación, nombre_completo, inicio_vigencia,
-#         fin_vigencia deben ignorase o son nulos.
-#
-#         """
-#         ip = get_ip(request)
-#         logger.debug('Validator: Certificate Person %s %r' %
-#                      (ip, request.data))
-#         logger.info('Validator: Certificate Person %s %s %s %s' %
-#                     get_log_person_information(request))
-#         self.DEFAULT_ERROR = ERRORES_VALIDA_CERTIFICADO
-#         return self._create(request, *args, **kwargs)
-#
-#     @authentication_classes([TokenAuthentication])
-#     @permission_classes([IsAuthenticated])
-#     @action(detail=False, methods=['post'])
-#     def person_document(self, request, *args, **kwargs):
-#         """
-#         ::
-#
-#           POST /validate/person_document/
-#
-#         Solicita una verificación de firma  de un documento xml
-#
-#         Los valores a suministrar en el parámetro data son:
-#
-#         * **person:** Identificación de la persona validante,
-#         * **document:** Archivo en base64 del certificado,
-#         * **format:** Formato del documento a validar disponibles (cofirma, contrafirma, msoffice, odf)
-#         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-#
-#         Data es un diccionario, osea un objeto de tipo clave -> valor
-#
-#         Los valores devueltos son:
-#
-#         * **identification:**  Identificación del suscriptor
-#         * **request_datetime:**  Hora de recepción de la solicitud
-#         * **code:** Código de identificación de la transacción (no es el mismo que el que se muestra en al usuario en firma)
-#         * **status:** Estado de la solicitud
-#         * **status_text:**  Descripción en texto del estado
-#         * **warnings:** Lista de advertencias
-#         * **errors:** Lista de errores encontrados en el documento del tipo [ {'codigo': 'codigo','descripcion': 'descripción'}, ... ]
-#         * **signers:** Lista con la información de los firmantes [ {'identification': '08-8888-8888', 'full_name': 'nombre del suscriptor', 'signature_date': timezone.now()}, ... ]
-#         * **was_successfully:**  Si la verificación del certificado fue exitosa
-#
-#         **Nota:**  Si la validación del documento no fue exitosa, entonces los campos de firmantes deben ignorase o son nulos.
-#
-#         """
-#
-#         ip = get_ip(request)
-#         logger.debug('Validator: Document Person %s %r' %
-#                      (ip, request.data))
-#         logger.info('Validator: Document Person %s %s %s %s' %
-#                     get_log_person_information(request))
-#         self.serializer_class = ValidatePersonDocument_Request_Serializer
-#         self.queryset = ValidatePersonDocumentRequest.objects.all()
-#         self.response_class = ValidatePersonDocumentRequest_Response_Serializer
-#         self.DEFAULT_ERROR = ERRORES_VALIDAR_XMLCOFIRMA
-#         return self._create(request, *args, **kwargs)
-#
-#
-# class ValidateSubscriptorPersonViewSet(BaseSuscriptor, viewsets.GenericViewSet):
-#     serializer_class = SuscriptorPerson_Serializer
-#     queryset = ValidatePersonCertificateRequest.objects.all()
-#
-#     @authentication_classes([TokenAuthentication])
-#     @permission_classes([IsAuthenticated])
-#     @action(detail=False, methods=['post'])
-#     def person_suscriptor_connected(self, request, *args, **kwargs):
-#         """
-#         ::
-#
-#           POST /validate/person_suscriptor_connected/
-#
-#         Verifica si una persona está conectada (es contactable por el BCCR).
-#
-#         Los valores a suministrar en el parámetro data son:
-#
-#         * **person:** Identificación de la persona validante,
-#         * **identification:** Identificación de la persona a buscar,
-#         * **request_datetime:** Hora de petición en formato '%Y-%m-%d %H:%M:%S', osea  '2006-10-25 14:30:59'
-#
-#         Data es un diccionario, osea un objeto de tipo clave -> valor
-#
-#         **Retorna:**
-#             **is_connected:** True si la persona está conectada, false si no lo está
-#         """
-#         ip = get_ip(request)
-#         logger.debug('Connected:  person %s %r' % (ip, request.data))
-#         logger.info('Connected:  person %s %s %s %s' % get_log_person_information(request))
-#         return self._create(request,  *args, **kwargs)

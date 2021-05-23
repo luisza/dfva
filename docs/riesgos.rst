@@ -1,7 +1,7 @@
 Riesgos identificados
 ============================
 
-Los riesgos aquí descritos responden a escenarios y comportamientos de DFVA que podrían llevar a un riesgo para la implementación, este lugar no es una lista de vulnerabilidades conocidas y todos los riesgos descritos han sido tratados y mitigados, pero en honor al trabajo realizado en este proyecto y en aras de demostrar que los desarrolladores de DFVA nos tomamos en serio la seguridad hacemos público aquellos riegos identificados que podrían poner en peligro la implementación de este software.
+Los riesgos aquí descritos responden a escenarios y comportamientos de SIFVA que podrían llevar a un riesgo para la implementación, este lugar no es una lista de vulnerabilidades conocidas y todos los riesgos descritos han sido tratados y mitigados, pero en honor al trabajo realizado en este proyecto y en aras de demostrar que los desarrolladores de SIFVA nos tomamos en serio la seguridad hacemos público aquellos riegos identificados que podrían poner en peligro la implementación de este software.
 
 Almacenamiento
 -----------------
@@ -38,7 +38,7 @@ Además afecta el rendimiento de consulta de peticiones con respecto al número 
 Almacenamiento de bitácoras y auditoría
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-DFVA y PyFVA poseen un completo sistema de bitácoras, haciendo uso completo de `Django logging`_ emitiendo mensajes en los niveles Información, Debug, Warning, Error.  Por defecto se guardan las bitácoras en disco provocando 2 afectaciones; 1) llenar el disco con logs, 2) fuga de información producto de los logs 
+SIFVA y PyFVA poseen un completo sistema de bitácoras, haciendo uso completo de `Django logging`_ emitiendo mensajes en los niveles Información, Debug, Warning, Error.  Por defecto se guardan las bitácoras en disco provocando 2 afectaciones; 1) llenar el disco con logs, 2) fuga de información producto de los logs 
 
 **Mitigación**
 
@@ -61,11 +61,11 @@ Serialización y deserialización de comunicaciones
 Deserialización de Json
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Toda la comunicación entre DFVA y las instituciones o personas se realiza utilizando JSON, por lo que alguien podría intentar insertar código malicioso para hacer romper los mecanismos de deserialización y con ello afectar el servicio.
+Toda la comunicación entre SIFVA y las instituciones o personas se realiza utilizando JSON, por lo que alguien podría intentar insertar código malicioso para hacer romper los mecanismos de deserialización y con ello afectar el servicio.
 
 **Mitigación**
 
-- DFVA utiliza la última versión de Django Rest Framework y confía en la seguridad de este proyecto en el manejo de deserialización JSON.
+- SIFVA utiliza la última versión de Django Rest Framework y confía en la seguridad de este proyecto en el manejo de deserialización JSON.
 
 Serialización de XML (Pyfva)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,7 +77,7 @@ Un atacante podría intentar construir una petición maliciosa que rompa el seri
 - Se confía en la biblioteca Soapfish_ para la elaboración de XML.
 - La deserialización de XML se confía en que el único que envía XML es el BCCR.
 
-.. _Soapfish: https://github.com/FlightDataServices/soapfish
+.. _Soapfish: https://github.com/soapteam/soapfish
 
 Disponibilidad
 -----------------
@@ -85,32 +85,32 @@ Disponibilidad
 Sustitución del servicio
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-DFVA es código abierto y libre, por lo que cualquiera puede configurar una instalación e intentar hacerse pasar por DFVA válido.
+SIFVA es código abierto y libre, por lo que cualquiera puede configurar una instalación e intentar hacerse pasar por SIFVA válido.
 
 
 **Mitigación**
 
-- Doble uso de llaves RSA y el cifrado de las comunicaciones ayuda a mitigarlo.  La llave privada de la apliación solo la debería conocer la aplicación y la llave privada del servicio solo la conoce DFVA por lo que un sustituto no puede desencriptar las peticiones o enviar respuestas falsas.
+- Doble uso de llaves RSA y el cifrado de las comunicaciones ayuda a mitigarlo.  La llave privada de la apliación solo la debería conocer la aplicación y la llave privada del servicio solo la conoce SIFVA por lo que un sustituto no puede desencriptar las peticiones o enviar respuestas falsas.
 - Cada institución debe crear mecanismos necesarios para resguardar las llaves RSA y los certificados.
 
 
 Continuidad del servicio 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-DFVA no provee ninguna herramienta para prevenir ataques de denegación de servicio.
+SIFVA no provee ninguna herramienta para prevenir ataques de denegación de servicio.
 
 
 **Mitigación**
 
-- DFVA está implementado para poder lanzarse en sistema distribuidos y balanceados, por lo que una buena infraestructura puede mitigar este tipo de ataques.
-- DFVA No utiliza sesiones de estado, y cada petición se inicia y termina en una operación atómica.
+- SIFVA está implementado para poder lanzarse en sistema distribuidos y balanceados, por lo que una buena infraestructura puede mitigar este tipo de ataques.
+- SIFVA No utiliza sesiones de estado, y cada petición se inicia y termina en una operación atómica.
 
 
-Si los servicios del BCCR no están disponibles DFVA no funciona.
+Si los servicios del BCCR no están disponibles SIFVA no funciona.
 
 **Mitigación**
 
-- DFVA siempre enviará un mensaje de error al cliente indicando que la transacción no se pudo realizar, por lo que el servicio de DFVA segurá disponible.
+- SIFVA siempre enviará un mensaje de error al cliente indicando que la transacción no se pudo realizar, por lo que el servicio de SIFVA segurá disponible.
 
 Integridad
 --------------
@@ -122,7 +122,7 @@ Algún atacante podría intentar un *Man in the Middle* para alterar el contenid
 
 **Mitigación**
 
-- DFVA, podría ser implementado sobre HTTP sin perder la integridad y confidencialidad de los datos, gracias al doble mecanismo de encripción. Aun así se recomienda encarecidamente utilizar HTTPS en producción.
+- SIFVA, podría ser implementado sobre HTTP sin perder la integridad y confidencialidad de los datos, gracias al doble mecanismo de encripción. Aun así se recomienda encarecidamente utilizar HTTPS en producción.
 
 Integridad de las respuestas del BCCR FVA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,7 +131,7 @@ Un atacante podría hacerse pasar por el BCCR FVA y emitir respuestas a peticion
 
 **Mitigación**
 
-- DFVA posee una variable de configuración obligatoria llamada `ALLOWED_BCCR_IP` donde se especifican las direcciones IP de los servidores del BCCR que envían respuestas, cualquier IP que no esté listada en esta variable se le denegará el acceso.
+- SIFVA posee una variable de configuración obligatoria llamada `ALLOWED_BCCR_IP` donde se especifican las direcciones IP de los servidores del BCCR que envían respuestas, cualquier IP que no esté listada en esta variable se le denegará el acceso.
 
 
 Confidencialidad
@@ -146,7 +146,7 @@ Alguien podría intentar hacerse pasar por otra persona.
 
 **Mitigación**
 
-- Toda petición a DFVA es encriptada usando el mecanismo provisto por el dispositivo PKCS11 y verificado usando el certificado digital.  Por lo tanto la autenticación de la persona es inequivoca.
+- Toda petición a SIFVA es encriptada usando el mecanismo provisto por el dispositivo PKCS11 y verificado usando el certificado digital.  Por lo tanto la autenticación de la persona es inequivoca.
 
 * **Instituciones:**
 

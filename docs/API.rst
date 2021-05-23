@@ -1,7 +1,7 @@
 API de Comunicación
 =====================
 
-DFVA es una aplicación RESTFull por lo que usa JSON como modelo de representación de objetos, los objetos son enviados vía POST sobre un canal de comunicación
+SIFVA es una aplicación RESTFull por lo que usa JSON como modelo de representación de objetos, los objetos son enviados vía POST sobre un canal de comunicación
 HTTPS.  
 Las peticiones tienen el siguiente formato:
 
@@ -11,12 +11,12 @@ Las peticiones tienen el siguiente formato:
 * **data:** Datos de solicitud de autenticación encriptados usando AES con la llave de sesión encriptada con PKCS1_OAEP.
 * **encrypt_method:** (opcional, por defecto: "aes_eax") Método de encripción del contenido ("aes_eax", "aes-256-cfb")  
 
-Además se envía un atributo identificador que depende del tipo de conversación que se quiera entablar, actualmente se pueden comunicar con DFVA: 
+Además se envía un atributo identificador que depende del tipo de conversación que se quiera entablar, actualmente se pueden comunicar con SIFVA:
 una institución (**institution**) con el uuid proporcionado en dfva y una persona (**person**) con su número de identificación (ver formato_). 
 
 .. _formato: http://pyfva.readthedocs.io/en/latest/formatos.html
 
-DFVA verifica que *data_hash* sea igual al generado a partir de data utilizando el algoritmo indicado.
+SIFVA verifica que *data_hash* sea igual al generado a partir de data utilizando el algoritmo indicado.
 
 Las respuestas tienen el siguiente formato:
 

@@ -1,7 +1,7 @@
 Descripción General
 ==========================
 
-DFVA pretente ser un cliente para el firmado digital avanzado, la autenticación mediante certificados digitales y la validación de certificados y documentos.
+SIFVA pretente ser un cliente para el firmado digital avanzado, la autenticación mediante certificados digitales y la validación de certificados y documentos.
 
 Proporciona soporte para instituciones y personas utilizando:
 
@@ -23,16 +23,16 @@ Clientes disponibles
 Personas
 ~~~~~~~~~~
 
-* **dfva_client** (https://github.com/luisza/dfva_client/) : Cliente en python para interactuar con DFVA con soporte a PKCS11 para personas.
+* **dfva_client** (https://github.com/luisza/dfva_client/) : Cliente en python para interactuar con SIFVA con soporte a PKCS11 para personas.
 
 Instituciones
 ~~~~~~~~~~~~~~~~~
 
-* **dfva_java** (https://github.com/luisza/dfva_java/) : Cliente en java para interactuar con DFVA para instituciones.
-* **dfva_php** (https://github.com/luisza/dfva_php/) : Cliente en php para interactuar con DFVA para instituciones.
-* **dfva_python** (https://github.com/luisza/dfva_python/) : Cliente en python para interactuar con DFVA para instituciones.
-* **dfva_c** (https://github.com/luisza/dfva_c/) : Cliente en c++ para interactuar con DFVA para instituciones.
-* **dfva_c#** (https://github.com/luisza/dfva_csharp/) : Cliente en c# para interactuar con DFVA para instituciones.
+* **dfva_java** (https://github.com/luisza/dfva_java/) : Cliente en java para interactuar con SIFVA para instituciones.
+* **dfva_php** (https://github.com/luisza/dfva_php/) : Cliente en php para interactuar con SIFVA para instituciones.
+* **dfva_python** (https://github.com/luisza/dfva_python/) : Cliente en python para interactuar con SIFVA para instituciones.
+* **dfva_c** (https://github.com/luisza/dfva_c/) : Cliente en c++ para interactuar con SIFVA para instituciones.
+* **dfva_c#** (https://github.com/luisza/dfva_csharp/) : Cliente en c# para interactuar con SIFVA para instituciones.
 * **dfva_html** (https://github.com/luisza/dfva_html/) : Cliente en javascript/html/css para captar información del usuario y mostrar los códigos provistos por dfva para instituciones.
 
 Conexión con el BCCR (interno)

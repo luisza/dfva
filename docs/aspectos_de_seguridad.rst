@@ -5,7 +5,7 @@ Aspectos de seguridad
 Comunicación
 --------------------------
 
-DFVA es una aplicación RESTFull por lo que usa JSON como modelo de representación de objetos, los objetos son enviados vía POST sobre un canal de comunicación
+SIFAV es una aplicación RESTFull por lo que usa JSON como modelo de representación de objetos, los objetos son enviados vía POST sobre un canal de comunicación
 HTTPS.  
 Las peticiones tienen el siguiente formato:
 
@@ -15,12 +15,12 @@ Las peticiones tienen el siguiente formato:
 * **data:** Datos de solicitud de autenticación encriptados usando AES con la llave de sesión encriptada con PKCS1_OAEP.
 * **encrypt_method:** (opcional, por defecto: "aes_eax") Método de encripción del contenido ("aes_eax", "aes-256-cfb")  
 
-Además se envía un atributo identificador que depende del tipo de conversación que se quiera entablar, actualmente se pueden comunicar con DFVA: 
-una institución (**institution**) con el uuid proporcionado en dfva y una persona (**person**) con su número de identificación (ver formato_). 
+Además se envía un atributo identificador que depende del tipo de conversación que se quiera entablar, actualmente se pueden comunicar con SIFAV: 
+una institución (**institution**) con el uuid proporcionado en sifva y una persona (**person**) con su número de identificación (ver formato_).
 
 .. _formato: http://pyfva.readthedocs.io/en/latest/formatos.html
 
-DFVA verifica que *data_hash* sea igual al generado a partir de data utilizando el algoritmo indicado.
+SIFAV verifica que *data_hash* sea igual al generado a partir de data utilizando el algoritmo indicado.
 
 Las respuestas tienen el siguiente formato:
 
@@ -28,7 +28,7 @@ Las respuestas tienen el siguiente formato:
 * **algorithm:** Algoritmo con que se construye data_hash, debe ser alguno de los siguientes: sha256, sha384, sha512 *por defecto sha515*
 * **data:** Datos de respuesta encriptados usando AES Modo EAX con la llave de sesión encriptada con PKCS1_OAEP.
 
-DFVA intenta desencriptar lo suministrado en data utilizando los juegos de llaves explicados acontinuación:
+SIFAV intenta desencriptar lo suministrado en data utilizando los juegos de llaves explicados acontinuación:
 
 Institución
 ~~~~~~~~~~~~~~
@@ -37,15 +37,15 @@ Para manejar instituciones se debe crear una institución en la plataforma, al c
 
 La llave privada corresponde a la llave privada de la institución y será utilizada para desencriptar las respuestas de dfva,
 
-La llave pública corresponde a la llave pública de DFVA que se utilizará para encriptar la información que se envía en data.  
+La llave pública corresponde a la llave pública de SIFAV que se utilizará para encriptar la información que se envía en data.  
 
-En DFVA se construye dos pares de llaves por cada institución.
+En SIFAV se construye dos pares de llaves por cada institución.
 
 * **Llaves de la aplicación:** La llave privada se entrega y la llave pública se guarda y nunca es revelada.
 * **Llaves del servicio:** La llave privada se guarda y nunca es revelada y la llave pública se entrega a la institución.
 
 Los juegos de llaves encriptados y el certificado se guardan en la base de datos, excepto la llave privada de la institución, la cual nunca es almacenada en la báse de datos y solo se muestra una vez al usuario.
-Debido a que tanto las llaves privadas y las públicas son exclusivas de cada institución y generadas dentro de DFVA la llave pública de la institución nunca es expuesta asegurando aún más la comunicación RSA.
+Debido a que tanto las llaves privadas y las públicas son exclusivas de cada institución y generadas dentro de SIFAV la llave pública de la institución nunca es expuesta asegurando aún más la comunicación RSA.
 
 .. note::  Se utiliza el SECRET_KEY de Django para generar una llave de encripción para los atributos almacenados en la base de datos, por lo que asegurece cambiar el valor por defecto.
 
@@ -59,9 +59,9 @@ Para la comunicación con personas se utiliza la encripción provista por los di
 
 En mis pruebas el certificado de firma tiene una llave privada que no permite desencriptar, por lo que solo se utiliza autenticación para comunicación.
 
-Cuando una persona desea comunicarse con DFVA lo primero que reliza el programa es negociar el token de autenticación, el token es encriptado utilizando la llave pública del certificado de Autenticación en DFVA y enviado a la aplicación, dicho token solo puede ser desencriptado con el dispositivo PKCS11 y la llave privada de auteticación.
+Cuando una persona desea comunicarse con SIFAV lo primero que reliza el programa es negociar el token de autenticación, el token es encriptado utilizando la llave pública del certificado de Autenticación en SIFAV y enviado a la aplicación, dicho token solo puede ser desencriptado con el dispositivo PKCS11 y la llave privada de auteticación.
 
-El token será utilizado como token de sesión en el algoritmo AES Modo EAX al encriptar data y deberá ser enviado firmado utilizando alguna de las llaves privadas del dispositivo (según contexto) y se comprobará en DFVA que el token sea correcto antes de proceder a desencriptar la información.
+El token será utilizado como token de sesión en el algoritmo AES Modo EAX al encriptar data y deberá ser enviado firmado utilizando alguna de las llaves privadas del dispositivo (según contexto) y se comprobará en SIFAV que el token sea correcto antes de proceder a desencriptar la información.
 
 
 
@@ -72,7 +72,7 @@ Almacenamiento
 
 .. warning:: FALTA, Manejo información sobre los modelos de personas, la información descrita corresponde únicamente a institutiones.
 
-DFVA se basa en Django por lo que soporta todas las bases de datos que este framework soporta, pero recomendamos Postgresql 9.4 o superior. 
+SIFAV se basa en Django por lo que soporta todas las bases de datos que este framework soporta, pero recomendamos Postgresql 9.4 o superior. 
 
 Las solicitudes de autenticación tiene un tiempo de vida de al menos 5 minutos (configurables), así una solicitud de autenticación se guardará en la base de datos por el tiempo definido, luego se extrae y se guarda en un archivo de log especiamente diseñado para guardar las solicitudes.
 
@@ -81,17 +81,17 @@ Las solicitudes de firma tienen un tiempo de vida de al menos 20 minutos (config
 
 Se pretende que las verificaciones de documentos y certificados y las revisiones de suscriptor conectado no se guarden en la base de datos (FALTA).
 
-DFVA trabaja con tareas asincrónicas llamadas cada 5 y 20 minutos las cuales se encargan de revisar cuales peticiones han vencido el plazo y deben enviarse a logs, debido a este comportamiento algunas peticiones tendrán una duración entre 5-9 minutos para autenticación y 20 a 39 minutos para firma antes de ser enviadas a logs.   Debido a que se provee la opción de solicitar la información de una petición para clientes no web esta información debe permanecer por un periodo de tiempo, además los mecanismos de control propios impedirá que una petición cuyo tiempo de vida haya caducado pueda ser obtenida por un cliente.
+SIFAV trabaja con tareas asincrónicas llamadas cada 5 y 20 minutos las cuales se encargan de revisar cuales peticiones han vencido el plazo y deben enviarse a logs, debido a este comportamiento algunas peticiones tendrán una duración entre 5-9 minutos para autenticación y 20 a 39 minutos para firma antes de ser enviadas a logs.   Debido a que se provee la opción de solicitar la información de una petición para clientes no web esta información debe permanecer por un periodo de tiempo, además los mecanismos de control propios impedirá que una petición cuyo tiempo de vida haya caducado pueda ser obtenida por un cliente.
 
 
 
 Bitácoras
 ------------------
 
-DFVA usa al máximo el sistema de bitácoras de Django por lo que es ampliamente configurable.  Actualmente genera los siguientes logs:
+SIFAV usa al máximo el sistema de bitácoras de Django por lo que es ampliamente configurable.  Actualmente genera los siguientes logs:
 
 * **pyfva (debug, info, errors):** Bitácoras de comunicación con BCCR FVA
-* **dfva (debug, info, errors):** Bitácoras de funcionamiento interno de DFVA.
+* **dfva (debug, info, errors):** Bitácoras de funcionamiento interno de SIFAV.
 * **dfva_authentication (info):** Bitácora de solicitudes de autenticación
 * **dfva_sign (info):**  Bitácora de solicitudes de firma.
 
@@ -106,16 +106,16 @@ Se recomienda implementar HTTP Strict Transport Security (HSTS) en el sistemas e
 Disponibilidad
 -------------------
 
-DFVA está basado en Django y utiliza todos los mecanismos provistos por este, así también posee todas las bondades en cuanto a escalabilidad. Por ello DFVA es escalable tanto Horizontal como Verticalmente.
+SIFAV está basado en Django y utiliza todos los mecanismos provistos por este, así también posee todas las bondades en cuanto a escalabilidad. Por ello SIFAV es escalable tanto Horizontal como Verticalmente.
 
-Aunque AES EAX no es thread safe, solo se utiliza un hilo por encripción y abonando el hecho que Django es thread safe, se concidera que DFVA posee la capacidad de ejecutarse en entornos multi-hilo, con un pequeño impacto en los tiempos de encripción.
+Aunque AES EAX no es thread safe, solo se utiliza un hilo por encripción y abonando el hecho que Django es thread safe, se concidera que SIFAV posee la capacidad de ejecutarse en entornos multi-hilo, con un pequeño impacto en los tiempos de encripción.
 
 .. note:: Más pruebas del comportamiento multihilo son recomendables.
 
 Manejo de los certificados
 ---------------------------
 
-DFVA es versatil y permite configurar el manejador de certificados, con ello permite comunicarse con la infraestructura de PKI que se desee.
+SIFAV es versatil y permite configurar el manejador de certificados, con ello permite comunicarse con la infraestructura de PKI que se desee.
 
 Actualmente, se soporta la integración con Dogtag_ y también se soporta CA's creadas con Python Certbuilder para desarrollo utilizando el manejador **CA simple**
 
@@ -126,7 +126,7 @@ CA Simple
 
 .. warning:: No utilizar en producción, este sistema está desarrollado para trabajar en desarrollo sin la necesidad de una infraestructura compleja.  
 
-DFVA trae un manejador y constructor de Autoridades de Certificados (CA), y debe construirse después de la instalación usando el comando:
+SIFAV trae un manejador y constructor de Autoridades de Certificados (CA), y debe construirse después de la instalación usando el comando:
 
 ::
 
@@ -151,7 +151,7 @@ Asegurar dichos archivos escapa al alcance de este documento, pero siempre es ú
 DogTag
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. note:: Para la instalación ver la sección de instalación de DFVA.
+.. note:: Para la instalación ver la sección de instalación de SIFAV.
 
 Dogtag es una aplicación que se integra con FreeIPA para proporcionar una robusta infraestructura PKI, actualmente el cliente desarrollado se integra con el API rest de Dogtag para generar, validar y revocar certificados.
 
@@ -170,7 +170,7 @@ En la validación del certificado se utiliza el `serial_number` del certificado 
 Encripción
 -------------
 
-Se recomienda utilizar transporte https para la puesta en producción de esta plataforma, aún así DFVA posee una segunda capa de encripción, utilizando los algoritmos.
+Se recomienda utilizar transporte https para la puesta en producción de esta plataforma, aún así SIFAV posee una segunda capa de encripción, utilizando los algoritmos.
 
 - **AES EAX:** Algoritmo simetrico, utilizado para encriptar el contenido, posee un token de sessión y un atributo IV (nonce), así como un Tag parameter. Este par debe ser único en cada encripción, osea no se puede repetir el IV con el mismo token de sessión.  Actualmente tanto el token de sessión, el Tag parameter y el IV son de 16 bytes.
 
