@@ -4,6 +4,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(BASE_DIR)
 
 LOG_BASE_DIR = os.environ.get('LOG_BASE_DIR', BASE_DIR+'/logs/')
+os.makedirs(LOG_BASE_DIR, exist_ok=True)
+
 DEFAULT_LOGGER_NAME = 'dfva'
 DEFAULT_LOGGER_LEVEL = 'DEBUG'
 DEFAULT_LOGGER_HANDLER = ['file']
