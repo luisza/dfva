@@ -3,7 +3,7 @@ asn1crypto==1.4.0
 celery==4.4.5
 crlbuilder==0.10.2
 certbuilder==0.14.2
-certifi==2020.6.20
+certifi==2022.12.7
 certvalidator==0.11.1
 cffi==1.14.3
 coreapi==2.3.3
